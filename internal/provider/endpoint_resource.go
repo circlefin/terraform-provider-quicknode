@@ -175,7 +175,7 @@ func (r *EndpointResource) Create(ctx context.Context, req resource.CreateReques
 
 	if err != nil {
 		resp.Diagnostics.AddError(
-			utils.ClientErrorSummary,
+			fmt.Sprintf("%s - Creating Endpoint", utils.ClientErrorSummary),
 			utils.BuildClientErrorMessage(err),
 		)
 		return
@@ -184,11 +184,11 @@ func (r *EndpointResource) Create(ctx context.Context, req resource.CreateReques
 	if endpointResp.StatusCode() != 200 {
 		m, err := utils.BuildRequestErrorMessage(endpointResp.Status(), endpointResp.Body)
 		if err != nil {
-			resp.Diagnostics.AddWarning(utils.InternalErrorSummary, utils.BuildInternalErrorMessage(err))
+			resp.Diagnostics.AddWarning(fmt.Sprintf("%s - Creating Endpoint", utils.InternalErrorSummary), utils.BuildInternalErrorMessage(err))
 		}
 
 		resp.Diagnostics.AddError(
-			utils.RequestErrorSummary,
+			fmt.Sprintf("%s - Creating Endpoint", utils.RequestErrorSummary),
 			m,
 		)
 		return
@@ -208,27 +208,17 @@ func (r *EndpointResource) Create(ctx context.Context, req resource.CreateReques
 			})
 
 			resp.Diagnostics.Append(diags...)
-			if resp.Diagnostics.HasError() {
-				return
-			}
-
 			tokens = append(tokens, tokenValue)
 		}
 
 		tokensValueList, diags := types.ListValueFrom(ctx, basetypes.ObjectType{AttrTypes: tokensAttributes}, tokens)
-		resp.Diagnostics.Append(diags...)
-		if resp.Diagnostics.HasError() {
-			return
-		}
 
+		resp.Diagnostics.Append(diags...)
 		securityValueObject, diags := types.ObjectValue(securityAttributes, map[string]attr.Value{
 			"tokens": tokensValueList,
 		})
-		resp.Diagnostics.Append(diags...)
-		if resp.Diagnostics.HasError() {
-			return
-		}
 
+		resp.Diagnostics.Append(diags...)
 		data.Security = securityValueObject
 	}
 
@@ -243,23 +233,21 @@ func (r *EndpointResource) Create(ctx context.Context, req resource.CreateReques
 		)
 		if err != nil {
 			resp.Diagnostics.AddError(
-				utils.ClientErrorSummary,
+				fmt.Sprintf("%s - Patching Endpoint Label", utils.ClientErrorSummary),
 				utils.BuildClientErrorMessage(err),
 			)
-			return
 		}
 
 		if endpointUpdateResp.StatusCode() != 200 {
 			m, err := utils.BuildRequestErrorMessage(endpointResp.Status(), endpointResp.Body)
 			if err != nil {
-				resp.Diagnostics.AddWarning(utils.InternalErrorSummary, utils.BuildInternalErrorMessage(err))
+				resp.Diagnostics.AddWarning(fmt.Sprintf("%s - Patching Endpoint Label", utils.InternalErrorSummary), utils.BuildInternalErrorMessage(err))
 			}
 
 			resp.Diagnostics.AddError(
-				utils.RequestErrorSummary,
+				fmt.Sprintf("%s - Patching Endpoint Label", utils.RequestErrorSummary),
 				m,
 			)
-			return
 		}
 	}
 
@@ -285,7 +273,7 @@ func (r *EndpointResource) Read(ctx context.Context, req resource.ReadRequest, r
 
 	if err != nil {
 		resp.Diagnostics.AddError(
-			utils.ClientErrorSummary,
+			fmt.Sprintf("%s - Reading Endpoint", utils.ClientErrorSummary),
 			utils.BuildClientErrorMessage(err),
 		)
 		return
@@ -294,11 +282,11 @@ func (r *EndpointResource) Read(ctx context.Context, req resource.ReadRequest, r
 	if endpointResp.StatusCode() != 200 {
 		m, err := utils.BuildRequestErrorMessage(endpointResp.Status(), endpointResp.Body)
 		if err != nil {
-			resp.Diagnostics.AddWarning(utils.InternalErrorSummary, utils.BuildInternalErrorMessage(err))
+			resp.Diagnostics.AddWarning(fmt.Sprintf("%s - Reading Endpoint", utils.InternalErrorSummary), utils.BuildInternalErrorMessage(err))
 		}
 
 		resp.Diagnostics.AddError(
-			utils.RequestErrorSummary,
+			fmt.Sprintf("%s - Reading Endpoint", utils.RequestErrorSummary),
 			m,
 		)
 		return
@@ -323,26 +311,17 @@ func (r *EndpointResource) Read(ctx context.Context, req resource.ReadRequest, r
 			})
 
 			resp.Diagnostics.Append(diags...)
-			if resp.Diagnostics.HasError() {
-				return
-			}
-
 			tokens = append(tokens, tokenValue)
 		}
 
 		tokensValueList, diags := types.ListValueFrom(ctx, basetypes.ObjectType{AttrTypes: tokensAttributes}, tokens)
+
 		resp.Diagnostics.Append(diags...)
-		if resp.Diagnostics.HasError() {
-			return
-		}
 		securityValueObject, diags := types.ObjectValue(securityAttributes, map[string]attr.Value{
 			"tokens": tokensValueList,
 		})
-		resp.Diagnostics.Append(diags...)
-		if resp.Diagnostics.HasError() {
-			return
-		}
 
+		resp.Diagnostics.Append(diags...)
 		data.Security = securityValueObject
 	}
 
@@ -372,7 +351,7 @@ func (r *EndpointResource) Update(ctx context.Context, req resource.UpdateReques
 
 	if err != nil {
 		resp.Diagnostics.AddError(
-			utils.ClientErrorSummary,
+			fmt.Sprintf("%s - Patching Endpoint", utils.ClientErrorSummary),
 			utils.BuildClientErrorMessage(err),
 		)
 		return
@@ -381,11 +360,11 @@ func (r *EndpointResource) Update(ctx context.Context, req resource.UpdateReques
 	if endpointResp.StatusCode() != 200 {
 		m, err := utils.BuildRequestErrorMessage(endpointResp.Status(), endpointResp.Body)
 		if err != nil {
-			resp.Diagnostics.AddWarning(utils.InternalErrorSummary, utils.BuildInternalErrorMessage(err))
+			resp.Diagnostics.AddWarning(fmt.Sprintf("%s - Patching Endpoint", utils.InternalErrorSummary), utils.BuildInternalErrorMessage(err))
 		}
 
 		resp.Diagnostics.AddError(
-			utils.RequestErrorSummary,
+			fmt.Sprintf("%s - Patching Endpoint", utils.RequestErrorSummary),
 			m,
 		)
 		return
@@ -411,7 +390,7 @@ func (r *EndpointResource) Delete(ctx context.Context, req resource.DeleteReques
 
 	if err != nil {
 		resp.Diagnostics.AddError(
-			utils.ClientErrorSummary,
+			fmt.Sprintf("%s - Deleting Endpoint", utils.ClientErrorSummary),
 			utils.BuildClientErrorMessage(err),
 		)
 		return
@@ -420,11 +399,11 @@ func (r *EndpointResource) Delete(ctx context.Context, req resource.DeleteReques
 	if endpointResp.StatusCode() != 200 {
 		m, err := utils.BuildRequestErrorMessage(endpointResp.Status(), endpointResp.Body)
 		if err != nil {
-			resp.Diagnostics.AddWarning(utils.InternalErrorSummary, utils.BuildInternalErrorMessage(err))
+			resp.Diagnostics.AddWarning(fmt.Sprintf("%s - Deleting Endpoint", utils.InternalErrorSummary), utils.BuildInternalErrorMessage(err))
 		}
 
 		resp.Diagnostics.AddError(
-			utils.RequestErrorSummary,
+			fmt.Sprintf("%s - Deleting Endpoint", utils.RequestErrorSummary),
 			m,
 		)
 		return
