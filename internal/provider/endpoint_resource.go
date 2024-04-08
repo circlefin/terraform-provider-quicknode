@@ -3,6 +3,7 @@ package provider
 import (
 	"context"
 	"fmt"
+	"net/url"
 
 	"github.com/circlefin/terraform-provider-quicknode/api/quicknode"
 	"github.com/circlefin/terraform-provider-quicknode/internal/utils"
@@ -195,7 +196,8 @@ func (r *EndpointResource) Create(ctx context.Context, req resource.CreateReques
 
 	endpoint := endpointResp.JSON200.Data
 	data.Id = types.StringValue(endpoint.Id)
-	data.Url = types.StringValue(endpoint.HttpUrl)
+	u, _ := url.Parse(endpoint.HttpUrl)
+	data.Url = types.StringValue(fmt.Sprintf("%s://%s", u.Scheme, u.Host))
 	data.Security = types.ObjectNull(securityAttributes)
 	if endpoint.Security.Tokens != nil {
 		var tokens []basetypes.ObjectValuable
@@ -309,7 +311,8 @@ func (r *EndpointResource) Read(ctx context.Context, req resource.ReadRequest, r
 	if endpoint.Label != nil && *endpoint.Label != "" {
 		data.Label = types.StringPointerValue(endpoint.Label)
 	}
-	data.Url = types.StringValue(endpoint.HttpUrl)
+	u, _ := url.Parse(endpoint.HttpUrl)
+	data.Url = types.StringValue(fmt.Sprintf("%s://%s", u.Scheme, u.Host))
 	data.Security = types.ObjectNull(securityAttributes)
 	if endpoint.Security.Tokens != nil {
 		var tokens []basetypes.ObjectValuable

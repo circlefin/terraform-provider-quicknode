@@ -23,12 +23,12 @@ func TestAccMinimalQuicknodeEndpointResource(t *testing.T) {
 			{
 				Config: testAccQuickNodeResource(rName, "created-by-terraform"),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttrSet(fmt.Sprintf("quicknode_endpoint.%s", rName), "id"),
+					resource.TestCheckResourceAttrSet("quicknode_endpoint.main", "id"),
 				),
 			},
 			// ImportState testing
 			{
-				ResourceName:      fmt.Sprintf("quicknode_endpoint.%s", rName),
+				ResourceName:      "quicknode_endpoint.main",
 				ImportState:       true,
 				ImportStateVerify: true,
 			},
@@ -62,9 +62,9 @@ func TestAccMinimalQuicknodeEndpointResource(t *testing.T) {
 
 func testAccQuickNodeResource(name string, label string) string {
 	return providerConfig + fmt.Sprintf(`
-resource "quicknode_endpoint" "%s" {
+resource "quicknode_endpoint" "main" {
 	network = "mainnet"
 	chain   = "eth"
-	label   = "%s"
-}`, name, fmt.Sprintf("%s-%s", name, label))
+	label   = "%s-%s"
+}`, name, label)
 }
