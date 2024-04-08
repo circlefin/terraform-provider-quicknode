@@ -1,0 +1,6 @@
+package: quicknode
+generate:
+  models: true
+  embedded-spec: true
+  client: true
+output: quicknode.gen.go
