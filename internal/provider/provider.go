@@ -7,6 +7,7 @@ import (
 	"github.com/circlefin/terraform-provider-quicknode/api/quicknode"
 
 	"github.com/deepmap/oapi-codegen/pkg/securityprovider"
+	"github.com/hashicorp/go-retryablehttp"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/function"
 	"github.com/hashicorp/terraform-plugin-framework/path"
@@ -90,7 +91,11 @@ func (p *QuickNodeProvider) Configure(ctx context.Context, req provider.Configur
 	}
 
 	bearerTokenProvider, _ := securityprovider.NewSecurityProviderBearerToken(apiKey)
-	client, _ := quicknode.NewClientWithResponses(endpoint, quicknode.WithRequestEditorFn(bearerTokenProvider.Intercept))
+	client, _ := quicknode.NewClientWithResponses(
+		endpoint,
+		quicknode.WithHTTPClient(retryablehttp.NewClient().StandardClient()),
+		quicknode.WithRequestEditorFn(bearerTokenProvider.Intercept),
+	)
 	resp.DataSourceData = client
 	resp.ResourceData = client
 }
