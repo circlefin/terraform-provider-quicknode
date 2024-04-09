@@ -50,6 +50,8 @@ signs:
       - "${signature}"
       - "--detach-sign"
       - "${artifact}"
+sboms:
+  - artifacts: archive
 release:
   extra_files:
     - glob: 'terraform-registry-manifest.json'

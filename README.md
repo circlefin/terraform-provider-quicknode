@@ -1,4 +1,4 @@
-# Terraform Provider Scaffolding (Terraform Plugin Framework)
+# Terraform Provider Quicknode
 
 This provider allows for managing [Quicknode](https://www.quicknode.com/) resources via Terraform.
 The structure of the repository is outlined below:
