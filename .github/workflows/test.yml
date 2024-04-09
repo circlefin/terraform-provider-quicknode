@@ -87,3 +87,14 @@ jobs:
           QUICKNODE_APIKEY: ${{ secrets.QUICKNODE_APIKEY }}
         run: go test -v -cover ./internal/provider/
         timeout-minutes: 10
+  
+  rollup:
+    name: Success Rollup
+    needs:
+    - build
+    - generate
+    - test
+    runs-on: ubuntu-latest
+    steps:
+    - run: exit 1
+      if: ${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}
