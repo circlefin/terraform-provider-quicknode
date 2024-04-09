@@ -40,15 +40,17 @@ jobs:
           # GitHub sets the GITHUB_TOKEN secret automatically.
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GPG_FINGERPRINT: ${{ steps.import_gpg.outputs.fingerprint }}
-      - name: Copy Manifest to Dist
+      - name: Copy Dist
         run : |
           TAG="${{ github.ref_name }}"
           TAG=${TAG#v}
-          cp 'terraform-registry-manifest.json' "dist/terraform-provider-quicknode_${TAG}_manifest.json"
+          mkdir provider-private-release
+          cp 'terraform-registry-manifest.json' "provider-private-release/terraform-provider-quicknode_${TAG}_manifest.json"
+          find dist ! -name "*.sbom" | xargs -i cp -r {} ~/provider-private-release
       - name: Publish Private Provider
         uses: thechrisjohnson/terraform-cloud-provider-publish@9c741f7c267fd8c1049089dbcc788eb83a1b0b69 # v1.3
         with:
           organization-name: circlefin
           organization-api-token: ${{ secrets.TF_CLOUD_TOKEN }}
           gpg-key: ${{ secrets.GPG_PUBLIC_KEY }}
-          provider-directory: dist
+          provider-directory: provider-private-release
