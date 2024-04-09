@@ -52,6 +52,9 @@ signs:
       - "${artifact}"
 sboms:
   - artifacts: archive
+    env:
+     - SYFT_GOLANG_SEARCH_LOCAL_MOD_CACHE_LICENSES=true
+     - SYFT_GOLANG_SEARCH_REMOTE_LICENSES=true
 release:
   extra_files:
     - glob: 'terraform-registry-manifest.json'
