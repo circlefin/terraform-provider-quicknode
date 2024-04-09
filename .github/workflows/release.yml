@@ -46,7 +46,7 @@ jobs:
           TAG=${TAG#v}
           mkdir provider-private-release
           cp 'terraform-registry-manifest.json' "provider-private-release/terraform-provider-quicknode_${TAG}_manifest.json"
-          find dist ! -name "*.sbom" | xargs -i cp -r {} ~/provider-private-release
+          find dist ! -name "*.sbom" | xargs -i cp -r {} provider-private-release
       - name: Publish Private Provider
         uses: thechrisjohnson/terraform-cloud-provider-publish@9c741f7c267fd8c1049089dbcc788eb83a1b0b69 # v1.3
         with:
