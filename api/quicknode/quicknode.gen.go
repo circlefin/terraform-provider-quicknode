@@ -21,7 +21,8 @@ import (
 )
 
 const (
-	BearerAuthScopes = "bearerAuth.Scopes"
+	Api_keyScopes     = "api_key.Scopes"
+	Bearer_authScopes = "bearer_auth.Scopes"
 )
 
 // Chain defines model for chain.
@@ -45,9 +46,8 @@ type Endpoint struct {
 	Label   *string `json:"label"`
 
 	// Network network slug
-	Network  string           `json:"network"`
-	Security EndpointSecurity `json:"security"`
-	WssUrl   string           `json:"wss_url"`
+	Network string  `json:"network"`
+	WssUrl  *string `json:"wss_url"`
 }
 
 // EndpointDomainMask defines model for endpoint_domain_mask.
@@ -70,6 +70,21 @@ type EndpointJwt struct {
 	PublicKey *string `json:"public_key,omitempty"`
 }
 
+// EndpointMetric defines model for endpoint_metric.
+type EndpointMetric struct {
+	Data *[][]interface{} `json:"data,omitempty"`
+	Tag  *string          `json:"tag,omitempty"`
+}
+
+// EndpointRateLimits defines model for endpoint_rate_limits.
+type EndpointRateLimits struct {
+	Cps           *int  `json:"cps"`
+	RateLimitByIp *bool `json:"rate_limit_by_ip"`
+	Rpd           *int  `json:"rpd"`
+	Rpm           *int  `json:"rpm"`
+	Rps           *int  `json:"rps"`
+}
+
 // EndpointReferrer defines model for endpoint_referrer.
 type EndpointReferrer struct {
 	Id       *string `json:"id,omitempty"`
@@ -82,7 +97,11 @@ type EndpointSecurity struct {
 	Ips         *[]EndpointIp         `json:"ips,omitempty"`
 	Jwts        *[]EndpointJwt        `json:"jwts,omitempty"`
 	Options     *struct {
-		Tokens *bool `json:"tokens,omitempty"`
+		DomainMasks *bool `json:"domain_masks"`
+		Ips         *bool `json:"ips"`
+		Jwts        *bool `json:"jwts"`
+		Referrers   *bool `json:"referrers"`
+		Tokens      *bool `json:"tokens"`
 	} `json:"options,omitempty"`
 	Referrers *[]EndpointReferrer `json:"referrers,omitempty"`
 	Tokens    *[]EndpointToken    `json:"tokens,omitempty"`
@@ -104,8 +123,26 @@ type EndpointUsage struct {
 	Network          *string        `json:"network,omitempty"`
 }
 
+// Invoice defines model for invoice.
+type Invoice struct {
+	AmountDue     *int    `json:"amount_due,omitempty"`
+	AmountPaid    *int    `json:"amount_paid,omitempty"`
+	BillingReason *string `json:"billing_reason,omitempty"`
+	Created       *int    `json:"created,omitempty"`
+	Id            *string `json:"id,omitempty"`
+	Lines         *[]struct {
+		Amount      *int    `json:"amount,omitempty"`
+		Description *string `json:"description,omitempty"`
+	} `json:"lines,omitempty"`
+	PeriodEnd   *int    `json:"period_end,omitempty"`
+	PeriodStart *int    `json:"period_start,omitempty"`
+	Status      *string `json:"status,omitempty"`
+	Subtotal    *int    `json:"subtotal,omitempty"`
+}
+
 // MethodUsage defines model for method_usage.
 type MethodUsage struct {
+	Archive     *bool   `json:"archive"`
 	CreditsUsed *int    `json:"credits_used,omitempty"`
 	MethodName  *string `json:"method_name,omitempty"`
 }
@@ -114,6 +151,37 @@ type MethodUsage struct {
 type Network struct {
 	Name *string `json:"name,omitempty"`
 	Slug *string `json:"slug,omitempty"`
+}
+
+// Payment defines model for payment.
+type Payment struct {
+	Amount            *string `json:"amount,omitempty"`
+	CardLast4         *string `json:"card_last_4"`
+	CreatedAt         *string `json:"created_at,omitempty"`
+	Currency          *string `json:"currency,omitempty"`
+	MarketplaceAmount *int    `json:"marketplace_amount"`
+	Status            *string `json:"status,omitempty"`
+}
+
+// SingleEndpoint defines model for single_endpoint.
+type SingleEndpoint struct {
+	// Chain chain slug
+	Chain   string  `json:"chain"`
+	HttpUrl string  `json:"http_url"`
+	Id      string  `json:"id"`
+	Label   *string `json:"label"`
+
+	// Network network slug
+	Network    string              `json:"network"`
+	RateLimits *EndpointRateLimits `json:"rate_limits,omitempty"`
+	Security   EndpointSecurity    `json:"security"`
+	WssUrl     *string             `json:"wss_url"`
+}
+
+// GetV0EndpointsParams defines parameters for GetV0Endpoints.
+type GetV0EndpointsParams struct {
+	Limit  *int `form:"limit,omitempty" json:"limit,omitempty"`
+	Offset *int `form:"offset,omitempty" json:"offset,omitempty"`
 }
 
 // PostV0EndpointsJSONBody defines parameters for PostV0Endpoints.
@@ -125,6 +193,23 @@ type PostV0EndpointsJSONBody struct {
 // PatchV0EndpointsIdJSONBody defines parameters for PatchV0EndpointsId.
 type PatchV0EndpointsIdJSONBody struct {
 	Label *string `json:"label,omitempty"`
+}
+
+// GetV0EndpointsIdMetricsParams defines parameters for GetV0EndpointsIdMetrics.
+type GetV0EndpointsIdMetricsParams struct {
+	// Period hour, day, week, month
+	Period string `form:"period" json:"period"`
+
+	// Metric method_calls_over_time, response_status_over_time, method_call_breakdown, response_status_breakdown, method_response_time_max
+	Metric string `form:"metric" json:"metric"`
+}
+
+// PutV0EndpointsIdRateLimitsJSONBody defines parameters for PutV0EndpointsIdRateLimits.
+type PutV0EndpointsIdRateLimitsJSONBody struct {
+	Cps *int `json:"cps,omitempty"`
+	Rpd *int `json:"rpd,omitempty"`
+	Rpm *int `json:"rpm,omitempty"`
+	Rps *int `json:"rps,omitempty"`
 }
 
 // PostV0EndpointsIdSecurityDomainMasksJSONBody defines parameters for PostV0EndpointsIdSecurityDomainMasks.
@@ -190,6 +275,9 @@ type PostV0EndpointsJSONRequestBody PostV0EndpointsJSONBody
 
 // PatchV0EndpointsIdJSONRequestBody defines body for PatchV0EndpointsId for application/json ContentType.
 type PatchV0EndpointsIdJSONRequestBody PatchV0EndpointsIdJSONBody
+
+// PutV0EndpointsIdRateLimitsJSONRequestBody defines body for PutV0EndpointsIdRateLimits for application/json ContentType.
+type PutV0EndpointsIdRateLimitsJSONRequestBody PutV0EndpointsIdRateLimitsJSONBody
 
 // PostV0EndpointsIdSecurityDomainMasksJSONRequestBody defines body for PostV0EndpointsIdSecurityDomainMasks for application/json ContentType.
 type PostV0EndpointsIdSecurityDomainMasksJSONRequestBody PostV0EndpointsIdSecurityDomainMasksJSONBody
@@ -276,11 +364,17 @@ func WithRequestEditorFn(fn RequestEditorFn) ClientOption {
 
 // The interface specification for the client above.
 type ClientInterface interface {
+	// GetV0BillingInvoices request
+	GetV0BillingInvoices(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetV0BillingPayments request
+	GetV0BillingPayments(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// GetV0Chains request
 	GetV0Chains(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetV0Endpoints request
-	GetV0Endpoints(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+	GetV0Endpoints(ctx context.Context, params *GetV0EndpointsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// PostV0EndpointsWithBody request with any body
 	PostV0EndpointsWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -297,6 +391,14 @@ type ClientInterface interface {
 	PatchV0EndpointsIdWithBody(ctx context.Context, id string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	PatchV0EndpointsId(ctx context.Context, id string, body PatchV0EndpointsIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetV0EndpointsIdMetrics request
+	GetV0EndpointsIdMetrics(ctx context.Context, id string, params *GetV0EndpointsIdMetricsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PutV0EndpointsIdRateLimitsWithBody request with any body
+	PutV0EndpointsIdRateLimitsWithBody(ctx context.Context, id string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PutV0EndpointsIdRateLimits(ctx context.Context, id string, body PutV0EndpointsIdRateLimitsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// PostV0EndpointsIdSecurityDomainMasksWithBody request with any body
 	PostV0EndpointsIdSecurityDomainMasksWithBody(ctx context.Context, id string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -349,6 +451,30 @@ type ClientInterface interface {
 	GetV0UsageRpcByMethod(ctx context.Context, params *GetV0UsageRpcByMethodParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 }
 
+func (c *Client) GetV0BillingInvoices(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetV0BillingInvoicesRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetV0BillingPayments(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetV0BillingPaymentsRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 func (c *Client) GetV0Chains(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetV0ChainsRequest(c.Server)
 	if err != nil {
@@ -361,8 +487,8 @@ func (c *Client) GetV0Chains(ctx context.Context, reqEditors ...RequestEditorFn)
 	return c.Client.Do(req)
 }
 
-func (c *Client) GetV0Endpoints(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetV0EndpointsRequest(c.Server)
+func (c *Client) GetV0Endpoints(ctx context.Context, params *GetV0EndpointsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetV0EndpointsRequest(c.Server, params)
 	if err != nil {
 		return nil, err
 	}
@@ -435,6 +561,42 @@ func (c *Client) PatchV0EndpointsIdWithBody(ctx context.Context, id string, cont
 
 func (c *Client) PatchV0EndpointsId(ctx context.Context, id string, body PatchV0EndpointsIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewPatchV0EndpointsIdRequest(c.Server, id, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetV0EndpointsIdMetrics(ctx context.Context, id string, params *GetV0EndpointsIdMetricsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetV0EndpointsIdMetricsRequest(c.Server, id, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PutV0EndpointsIdRateLimitsWithBody(ctx context.Context, id string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutV0EndpointsIdRateLimitsRequestWithBody(c.Server, id, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PutV0EndpointsIdRateLimits(ctx context.Context, id string, body PutV0EndpointsIdRateLimitsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutV0EndpointsIdRateLimitsRequest(c.Server, id, body)
 	if err != nil {
 		return nil, err
 	}
@@ -661,6 +823,60 @@ func (c *Client) GetV0UsageRpcByMethod(ctx context.Context, params *GetV0UsageRp
 	return c.Client.Do(req)
 }
 
+// NewGetV0BillingInvoicesRequest generates requests for GetV0BillingInvoices
+func NewGetV0BillingInvoicesRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v0/billing/invoices")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetV0BillingPaymentsRequest generates requests for GetV0BillingPayments
+func NewGetV0BillingPaymentsRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v0/billing/payments")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
 // NewGetV0ChainsRequest generates requests for GetV0Chains
 func NewGetV0ChainsRequest(server string) (*http.Request, error) {
 	var err error
@@ -689,7 +905,7 @@ func NewGetV0ChainsRequest(server string) (*http.Request, error) {
 }
 
 // NewGetV0EndpointsRequest generates requests for GetV0Endpoints
-func NewGetV0EndpointsRequest(server string) (*http.Request, error) {
+func NewGetV0EndpointsRequest(server string, params *GetV0EndpointsParams) (*http.Request, error) {
 	var err error
 
 	serverURL, err := url.Parse(server)
@@ -705,6 +921,44 @@ func NewGetV0EndpointsRequest(server string) (*http.Request, error) {
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.Limit != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "limit", runtime.ParamLocationQuery, *params.Limit); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Offset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "offset", runtime.ParamLocationQuery, *params.Offset); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
 	}
 
 	req, err := http.NewRequest("GET", queryURL.String(), nil)
@@ -861,6 +1115,117 @@ func NewPatchV0EndpointsIdRequestWithBody(server string, id string, contentType 
 	}
 
 	req, err := http.NewRequest("PATCH", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewGetV0EndpointsIdMetricsRequest generates requests for GetV0EndpointsIdMetrics
+func NewGetV0EndpointsIdMetricsRequest(server string, id string, params *GetV0EndpointsIdMetricsParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v0/endpoints/%s/metrics", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "period", runtime.ParamLocationQuery, params.Period); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "metric", runtime.ParamLocationQuery, params.Metric); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewPutV0EndpointsIdRateLimitsRequest calls the generic PutV0EndpointsIdRateLimits builder with application/json body
+func NewPutV0EndpointsIdRateLimitsRequest(server string, id string, body PutV0EndpointsIdRateLimitsJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPutV0EndpointsIdRateLimitsRequestWithBody(server, id, "application/json", bodyReader)
+}
+
+// NewPutV0EndpointsIdRateLimitsRequestWithBody generates requests for PutV0EndpointsIdRateLimits with any type of body
+func NewPutV0EndpointsIdRateLimitsRequestWithBody(server string, id string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v0/endpoints/%s/rate-limits", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PUT", queryURL.String(), body)
 	if err != nil {
 		return nil, err
 	}
@@ -1600,11 +1965,17 @@ func WithBaseURL(baseURL string) ClientOption {
 
 // ClientWithResponsesInterface is the interface specification for the client with responses above.
 type ClientWithResponsesInterface interface {
+	// GetV0BillingInvoicesWithResponse request
+	GetV0BillingInvoicesWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetV0BillingInvoicesResponse, error)
+
+	// GetV0BillingPaymentsWithResponse request
+	GetV0BillingPaymentsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetV0BillingPaymentsResponse, error)
+
 	// GetV0ChainsWithResponse request
 	GetV0ChainsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetV0ChainsResponse, error)
 
 	// GetV0EndpointsWithResponse request
-	GetV0EndpointsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetV0EndpointsResponse, error)
+	GetV0EndpointsWithResponse(ctx context.Context, params *GetV0EndpointsParams, reqEditors ...RequestEditorFn) (*GetV0EndpointsResponse, error)
 
 	// PostV0EndpointsWithBodyWithResponse request with any body
 	PostV0EndpointsWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV0EndpointsResponse, error)
@@ -1621,6 +1992,14 @@ type ClientWithResponsesInterface interface {
 	PatchV0EndpointsIdWithBodyWithResponse(ctx context.Context, id string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PatchV0EndpointsIdResponse, error)
 
 	PatchV0EndpointsIdWithResponse(ctx context.Context, id string, body PatchV0EndpointsIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PatchV0EndpointsIdResponse, error)
+
+	// GetV0EndpointsIdMetricsWithResponse request
+	GetV0EndpointsIdMetricsWithResponse(ctx context.Context, id string, params *GetV0EndpointsIdMetricsParams, reqEditors ...RequestEditorFn) (*GetV0EndpointsIdMetricsResponse, error)
+
+	// PutV0EndpointsIdRateLimitsWithBodyWithResponse request with any body
+	PutV0EndpointsIdRateLimitsWithBodyWithResponse(ctx context.Context, id string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutV0EndpointsIdRateLimitsResponse, error)
+
+	PutV0EndpointsIdRateLimitsWithResponse(ctx context.Context, id string, body PutV0EndpointsIdRateLimitsJSONRequestBody, reqEditors ...RequestEditorFn) (*PutV0EndpointsIdRateLimitsResponse, error)
 
 	// PostV0EndpointsIdSecurityDomainMasksWithBodyWithResponse request with any body
 	PostV0EndpointsIdSecurityDomainMasksWithBodyWithResponse(ctx context.Context, id string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV0EndpointsIdSecurityDomainMasksResponse, error)
@@ -1671,6 +2050,60 @@ type ClientWithResponsesInterface interface {
 
 	// GetV0UsageRpcByMethodWithResponse request
 	GetV0UsageRpcByMethodWithResponse(ctx context.Context, params *GetV0UsageRpcByMethodParams, reqEditors ...RequestEditorFn) (*GetV0UsageRpcByMethodResponse, error)
+}
+
+type GetV0BillingInvoicesResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *struct {
+		Data *struct {
+			Invoices *[]Invoice `json:"invoices,omitempty"`
+		} `json:"data,omitempty"`
+		Error *string `json:"error"`
+	}
+}
+
+// Status returns HTTPResponse.Status
+func (r GetV0BillingInvoicesResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetV0BillingInvoicesResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetV0BillingPaymentsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *struct {
+		Data *struct {
+			Payments *[]Payment `json:"payments,omitempty"`
+		} `json:"data,omitempty"`
+		Error *string `json:"error"`
+	}
+}
+
+// Status returns HTTPResponse.Status
+func (r GetV0BillingPaymentsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetV0BillingPaymentsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
 }
 
 type GetV0ChainsResponse struct {
@@ -1727,8 +2160,8 @@ type PostV0EndpointsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data  Endpoint `json:"data"`
-		Error *string  `json:"error"`
+		Data  SingleEndpoint `json:"data"`
+		Error *string        `json:"error"`
 	}
 }
 
@@ -1773,8 +2206,8 @@ type GetV0EndpointsIdResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data  *Endpoint `json:"data,omitempty"`
-		Error *string   `json:"error"`
+		Data  *SingleEndpoint `json:"data,omitempty"`
+		Error *string         `json:"error"`
 	}
 }
 
@@ -1809,6 +2242,52 @@ func (r PatchV0EndpointsIdResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r PatchV0EndpointsIdResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetV0EndpointsIdMetricsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *struct {
+		Data  []EndpointMetric `json:"data"`
+		Error *string          `json:"error"`
+	}
+}
+
+// Status returns HTTPResponse.Status
+func (r GetV0EndpointsIdMetricsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetV0EndpointsIdMetricsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PutV0EndpointsIdRateLimitsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+}
+
+// Status returns HTTPResponse.Status
+func (r PutV0EndpointsIdRateLimitsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PutV0EndpointsIdRateLimitsResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -2156,6 +2635,24 @@ func (r GetV0UsageRpcByMethodResponse) StatusCode() int {
 	return 0
 }
 
+// GetV0BillingInvoicesWithResponse request returning *GetV0BillingInvoicesResponse
+func (c *ClientWithResponses) GetV0BillingInvoicesWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetV0BillingInvoicesResponse, error) {
+	rsp, err := c.GetV0BillingInvoices(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetV0BillingInvoicesResponse(rsp)
+}
+
+// GetV0BillingPaymentsWithResponse request returning *GetV0BillingPaymentsResponse
+func (c *ClientWithResponses) GetV0BillingPaymentsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetV0BillingPaymentsResponse, error) {
+	rsp, err := c.GetV0BillingPayments(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetV0BillingPaymentsResponse(rsp)
+}
+
 // GetV0ChainsWithResponse request returning *GetV0ChainsResponse
 func (c *ClientWithResponses) GetV0ChainsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetV0ChainsResponse, error) {
 	rsp, err := c.GetV0Chains(ctx, reqEditors...)
@@ -2166,8 +2663,8 @@ func (c *ClientWithResponses) GetV0ChainsWithResponse(ctx context.Context, reqEd
 }
 
 // GetV0EndpointsWithResponse request returning *GetV0EndpointsResponse
-func (c *ClientWithResponses) GetV0EndpointsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetV0EndpointsResponse, error) {
-	rsp, err := c.GetV0Endpoints(ctx, reqEditors...)
+func (c *ClientWithResponses) GetV0EndpointsWithResponse(ctx context.Context, params *GetV0EndpointsParams, reqEditors ...RequestEditorFn) (*GetV0EndpointsResponse, error) {
+	rsp, err := c.GetV0Endpoints(ctx, params, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
@@ -2224,6 +2721,32 @@ func (c *ClientWithResponses) PatchV0EndpointsIdWithResponse(ctx context.Context
 		return nil, err
 	}
 	return ParsePatchV0EndpointsIdResponse(rsp)
+}
+
+// GetV0EndpointsIdMetricsWithResponse request returning *GetV0EndpointsIdMetricsResponse
+func (c *ClientWithResponses) GetV0EndpointsIdMetricsWithResponse(ctx context.Context, id string, params *GetV0EndpointsIdMetricsParams, reqEditors ...RequestEditorFn) (*GetV0EndpointsIdMetricsResponse, error) {
+	rsp, err := c.GetV0EndpointsIdMetrics(ctx, id, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetV0EndpointsIdMetricsResponse(rsp)
+}
+
+// PutV0EndpointsIdRateLimitsWithBodyWithResponse request with arbitrary body returning *PutV0EndpointsIdRateLimitsResponse
+func (c *ClientWithResponses) PutV0EndpointsIdRateLimitsWithBodyWithResponse(ctx context.Context, id string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutV0EndpointsIdRateLimitsResponse, error) {
+	rsp, err := c.PutV0EndpointsIdRateLimitsWithBody(ctx, id, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutV0EndpointsIdRateLimitsResponse(rsp)
+}
+
+func (c *ClientWithResponses) PutV0EndpointsIdRateLimitsWithResponse(ctx context.Context, id string, body PutV0EndpointsIdRateLimitsJSONRequestBody, reqEditors ...RequestEditorFn) (*PutV0EndpointsIdRateLimitsResponse, error) {
+	rsp, err := c.PutV0EndpointsIdRateLimits(ctx, id, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutV0EndpointsIdRateLimitsResponse(rsp)
 }
 
 // PostV0EndpointsIdSecurityDomainMasksWithBodyWithResponse request with arbitrary body returning *PostV0EndpointsIdSecurityDomainMasksResponse
@@ -2384,6 +2907,68 @@ func (c *ClientWithResponses) GetV0UsageRpcByMethodWithResponse(ctx context.Cont
 	return ParseGetV0UsageRpcByMethodResponse(rsp)
 }
 
+// ParseGetV0BillingInvoicesResponse parses an HTTP response from a GetV0BillingInvoicesWithResponse call
+func ParseGetV0BillingInvoicesResponse(rsp *http.Response) (*GetV0BillingInvoicesResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetV0BillingInvoicesResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest struct {
+			Data *struct {
+				Invoices *[]Invoice `json:"invoices,omitempty"`
+			} `json:"data,omitempty"`
+			Error *string `json:"error"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetV0BillingPaymentsResponse parses an HTTP response from a GetV0BillingPaymentsWithResponse call
+func ParseGetV0BillingPaymentsResponse(rsp *http.Response) (*GetV0BillingPaymentsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetV0BillingPaymentsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest struct {
+			Data *struct {
+				Payments *[]Payment `json:"payments,omitempty"`
+			} `json:"data,omitempty"`
+			Error *string `json:"error"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
 // ParseGetV0ChainsResponse parses an HTTP response from a GetV0ChainsWithResponse call
 func ParseGetV0ChainsResponse(rsp *http.Response) (*GetV0ChainsResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -2458,8 +3043,8 @@ func ParsePostV0EndpointsResponse(rsp *http.Response) (*PostV0EndpointsResponse,
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data  Endpoint `json:"data"`
-			Error *string  `json:"error"`
+			Data  SingleEndpoint `json:"data"`
+			Error *string        `json:"error"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -2503,8 +3088,8 @@ func ParseGetV0EndpointsIdResponse(rsp *http.Response) (*GetV0EndpointsIdRespons
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data  *Endpoint `json:"data,omitempty"`
-			Error *string   `json:"error"`
+			Data  *SingleEndpoint `json:"data,omitempty"`
+			Error *string         `json:"error"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -2525,6 +3110,51 @@ func ParsePatchV0EndpointsIdResponse(rsp *http.Response) (*PatchV0EndpointsIdRes
 	}
 
 	response := &PatchV0EndpointsIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	return response, nil
+}
+
+// ParseGetV0EndpointsIdMetricsResponse parses an HTTP response from a GetV0EndpointsIdMetricsWithResponse call
+func ParseGetV0EndpointsIdMetricsResponse(rsp *http.Response) (*GetV0EndpointsIdMetricsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetV0EndpointsIdMetricsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest struct {
+			Data  []EndpointMetric `json:"data"`
+			Error *string          `json:"error"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePutV0EndpointsIdRateLimitsResponse parses an HTTP response from a PutV0EndpointsIdRateLimitsWithResponse call
+func ParsePutV0EndpointsIdRateLimitsResponse(rsp *http.Response) (*PutV0EndpointsIdRateLimitsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PutV0EndpointsIdRateLimitsResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -2869,33 +3499,43 @@ func ParseGetV0UsageRpcByMethodResponse(rsp *http.Response) (*GetV0UsageRpcByMet
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"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",
+	"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",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file

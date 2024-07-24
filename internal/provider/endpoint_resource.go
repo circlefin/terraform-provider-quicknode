@@ -20,6 +20,7 @@ import (
 	"context"
 	"fmt"
 	"net/url"
+	"strings"
 
 	"github.com/circlefin/terraform-provider-quicknode/api/quicknode"
 	"github.com/circlefin/terraform-provider-quicknode/internal/utils"
@@ -38,9 +39,11 @@ import (
 
 // Ensure provider defined types fully satisfy framework interfaces.
 var (
-	_                  resource.Resource                = &EndpointResource{}
-	_                  resource.ResourceWithImportState = &EndpointResource{}
-	securityAttributes                                  = map[string]attr.Type{
+	_ resource.Resource                = &EndpointResource{}
+	_ resource.ResourceWithImportState = &EndpointResource{}
+	_ resource.ResourceWithModifyPlan  = &EndpointResource{}
+
+	securityAttributes = map[string]attr.Type{
 		"tokens": basetypes.ListType{
 			ElemType: basetypes.ObjectType{
 				AttrTypes: tokensAttributes,
@@ -148,6 +151,76 @@ func (r *EndpointResource) Schema(ctx context.Context, req resource.SchemaReques
 				},
 			},
 		},
+	}
+}
+
+func (r *EndpointResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse) {
+	// If the entire plan is null, the resource is planned for destruction and we need no validation.
+	if !req.Plan.Raw.IsNull() {
+		chainsResponse, err := r.client.GetV0ChainsWithResponse(ctx)
+		if err != nil {
+			resp.Diagnostics.AddError(
+				fmt.Sprintf("%s - configuring provider", utils.ClientErrorSummary),
+				utils.BuildClientErrorMessage(err),
+			)
+
+			return
+		}
+
+		if chainsResponse.StatusCode() != 200 {
+			m, err := utils.BuildRequestErrorMessage(chainsResponse.Status(), chainsResponse.Body)
+			if err != nil {
+				resp.Diagnostics.AddWarning(fmt.Sprintf("%s - configuring provider", utils.InternalErrorSummary), utils.BuildInternalErrorMessage(err))
+			}
+
+			resp.Diagnostics.AddError(
+				fmt.Sprintf("%s - configuring provider", utils.RequestErrorSummary),
+				m,
+			)
+
+			return
+		}
+
+		chains := chainsResponse.JSON200.Data
+
+		var data EndpointResourceModel
+
+		resp.Diagnostics.Append(req.Config.Get(ctx, &data)...)
+		if resp.Diagnostics.HasError() {
+			return
+		}
+
+		var validChainSlugs []string
+		var validNetworkSlugs []string
+		for _, chain := range chains {
+			validChainSlugs = append(validChainSlugs, strings.ToLower(*chain.Slug))
+
+			if strings.EqualFold(*chain.Slug, data.Chain.ValueString()) {
+				for _, network := range *chain.Networks {
+					validNetworkSlugs = append(validNetworkSlugs, strings.ToLower(*network.Slug))
+					if strings.EqualFold(*network.Slug, data.Network.ValueString()) {
+						return
+					}
+				}
+			}
+		}
+
+		// If this is empty, then we never matched a chain slug.
+		if len(validNetworkSlugs) == 0 {
+			resp.Diagnostics.AddAttributeError(
+				path.Root("chain"),
+				"Invalid Chain",
+				fmt.Sprintf("Expected chain to be one of %v, but was %s", validChainSlugs, data.Chain.ValueString()),
+			)
+
+			return
+		}
+
+		resp.Diagnostics.AddAttributeError(
+			path.Root("network"),
+			"Invalid Network",
+			fmt.Sprintf("Expected network to be one of %v for chain %s, but was %s", validNetworkSlugs, data.Chain.ValueString(), data.Network.ValueString()),
+		)
 	}
 }
 

@@ -10,3 +10,6 @@ generate:
 	go generate ./... && \
 	go run github.com/google/addlicense -c "Circle Internet Financial, LTD.  All rights reserved." -l "apache" -v -s `find . -name "*.go" -type f -print0 | xargs -0`
 
+.PHONY: vendor
+vendor:
+	curl --fail --retry 5 --retry-max-time 120 --retry-connrefused -u ${QUICKNODE_SWAGGER_USER}:${QUICKNODE_SWAGGER_PASSWORD} -s https://www.quicknode.com/api-docs/v0/swagger.json -o api/quicknode/openapi.json
