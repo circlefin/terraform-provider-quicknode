@@ -13,3 +13,7 @@ generate:
 .PHONY: vendor
 vendor:
 	curl --fail --retry 5 --retry-max-time 120 --retry-connrefused -u ${QUICKNODE_SWAGGER_USER}:${QUICKNODE_SWAGGER_PASSWORD} -s https://www.quicknode.com/api-docs/v0/swagger.json -o api/quicknode/openapi.json
+
+.PHONY: validate
+validate:
+	goreleaser check
