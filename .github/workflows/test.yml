@@ -59,6 +59,8 @@ jobs:
 
   # Run acceptance tests in a matrix with Terraform CLI versions
   test:
+    # skip when triggered by dependabot, due to no access to secrets
+    if: ${{ github.actor != 'dependabot[bot]' }}
     name: Terraform Provider Acceptance Tests
     needs: build
     runs-on: ubuntu-latest
