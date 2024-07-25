@@ -6,7 +6,21 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
+    groups:
+      go-deps/minor/patch:
+        patterns:
+          - "*"
+        updateTypes:
+          - patch
+          - minor
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "daily"
+    groups:
+      actions-deps/minor/patch:
+        patterns:
+          - "*"
+        updateTypes:
+          - patch
+          - minor
