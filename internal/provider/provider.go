@@ -18,12 +18,14 @@ package provider
 
 import (
 	"context"
+	"fmt"
 	"os"
 
 	"github.com/circlefin/terraform-provider-quicknode/api/quicknode"
+	"github.com/circlefin/terraform-provider-quicknode/internal/client/transport"
+	"github.com/circlefin/terraform-provider-quicknode/internal/utils"
 
 	"github.com/deepmap/oapi-codegen/pkg/securityprovider"
-	"github.com/hashicorp/go-retryablehttp"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/function"
 	"github.com/hashicorp/terraform-plugin-framework/path"
@@ -33,9 +35,20 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
+const (
+	quicknodeEndpointDefault          = "https://api.quicknode.com"
+	quicknodeRequestsPerSecondDefault = 5
+)
+
 // Ensure ScaffoldingProvider satisfies various provider interfaces.
 var _ provider.Provider = &QuickNodeProvider{}
 var _ provider.ProviderWithFunctions = &QuickNodeProvider{}
+
+// QuickNodeData is provided in the DataSourceData and ResourceData to be made accessible by data and resources.
+type QuickNodeData struct {
+	Client quicknode.ClientWithResponsesInterface
+	Chains []quicknode.Chain
+}
 
 // QuickNodeProvider defines the provider implementation.
 type QuickNodeProvider struct {
@@ -47,8 +60,9 @@ type QuickNodeProvider struct {
 
 // QuickNodeProviderModel describes the provider data model.
 type QuickNodeProviderModel struct {
-	Endpoint types.String `tfsdk:"endpoint"`
-	ApiKey   types.String `tfsdk:"apikey"`
+	Endpoint          types.String `tfsdk:"endpoint"`
+	ApiKey            types.String `tfsdk:"apikey"`
+	RequestsPerSecond types.Int64  `tfsdk:"requests_per_second"`
 }
 
 func (p *QuickNodeProvider) Metadata(ctx context.Context, req provider.MetadataRequest, resp *provider.MetadataResponse) {
@@ -68,6 +82,10 @@ func (p *QuickNodeProvider) Schema(ctx context.Context, req provider.SchemaReque
 				Optional:            true,
 				Sensitive:           true,
 			},
+			"requests_per_second": schema.Int64Attribute{
+				MarkdownDescription: "Maximum requests per second to limit requests to quicknode api",
+				Optional:            true,
+			},
 		},
 	}
 }
@@ -81,7 +99,7 @@ func (p *QuickNodeProvider) Configure(ctx context.Context, req provider.Configur
 		return
 	}
 
-	endpoint := "https://api.quicknode.com"
+	endpoint := quicknodeEndpointDefault
 	if !data.Endpoint.IsNull() {
 		endpoint = data.Endpoint.ValueString()
 	}
@@ -102,6 +120,11 @@ func (p *QuickNodeProvider) Configure(ctx context.Context, req provider.Configur
 		)
 	}
 
+	requestsPerSecond := quicknodeRequestsPerSecondDefault
+	if !data.RequestsPerSecond.IsNull() {
+		requestsPerSecond = int(data.RequestsPerSecond.ValueInt64())
+	}
+
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -109,11 +132,43 @@ func (p *QuickNodeProvider) Configure(ctx context.Context, req provider.Configur
 	bearerTokenProvider, _ := securityprovider.NewSecurityProviderBearerToken(apiKey)
 	client, _ := quicknode.NewClientWithResponses(
 		endpoint,
-		quicknode.WithHTTPClient(retryablehttp.NewClient().StandardClient()),
+		quicknode.WithHTTPClient(transport.NewRetryableThrottledClient(requestsPerSecond)),
 		quicknode.WithRequestEditorFn(bearerTokenProvider.Intercept),
 	)
-	resp.DataSourceData = client
-	resp.ResourceData = client
+
+	chainsResponse, err := client.GetV0ChainsWithResponse(ctx)
+	if err != nil {
+		resp.Diagnostics.AddError(
+			fmt.Sprintf("%s - configuring provider", utils.ClientErrorSummary),
+			utils.BuildClientErrorMessage(err),
+		)
+
+		return
+	}
+
+	if chainsResponse.StatusCode() != 200 {
+		m, err := utils.BuildRequestErrorMessage(chainsResponse.Status(), chainsResponse.Body)
+		if err != nil {
+			resp.Diagnostics.AddWarning(fmt.Sprintf("%s - configuring provider", utils.InternalErrorSummary), utils.BuildInternalErrorMessage(err))
+		}
+
+		resp.Diagnostics.AddError(
+			fmt.Sprintf("%s - configuring provider", utils.RequestErrorSummary),
+			m,
+		)
+
+		return
+	}
+
+	chains := chainsResponse.JSON200.Data
+
+	qnd := QuickNodeData{
+		Client: client,
+		Chains: chains,
+	}
+
+	resp.DataSourceData = qnd
+	resp.ResourceData = qnd
 }
 
 func (p *QuickNodeProvider) Resources(ctx context.Context) []func() resource.Resource {

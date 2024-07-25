@@ -62,8 +62,22 @@ jobs:
           install-only: true
       - run: make validate
 
-  # Run acceptance tests in a matrix with Terraform CLI versions
   test:
+    name: Terraform Provider Unit Tests
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+      - uses: actions/setup-go@0a12ed9d6a96ab950c8f026ed9f722fe0da7ef32 # v5.0.2
+        with:
+          go-version-file: 'go.mod'
+          cache: true
+      - run: go mod download
+      - run: go test -v -cover ./... -run Test -skip TestAcc
+
+  # Run acceptance tests in a matrix with Terraform CLI versions
+  acctest:
     # skip when triggered by dependabot, due to no access to secrets
     if: ${{ github.actor != 'dependabot[bot]' }}
     name: Terraform Provider Acceptance Tests
@@ -92,15 +106,17 @@ jobs:
       - env:
           TF_ACC: "1"
           QUICKNODE_APIKEY: ${{ secrets.QUICKNODE_APIKEY }}
-        run: go test -v -cover ./internal/provider/
+        run: go test -v -cover ./... -run TestAcc
         timeout-minutes: 10
   
   rollup:
     name: Success Rollup
+    if: always()
     needs:
     - build
     - generate
     - test
+    - acctest
     runs-on: ubuntu-latest
     steps:
     - run: exit 1

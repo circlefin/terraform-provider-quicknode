@@ -19,3 +19,4 @@ description: |-
 
 - `apikey` (String, Sensitive) QuickNode API Key
 - `endpoint` (String) QuickNode API Endpoint
+- `requests_per_second` (Number) Maximum requests per second to limit requests to quicknode api

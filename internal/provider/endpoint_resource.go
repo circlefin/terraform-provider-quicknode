@@ -63,6 +63,7 @@ func NewEndpointResource() resource.Resource {
 // EndpointResource defines the resource implementation.
 type EndpointResource struct {
 	client quicknode.ClientWithResponsesInterface
+	chains []quicknode.Chain
 }
 
 // EndpointResourceModel describes the resource data model.
@@ -157,34 +158,7 @@ func (r *EndpointResource) Schema(ctx context.Context, req resource.SchemaReques
 func (r *EndpointResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse) {
 	// If the entire plan is null, the resource is planned for destruction and we need no validation.
 	if !req.Plan.Raw.IsNull() {
-		chainsResponse, err := r.client.GetV0ChainsWithResponse(ctx)
-		if err != nil {
-			resp.Diagnostics.AddError(
-				fmt.Sprintf("%s - configuring provider", utils.ClientErrorSummary),
-				utils.BuildClientErrorMessage(err),
-			)
-
-			return
-		}
-
-		if chainsResponse.StatusCode() != 200 {
-			m, err := utils.BuildRequestErrorMessage(chainsResponse.Status(), chainsResponse.Body)
-			if err != nil {
-				resp.Diagnostics.AddWarning(fmt.Sprintf("%s - configuring provider", utils.InternalErrorSummary), utils.BuildInternalErrorMessage(err))
-			}
-
-			resp.Diagnostics.AddError(
-				fmt.Sprintf("%s - configuring provider", utils.RequestErrorSummary),
-				m,
-			)
-
-			return
-		}
-
-		chains := chainsResponse.JSON200.Data
-
 		var data EndpointResourceModel
-
 		resp.Diagnostics.Append(req.Config.Get(ctx, &data)...)
 		if resp.Diagnostics.HasError() {
 			return
@@ -192,7 +166,7 @@ func (r *EndpointResource) ModifyPlan(ctx context.Context, req resource.ModifyPl
 
 		var validChainSlugs []string
 		var validNetworkSlugs []string
-		for _, chain := range chains {
+		for _, chain := range r.chains {
 			validChainSlugs = append(validChainSlugs, strings.ToLower(*chain.Slug))
 
 			if strings.EqualFold(*chain.Slug, data.Chain.ValueString()) {
@@ -230,18 +204,19 @@ func (r *EndpointResource) Configure(ctx context.Context, req resource.Configure
 		return
 	}
 
-	client, ok := req.ProviderData.(quicknode.ClientWithResponsesInterface)
+	qnd, ok := req.ProviderData.(QuickNodeData)
 
 	if !ok {
 		resp.Diagnostics.AddError(
 			"Unexpected Resource Configure Type",
-			fmt.Sprintf("Expected quicknode.ClientWithResponsesInterface, got: %T. Please report this issue to the provider developers.", req.ProviderData),
+			fmt.Sprintf("Expected QuickNodeData, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
 
 		return
 	}
 
-	r.client = client
+	r.client = qnd.Client
+	r.chains = qnd.Chains
 }
 
 func (r *EndpointResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
