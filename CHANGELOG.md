@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.5.0](https://github.com/circlefin/terraform-provider-quicknode/compare/v0.4.0...v0.5.0) (2024-08-08)
+
+
+### Features
+
+* enable code scanning ([#83](https://github.com/circlefin/terraform-provider-quicknode/issues/83)) ([890f6e2](https://github.com/circlefin/terraform-provider-quicknode/commit/890f6e27d1a5da75b50d88d425902cf3efbb0424))
+
+
+### Miscellaneous Chores
+
+* update copyright holder entity in copyright headers ([#80](https://github.com/circlefin/terraform-provider-quicknode/issues/80)) ([d8c7419](https://github.com/circlefin/terraform-provider-quicknode/commit/d8c74190a2eed066e3d0831d2ed1517d10c4f1ab))
+
 ## [0.4.0](https://github.com/circlefin/terraform-provider-quicknode/compare/v0.3.0...v0.4.0) (2024-08-07)
 
 
