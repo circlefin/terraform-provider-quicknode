@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.5.1](https://github.com/circlefin/terraform-provider-quicknode/compare/v0.5.0...v0.5.1) (2024-08-09)
+
+
+### Bug Fixes
+
+* permissions relative to a private repo ([#86](https://github.com/circlefin/terraform-provider-quicknode/issues/86)) ([c742f6e](https://github.com/circlefin/terraform-provider-quicknode/commit/c742f6ef36b864235e573ad91d1bb0294621ea82))
+
+
+### Miscellaneous Chores
+
+* add scorecard check ([#84](https://github.com/circlefin/terraform-provider-quicknode/issues/84)) ([9ddfeb6](https://github.com/circlefin/terraform-provider-quicknode/commit/9ddfeb6103a93b11f2953c8ad47274e4d4fe2244))
+
 ## [0.5.0](https://github.com/circlefin/terraform-provider-quicknode/compare/v0.4.0...v0.5.0) (2024-08-08)
 
 
