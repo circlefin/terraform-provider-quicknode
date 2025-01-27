@@ -229,9 +229,9 @@ func (r *EndpointResource) Create(ctx context.Context, req resource.CreateReques
 		return
 	}
 
-	endpointResp, err := r.client.PostV0EndpointsWithResponse(
+	endpointResp, err := r.client.CreateEndpointWithResponse(
 		ctx,
-		quicknode.PostV0EndpointsJSONRequestBody{
+		quicknode.CreateEndpointJSONRequestBody{
 			Chain:   data.Chain.ValueStringPointer(),
 			Network: data.Network.ValueStringPointer(),
 		},
@@ -288,10 +288,10 @@ func (r *EndpointResource) Create(ctx context.Context, req resource.CreateReques
 
 	l := data.Label.ValueString()
 	if l != "" {
-		endpointUpdateResp, err := r.client.PatchV0EndpointsIdWithResponse(
+		endpointUpdateResp, err := r.client.UpdateEndpointWithResponse(
 			ctx,
 			data.Id.ValueString(),
-			quicknode.PatchV0EndpointsIdJSONRequestBody{
+			quicknode.UpdateEndpointJSONRequestBody{
 				Label: &l,
 			},
 		)
@@ -330,7 +330,7 @@ func (r *EndpointResource) Read(ctx context.Context, req resource.ReadRequest, r
 		return
 	}
 
-	endpointResp, err := r.client.GetV0EndpointsIdWithResponse(
+	endpointResp, err := r.client.ShowEndpointWithResponse(
 		ctx,
 		data.Id.ValueString(),
 	)
@@ -405,10 +405,10 @@ func (r *EndpointResource) Update(ctx context.Context, req resource.UpdateReques
 
 	l := data.Label.ValueString()
 
-	endpointResp, err := r.client.PatchV0EndpointsIdWithResponse(
+	endpointResp, err := r.client.UpdateEndpointWithResponse(
 		ctx,
 		data.Id.ValueString(),
-		quicknode.PatchV0EndpointsIdJSONRequestBody{
+		quicknode.UpdateEndpointJSONRequestBody{
 			Label: &l,
 		},
 	)
@@ -447,7 +447,7 @@ func (r *EndpointResource) Delete(ctx context.Context, req resource.DeleteReques
 		return
 	}
 
-	endpointResp, err := r.client.DeleteV0EndpointsIdWithResponse(
+	endpointResp, err := r.client.ArchiveEndpointWithResponse(
 		ctx,
 		data.Id.ValueString(),
 	)

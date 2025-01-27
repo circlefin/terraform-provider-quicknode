@@ -23,10 +23,10 @@ import (
 	"testing"
 
 	"github.com/circlefin/terraform-provider-quicknode/api/quicknode"
-	"github.com/deepmap/oapi-codegen/pkg/securityprovider"
 	"github.com/hashicorp/terraform-plugin-testing/helper/acctest"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 	"github.com/hashicorp/terraform-plugin-testing/terraform"
+	"github.com/oapi-codegen/oapi-codegen/v2/pkg/securityprovider"
 )
 
 func TestAccMinimalQuicknodeEndpointResource(t *testing.T) {
@@ -65,7 +65,7 @@ func TestAccMinimalQuicknodeEndpointResource(t *testing.T) {
 					continue
 				}
 
-				resp, err := client.GetV0EndpointsId(context.Background(), rs.Primary.ID)
+				resp, err := client.ShowEndpoint(context.Background(), rs.Primary.ID)
 				if err != nil || resp.StatusCode == 200 {
 					return fmt.Errorf("Resource %s still exists", rs.Primary.ID)
 				}
