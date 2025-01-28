@@ -1,5 +1,28 @@
 # Changelog
 
+## [0.5.2](https://github.com/circlefin/terraform-provider-quicknode/compare/v0.5.1...v0.5.2) (2025-01-28)
+
+
+### Bug Fixes
+
+* replaces deprecated oapi-codegen lib with v2 ([#141](https://github.com/circlefin/terraform-provider-quicknode/issues/141)) ([672437f](https://github.com/circlefin/terraform-provider-quicknode/commit/672437fe5c567a49798bc3c78595101f00a3f47d))
+
+
+### Miscellaneous Chores
+
+* **deps:** bump anchore/sbom-action from f2d02cbcc3489818621f2809e6cae4ce98b19c27 to fe5e7c313de46b71a0d4d583d46928af58e60b2e in the actions-deps-minor-patch group ([#90](https://github.com/circlefin/terraform-provider-quicknode/issues/90)) ([7623044](https://github.com/circlefin/terraform-provider-quicknode/commit/76230441a0e1494de65e5cdd6df96ddcd146ba2d))
+* **deps:** bump github.com/hashicorp/terraform-plugin-testing from 1.9.0 to 1.10.0 in the go-deps-minor-patch group ([#87](https://github.com/circlefin/terraform-provider-quicknode/issues/87)) ([7edbd32](https://github.com/circlefin/terraform-provider-quicknode/commit/7edbd3207d12c70f2b87a9fdd9130159262dea6c))
+* **deps:** bump github/codeql-action from 3.27.5 to 3.27.6 in the actions-deps-minor-patch group ([#126](https://github.com/circlefin/terraform-provider-quicknode/issues/126)) ([7264d5d](https://github.com/circlefin/terraform-provider-quicknode/commit/7264d5dbe134d8268ff83256cc020c32e8d594d1))
+* **deps:** bump the actions-deps-minor-patch group across 1 directory with 2 updates ([#92](https://github.com/circlefin/terraform-provider-quicknode/issues/92)) ([d9055d5](https://github.com/circlefin/terraform-provider-quicknode/commit/d9055d5a7252567026ddaf63fb62726cee179a22))
+* **deps:** bump the actions-deps-minor-patch group across 1 directory with 2 updates ([#97](https://github.com/circlefin/terraform-provider-quicknode/issues/97)) ([e5608fb](https://github.com/circlefin/terraform-provider-quicknode/commit/e5608fbb6e9adbbd8bb9b570db0140604b599a48))
+* **deps:** bump the actions-deps-minor-patch group across 1 directory with 5 updates ([#142](https://github.com/circlefin/terraform-provider-quicknode/issues/142)) ([a9f7cb3](https://github.com/circlefin/terraform-provider-quicknode/commit/a9f7cb3522fe59f70675e4bbbd09ee3af1a195f9))
+* **deps:** bump the actions-deps-minor-patch group across 1 directory with 6 updates ([#110](https://github.com/circlefin/terraform-provider-quicknode/issues/110)) ([8482a26](https://github.com/circlefin/terraform-provider-quicknode/commit/8482a264636702fc797793a9f65f2764e8123d35))
+* **deps:** bump the actions-deps-minor-patch group across 1 directory with 7 updates ([#125](https://github.com/circlefin/terraform-provider-quicknode/issues/125)) ([54e98c7](https://github.com/circlefin/terraform-provider-quicknode/commit/54e98c7a7c3c22beee255d89c97022654fd9a4fb))
+* **deps:** bump the actions-deps-minor-patch group with 2 updates ([#93](https://github.com/circlefin/terraform-provider-quicknode/issues/93)) ([c678a3a](https://github.com/circlefin/terraform-provider-quicknode/commit/c678a3a2d87b08a76dce4b1d08ab6b10840f2dc0))
+* **deps:** bump the actions-deps-minor-patch group with 2 updates ([#94](https://github.com/circlefin/terraform-provider-quicknode/issues/94)) ([dc9660c](https://github.com/circlefin/terraform-provider-quicknode/commit/dc9660c90ae8196ead0a960cc25409830ba433b2))
+* **deps:** bump the actions-deps-minor-patch group with 3 updates ([#88](https://github.com/circlefin/terraform-provider-quicknode/issues/88)) ([cf4b9b3](https://github.com/circlefin/terraform-provider-quicknode/commit/cf4b9b3a4a8e094210ef24c245727c54da19cbe3))
+* **deps:** bump the go-deps-minor-patch group across 1 directory with 5 updates ([#143](https://github.com/circlefin/terraform-provider-quicknode/issues/143)) ([822b8b2](https://github.com/circlefin/terraform-provider-quicknode/commit/822b8b253d781f27540ce5190624c703d61f1683))
+
 ## [0.5.1](https://github.com/circlefin/terraform-provider-quicknode/compare/v0.5.0...v0.5.1) (2024-08-09)
 
 
