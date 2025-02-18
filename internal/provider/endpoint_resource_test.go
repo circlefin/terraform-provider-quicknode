@@ -17,7 +17,6 @@
 package provider
 
 import (
-	"context"
 	"fmt"
 	"os"
 	"testing"
@@ -65,7 +64,7 @@ func TestAccMinimalQuicknodeEndpointResource(t *testing.T) {
 					continue
 				}
 
-				resp, err := client.ShowEndpoint(context.Background(), rs.Primary.ID)
+				resp, err := client.ShowEndpoint(t.Context(), rs.Primary.ID)
 				if err != nil || resp.StatusCode == 200 {
 					return fmt.Errorf("Resource %s still exists", rs.Primary.ID)
 				}

@@ -1,8 +1,6 @@
 module github.com/circlefin/terraform-provider-quicknode
 
-go 1.22.7
-
-toolchain go1.22.11
+go 1.24
 
 require (
 	github.com/getkin/kin-openapi v0.128.0
