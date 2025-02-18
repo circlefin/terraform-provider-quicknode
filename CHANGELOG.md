@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.3](https://github.com/circlefin/terraform-provider-quicknode/compare/v0.5.2...v0.5.3) (2025-02-18)
+
+
+### Miscellaneous Chores
+
+* **deps:** bump golang to 1.24 ([#155](https://github.com/circlefin/terraform-provider-quicknode/issues/155)) ([f940950](https://github.com/circlefin/terraform-provider-quicknode/commit/f940950db96f1630e0303fa592ba476346522a82))
+
 ## [0.5.2](https://github.com/circlefin/terraform-provider-quicknode/compare/v0.5.1...v0.5.2) (2025-01-28)
 
 
