@@ -6,7 +6,7 @@ name: Release
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   conventional-commit-release:
@@ -53,14 +53,3 @@ jobs:
           # GitHub sets the GITHUB_TOKEN secret automatically.
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GPG_FINGERPRINT: ${{ steps.import_gpg.outputs.fingerprint }}
-      - name: Copy Dist
-        run : |
-          TAG=${GORELEASER_CURRENT_TAG#v}
-          cp 'terraform-registry-manifest.json' "dist/terraform-provider-quicknode_${TAG}_manifest.json"
-      - name: Publish Private Provider
-        uses: wparr-circle/terraform-cloud-provider-publish@e920d21d8cc221faf38377147062d769eeed6f8d # v1.4
-        with:
-          organization-name: circlefin
-          organization-api-token: ${{ secrets.TF_CLOUD_TOKEN }}
-          gpg-key: ${{ secrets.GPG_PUBLIC_KEY }}
-          provider-directory: dist
