@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.5.4](https://github.com/circlefin/terraform-provider-quicknode/compare/v0.5.3...v0.5.4) (2025-02-24)
+
+
+### Miscellaneous Chores
+
+* **deps:** bump the go-deps-minor-patch group with 4 updates ([#1](https://github.com/circlefin/terraform-provider-quicknode/issues/1)) ([057d53f](https://github.com/circlefin/terraform-provider-quicknode/commit/057d53f0818180da856584f20637e76753c671e1))
+* prepare repository for opensource ([ee7db57](https://github.com/circlefin/terraform-provider-quicknode/commit/ee7db5791883e89fc5812b17c586fab29827d3b2))
+
 ## [0.5.3](https://github.com/circlefin/terraform-provider-quicknode/compare/v0.5.2...v0.5.3) (2025-02-18)
 
 
