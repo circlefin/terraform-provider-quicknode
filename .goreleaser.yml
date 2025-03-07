@@ -57,9 +57,10 @@ sboms:
      - SYFT_GOLANG_SEARCH_LOCAL_MOD_CACHE_LICENSES=true
      - SYFT_GOLANG_SEARCH_REMOTE_LICENSES=true
 release:
-  extra_files:
-    - glob: 'terraform-registry-manifest.json'
-      name_template: '{{ .ProjectName }}_{{ .Version }}_manifest.json'
+  # todo(wparr-circle): this seems to cause issues this publishing to hashicorp registery
+  # extra_files:
+  #   - glob: 'terraform-registry-manifest.json'
+  #     name_template: '{{ .ProjectName }}_{{ .Version }}_manifest.json'
   # If you want to manually examine the release before its live, uncomment this line:
   # draft: true
 changelog:
