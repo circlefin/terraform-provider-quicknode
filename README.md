@@ -2,9 +2,16 @@
 
 This provider allows for managing [Quicknode](https://www.quicknode.com/) resources via Terraform.
 The structure of the repository is outlined below:
-- A resource and a data source (`internal/provider/`),
+- Resources and data sources (`internal/provider/`),
 - Examples (`examples/`)
 - Generated documentation (`docs/`),
+
+## Resources
+
+This provider supports the following resources:
+
+- **`quicknode_endpoint`** - Manage QuickNode endpoints for blockchain networks
+- **`quicknode_stream`** - Manage QuickNode Streams for real-time blockchain data
 
 ## Requirements
 

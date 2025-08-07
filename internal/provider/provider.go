@@ -19,9 +19,11 @@ package provider
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"os"
 
 	"github.com/circlefin/terraform-provider-quicknode/api/quicknode"
+	"github.com/circlefin/terraform-provider-quicknode/api/streams"
 	"github.com/circlefin/terraform-provider-quicknode/internal/client/transport"
 	"github.com/circlefin/terraform-provider-quicknode/internal/utils"
 
@@ -46,8 +48,10 @@ var _ provider.ProviderWithFunctions = &QuickNodeProvider{}
 
 // QuickNodeData is provided in the DataSourceData and ResourceData to be made accessible by data and resources.
 type QuickNodeData struct {
-	Client quicknode.ClientWithResponsesInterface
-	Chains []quicknode.Chain
+	Client        quicknode.ClientWithResponsesInterface
+	StreamsClient streams.ClientWithResponsesInterface
+	Chains        []quicknode.Chain
+	ApiKey        string
 }
 
 // QuickNodeProvider defines the provider implementation.
@@ -136,6 +140,16 @@ func (p *QuickNodeProvider) Configure(ctx context.Context, req provider.Configur
 		quicknode.WithRequestEditorFn(bearerTokenProvider.Intercept),
 	)
 
+	// Create Streams API client with x-api-key authentication
+	streamsClient, _ := streams.NewClientWithResponses(
+		"https://api.quicknode.com",
+		streams.WithHTTPClient(transport.NewRetryableThrottledClient(requestsPerSecond)),
+		streams.WithRequestEditorFn(func(ctx context.Context, req *http.Request) error {
+			req.Header.Set("x-api-key", apiKey)
+			return nil
+		}),
+	)
+
 	chainsResponse, err := client.ChainsWithResponse(ctx)
 	if err != nil {
 		resp.Diagnostics.AddError(
@@ -163,8 +177,10 @@ func (p *QuickNodeProvider) Configure(ctx context.Context, req provider.Configur
 	chains := chainsResponse.JSON200.Data
 
 	qnd := QuickNodeData{
-		Client: client,
-		Chains: chains,
+		Client:        client,
+		StreamsClient: streamsClient,
+		Chains:        chains,
+		ApiKey:        apiKey,
 	}
 
 	resp.DataSourceData = qnd
@@ -174,11 +190,14 @@ func (p *QuickNodeProvider) Configure(ctx context.Context, req provider.Configur
 func (p *QuickNodeProvider) Resources(ctx context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
 		NewEndpointResource,
+		NewStreamResource,
 	}
 }
 
 func (p *QuickNodeProvider) DataSources(ctx context.Context) []func() datasource.DataSource {
-	return nil
+	return []func() datasource.DataSource{
+		NewFilterDataSource,
+	}
 }
 
 func (p *QuickNodeProvider) Functions(ctx context.Context) []func() function.Function {
