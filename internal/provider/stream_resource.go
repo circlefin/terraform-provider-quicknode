@@ -359,7 +359,7 @@ func (r *StreamResource) Schema(ctx context.Context, req resource.SchemaRequest,
 	}
 }
 
-// getWebhookAttributes extracts webhook attributes from the destination_attributes map
+// getWebhookAttributes extracts webhook attributes from the destination_attributes map.
 func getWebhookAttributes(destAttrs map[string]interface{}) (*streams.WebhookAttributes, error) {
 	url, ok := destAttrs["url"].(string)
 	if !ok {
@@ -397,7 +397,7 @@ func getWebhookAttributes(destAttrs map[string]interface{}) (*streams.WebhookAtt
 	}, nil
 }
 
-// getS3Attributes extracts S3 attributes from the destination_attributes map
+// getS3Attributes extracts S3 attributes from the destination_attributes map.
 func getS3Attributes(destAttrs map[string]interface{}) (*streams.S3Attributes, error) {
 	endpoint, ok := destAttrs["endpoint"].(string)
 	if !ok {
@@ -454,7 +454,7 @@ func getS3Attributes(destAttrs map[string]interface{}) (*streams.S3Attributes, e
 	}, nil
 }
 
-// getPostgresAttributes extracts Postgres attributes from the destination_attributes map
+// getPostgresAttributes extracts Postgres attributes from the destination_attributes map.
 func getPostgresAttributes(destAttrs map[string]interface{}) (*streams.PostgresAttributes, error) {
 	username, ok := destAttrs["username"].(string)
 	if !ok {
@@ -511,7 +511,7 @@ func getPostgresAttributes(destAttrs map[string]interface{}) (*streams.PostgresA
 	}, nil
 }
 
-// readStreamFromAPI reads stream data from the API and updates the provided StreamResourceModel
+// readStreamFromAPI reads stream data from the API and updates the provided StreamResourceModel.
 func (r *StreamResource) readStreamFromAPI(ctx context.Context, streamID string) (*StreamResourceModel, error) {
 	readResp, err := r.client.FindOneWithResponse(ctx, streamID)
 	if err != nil {
