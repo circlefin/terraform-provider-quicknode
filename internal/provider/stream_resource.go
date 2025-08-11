@@ -20,6 +20,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	"github.com/circlefin/terraform-provider-quicknode/api/streams"
 	"github.com/circlefin/terraform-provider-quicknode/internal/utils"
@@ -358,6 +359,247 @@ func (r *StreamResource) Schema(ctx context.Context, req resource.SchemaRequest,
 	}
 }
 
+// getWebhookAttributes extracts webhook attributes from the destination_attributes map
+func getWebhookAttributes(destAttrs map[string]interface{}) (*streams.WebhookAttributes, error) {
+	url, ok := destAttrs["url"].(string)
+	if !ok {
+		return nil, fmt.Errorf("url must be a string")
+	}
+	compression, ok := destAttrs["compression"].(string)
+	if !ok {
+		return nil, fmt.Errorf("compression must be a string")
+	}
+	headers, ok := destAttrs["headers"].(map[string]interface{})
+	if !ok {
+		return nil, fmt.Errorf("headers must be a map")
+	}
+	maxRetry, ok := destAttrs["max_retry"].(int64)
+	if !ok {
+		return nil, fmt.Errorf("max_retry must be an integer")
+	}
+	postTimeoutSec, ok := destAttrs["post_timeout_sec"].(int64)
+	if !ok {
+		return nil, fmt.Errorf("post_timeout_sec must be an integer")
+	}
+	retryIntervalSec, ok := destAttrs["retry_interval_sec"].(int64)
+	if !ok {
+		return nil, fmt.Errorf("retry_interval_sec must be an integer")
+	}
+
+	return &streams.WebhookAttributes{
+		Url:              url,
+		Compression:      compression,
+		Headers:          headers,
+		MaxRetry:         float32(maxRetry),
+		PostTimeoutSec:   float32(postTimeoutSec),
+		RetryIntervalSec: float32(retryIntervalSec),
+		SecurityToken:    "",
+	}, nil
+}
+
+// getS3Attributes extracts S3 attributes from the destination_attributes map
+func getS3Attributes(destAttrs map[string]interface{}) (*streams.S3Attributes, error) {
+	endpoint, ok := destAttrs["endpoint"].(string)
+	if !ok {
+		return nil, fmt.Errorf("endpoint must be a string")
+	}
+	accessKey, ok := destAttrs["access_key"].(string)
+	if !ok {
+		return nil, fmt.Errorf("access_key must be a string")
+	}
+	secretKey, ok := destAttrs["secret_key"].(string)
+	if !ok {
+		return nil, fmt.Errorf("secret_key must be a string")
+	}
+	bucket, ok := destAttrs["bucket"].(string)
+	if !ok {
+		return nil, fmt.Errorf("bucket must be a string")
+	}
+	objectPrefix, ok := destAttrs["object_prefix"].(string)
+	if !ok {
+		return nil, fmt.Errorf("object_prefix must be a string")
+	}
+	fileCompression, ok := destAttrs["file_compression"].(string)
+	if !ok {
+		return nil, fmt.Errorf("file_compression must be a string")
+	}
+	fileType, ok := destAttrs["file_type"].(string)
+	if !ok {
+		return nil, fmt.Errorf("file_type must be a string")
+	}
+	maxRetry, ok := destAttrs["max_retry"].(int64)
+	if !ok {
+		return nil, fmt.Errorf("max_retry must be an integer")
+	}
+	retryIntervalSec, ok := destAttrs["retry_interval_sec"].(int64)
+	if !ok {
+		return nil, fmt.Errorf("retry_interval_sec must be an integer")
+	}
+	useSsl, ok := destAttrs["use_ssl"].(bool)
+	if !ok {
+		return nil, fmt.Errorf("use_ssl must be a boolean")
+	}
+
+	return &streams.S3Attributes{
+		Endpoint:         endpoint,
+		AccessKey:        accessKey,
+		SecretKey:        secretKey,
+		Bucket:           bucket,
+		ObjectPrefix:     objectPrefix,
+		FileCompression:  fileCompression,
+		FileType:         streams.S3AttributesFileType(fileType),
+		MaxRetry:         float32(maxRetry),
+		RetryIntervalSec: float32(retryIntervalSec),
+		UseSsl:           useSsl,
+	}, nil
+}
+
+// getPostgresAttributes extracts Postgres attributes from the destination_attributes map
+func getPostgresAttributes(destAttrs map[string]interface{}) (*streams.PostgresAttributes, error) {
+	username, ok := destAttrs["username"].(string)
+	if !ok {
+		return nil, fmt.Errorf("username must be a string")
+	}
+	password, ok := destAttrs["password"].(string)
+	if !ok {
+		return nil, fmt.Errorf("password must be a string")
+	}
+	host, ok := destAttrs["host"].(string)
+	if !ok {
+		return nil, fmt.Errorf("host must be a string")
+	}
+	port, ok := destAttrs["port"].(int64)
+	if !ok {
+		return nil, fmt.Errorf("port must be an integer")
+	}
+	database, ok := destAttrs["database"].(string)
+	if !ok {
+		return nil, fmt.Errorf("database must be a string")
+	}
+	accessKey, ok := destAttrs["access_key"].(string)
+	if !ok {
+		return nil, fmt.Errorf("access_key must be a string")
+	}
+	sslmode, ok := destAttrs["sslmode"].(string)
+	if !ok {
+		return nil, fmt.Errorf("sslmode must be a string")
+	}
+	tableName, ok := destAttrs["table_name"].(string)
+	if !ok {
+		return nil, fmt.Errorf("table_name must be a string")
+	}
+	maxRetry, ok := destAttrs["max_retry"].(int64)
+	if !ok {
+		return nil, fmt.Errorf("max_retry must be an integer")
+	}
+	retryIntervalSec, ok := destAttrs["retry_interval_sec"].(int64)
+	if !ok {
+		return nil, fmt.Errorf("retry_interval_sec must be an integer")
+	}
+
+	return &streams.PostgresAttributes{
+		Username:         username,
+		Password:         password,
+		Host:             host,
+		Port:             float32(port),
+		Database:         database,
+		AccessKey:        accessKey,
+		Sslmode:          streams.PostgresAttributesSslmode(sslmode),
+		TableName:        tableName,
+		MaxRetry:         float32(maxRetry),
+		RetryIntervalSec: float32(retryIntervalSec),
+	}, nil
+}
+
+// readStreamFromAPI reads stream data from the API and updates the provided StreamResourceModel
+func (r *StreamResource) readStreamFromAPI(ctx context.Context, streamID string) (*StreamResourceModel, error) {
+	readResp, err := r.client.FindOneWithResponse(ctx, streamID)
+	if err != nil {
+		return nil, fmt.Errorf("error reading stream: %w", err)
+	}
+
+	if readResp.StatusCode() == 404 {
+		return nil, fmt.Errorf("stream not found")
+	}
+
+	if readResp.StatusCode() != 200 {
+		return nil, fmt.Errorf("API returned status code %d", readResp.StatusCode())
+	}
+
+	var result map[string]interface{}
+	if err := json.Unmarshal(readResp.Body, &result); err != nil {
+		return nil, fmt.Errorf("error decoding response: %w", err)
+	}
+
+	// Create a new model and populate it with API data
+	data := &StreamResourceModel{}
+
+	// Update data based on API response
+	if id, ok := result["id"].(string); ok {
+		data.Id = types.StringValue(id)
+	}
+	if name, ok := result["name"].(string); ok {
+		data.Name = types.StringValue(name)
+	}
+	if network, ok := result["network"].(string); ok {
+		data.Network = types.StringValue(network)
+	}
+	if dataset, ok := result["dataset"].(string); ok {
+		data.Dataset = types.StringValue(dataset)
+	}
+	if startRange, ok := result["start_range"].(float64); ok {
+		data.StartRange = types.Int64Value(int64(startRange))
+	}
+	if endRange, ok := result["end_range"].(float64); ok {
+		if endRange == -1 {
+			data.EndRange = types.Int64Null()
+		} else {
+			data.EndRange = types.Int64Value(int64(endRange))
+		}
+	}
+	if datasetBatchSize, ok := result["dataset_batch_size"].(float64); ok {
+		data.DatasetBatchSize = types.Int64Value(int64(datasetBatchSize))
+	}
+	if includeStreamMetadata, ok := result["include_stream_metadata"].(string); ok {
+		data.IncludeStreamMetadata = types.StringValue(includeStreamMetadata)
+	}
+	if destination, ok := result["destination"].(string); ok {
+		data.Destination = types.StringValue(destination)
+	}
+	if status, ok := result["status"].(string); ok {
+		data.Status = types.StringValue(status)
+	}
+	if elasticBatchEnabled, ok := result["elastic_batch_enabled"].(bool); ok {
+		data.ElasticBatchEnabled = types.BoolValue(elasticBatchEnabled)
+	}
+	if region, ok := result["region"].(string); ok {
+		data.Region = types.StringValue(region)
+	}
+	if filterFunction, ok := result["filter_function"].(string); ok {
+		data.FilterFunction = types.StringValue(filterFunction)
+	}
+	if fixBlockReorgs, ok := result["fix_block_reorgs"].(float64); ok {
+		data.FixBlockReorgs = types.Int64Value(int64(fixBlockReorgs))
+	}
+	if keepDistanceFromTip, ok := result["keep_distance_from_tip"].(float64); ok {
+		data.KeepDistanceFromTip = types.Int64Value(int64(keepDistanceFromTip))
+	}
+	if notificationEmail, ok := result["notification_email"].(string); ok {
+		data.NotificationEmail = types.StringValue(notificationEmail)
+	}
+
+	// Update destination_attributes
+	if destAttrs, ok := result["destination_attributes"].(map[string]interface{}); ok {
+		obj, err := r.updateDestinationAttributesFromAPI(destAttrs)
+		if err != nil {
+			return nil, fmt.Errorf("error updating destination_attributes: %w", err)
+		}
+		data.DestinationAttributes = obj
+	}
+
+	return data, nil
+}
+
 func (r *StreamResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
 	var data StreamResourceModel
 
@@ -414,185 +656,34 @@ func (r *StreamResource) Create(ctx context.Context, req resource.CreateRequest,
 
 	switch data.Destination.ValueString() {
 	case "webhook":
-		url, ok := destAttrs["url"].(string)
-		if !ok {
-			resp.Diagnostics.AddError("Error converting destination_attributes", "url must be a string")
+		webhookAttrs, err := getWebhookAttributes(destAttrs)
+		if err != nil {
+			resp.Diagnostics.AddError("Error converting destination_attributes", err.Error())
 			return
 		}
-		compression, ok := destAttrs["compression"].(string)
-		if !ok {
-			resp.Diagnostics.AddError("Error converting destination_attributes", "compression must be a string")
-			return
-		}
-		headers, ok := destAttrs["headers"].(map[string]interface{})
-		if !ok {
-			resp.Diagnostics.AddError("Error converting destination_attributes", "headers must be a map")
-			return
-		}
-		maxRetry, ok := destAttrs["max_retry"].(int64)
-		if !ok {
-			resp.Diagnostics.AddError("Error converting destination_attributes", "max_retry must be an integer")
-			return
-		}
-		postTimeoutSec, ok := destAttrs["post_timeout_sec"].(int64)
-		if !ok {
-			resp.Diagnostics.AddError("Error converting destination_attributes", "post_timeout_sec must be an integer")
-			return
-		}
-		retryIntervalSec, ok := destAttrs["retry_interval_sec"].(int64)
-		if !ok {
-			resp.Diagnostics.AddError("Error converting destination_attributes", "retry_interval_sec must be an integer")
-			return
-		}
-
-		webhookAttrs := streams.WebhookAttributes{
-			Url:              url,
-			Compression:      compression,
-			Headers:          headers,
-			MaxRetry:         float32(maxRetry),
-			PostTimeoutSec:   float32(postTimeoutSec),
-			RetryIntervalSec: float32(retryIntervalSec),
-			SecurityToken:    "",
-		}
-		if err := destAttrsUnion.FromWebhookAttributes(webhookAttrs); err != nil {
+		if err := destAttrsUnion.FromWebhookAttributes(*webhookAttrs); err != nil {
 			resp.Diagnostics.AddError("Error creating webhook destination_attributes", err.Error())
 			return
 		}
 
 	case "s3":
-		endpoint, ok := destAttrs["endpoint"].(string)
-		if !ok {
-			resp.Diagnostics.AddError("Error converting destination_attributes", "endpoint must be a string")
+		s3Attrs, err := getS3Attributes(destAttrs)
+		if err != nil {
+			resp.Diagnostics.AddError("Error converting destination_attributes", err.Error())
 			return
 		}
-		accessKey, ok := destAttrs["access_key"].(string)
-		if !ok {
-			resp.Diagnostics.AddError("Error converting destination_attributes", "access_key must be a string")
-			return
-		}
-		secretKey, ok := destAttrs["secret_key"].(string)
-		if !ok {
-			resp.Diagnostics.AddError("Error converting destination_attributes", "secret_key must be a string")
-			return
-		}
-		bucket, ok := destAttrs["bucket"].(string)
-		if !ok {
-			resp.Diagnostics.AddError("Error converting destination_attributes", "bucket must be a string")
-			return
-		}
-		objectPrefix, ok := destAttrs["object_prefix"].(string)
-		if !ok {
-			resp.Diagnostics.AddError("Error converting destination_attributes", "object_prefix must be a string")
-			return
-		}
-		fileCompression, ok := destAttrs["file_compression"].(string)
-		if !ok {
-			resp.Diagnostics.AddError("Error converting destination_attributes", "file_compression must be a string")
-			return
-		}
-		fileType, ok := destAttrs["file_type"].(string)
-		if !ok {
-			resp.Diagnostics.AddError("Error converting destination_attributes", "file_type must be a string")
-			return
-		}
-		maxRetry, ok := destAttrs["max_retry"].(int64)
-		if !ok {
-			resp.Diagnostics.AddError("Error converting destination_attributes", "max_retry must be an integer")
-			return
-		}
-		retryIntervalSec, ok := destAttrs["retry_interval_sec"].(int64)
-		if !ok {
-			resp.Diagnostics.AddError("Error converting destination_attributes", "retry_interval_sec must be an integer")
-			return
-		}
-		useSsl, ok := destAttrs["use_ssl"].(bool)
-		if !ok {
-			resp.Diagnostics.AddError("Error converting destination_attributes", "use_ssl must be a boolean")
-			return
-		}
-
-		s3Attrs := streams.S3Attributes{
-			Endpoint:         endpoint,
-			AccessKey:        accessKey,
-			SecretKey:        secretKey,
-			Bucket:           bucket,
-			ObjectPrefix:     objectPrefix,
-			FileCompression:  fileCompression,
-			FileType:         streams.S3AttributesFileType(fileType),
-			MaxRetry:         float32(maxRetry),
-			RetryIntervalSec: float32(retryIntervalSec),
-			UseSsl:           useSsl,
-		}
-		if err := destAttrsUnion.FromS3Attributes(s3Attrs); err != nil {
+		if err := destAttrsUnion.FromS3Attributes(*s3Attrs); err != nil {
 			resp.Diagnostics.AddError("Error creating S3 destination_attributes", err.Error())
 			return
 		}
 
 	case "postgres":
-		username, ok := destAttrs["username"].(string)
-		if !ok {
-			resp.Diagnostics.AddError("Error converting destination_attributes", "username must be a string")
+		postgresAttrs, err := getPostgresAttributes(destAttrs)
+		if err != nil {
+			resp.Diagnostics.AddError("Error converting destination_attributes", err.Error())
 			return
 		}
-		password, ok := destAttrs["password"].(string)
-		if !ok {
-			resp.Diagnostics.AddError("Error converting destination_attributes", "password must be a string")
-			return
-		}
-		host, ok := destAttrs["host"].(string)
-		if !ok {
-			resp.Diagnostics.AddError("Error converting destination_attributes", "host must be a string")
-			return
-		}
-		port, ok := destAttrs["port"].(int64)
-		if !ok {
-			resp.Diagnostics.AddError("Error converting destination_attributes", "port must be an integer")
-			return
-		}
-		database, ok := destAttrs["database"].(string)
-		if !ok {
-			resp.Diagnostics.AddError("Error converting destination_attributes", "database must be a string")
-			return
-		}
-		accessKey, ok := destAttrs["access_key"].(string)
-		if !ok {
-			resp.Diagnostics.AddError("Error converting destination_attributes", "access_key must be a string")
-			return
-		}
-		sslmode, ok := destAttrs["sslmode"].(string)
-		if !ok {
-			resp.Diagnostics.AddError("Error converting destination_attributes", "sslmode must be a string")
-			return
-		}
-		tableName, ok := destAttrs["table_name"].(string)
-		if !ok {
-			resp.Diagnostics.AddError("Error converting destination_attributes", "table_name must be a string")
-			return
-		}
-		maxRetry, ok := destAttrs["max_retry"].(int64)
-		if !ok {
-			resp.Diagnostics.AddError("Error converting destination_attributes", "max_retry must be an integer")
-			return
-		}
-		retryIntervalSec, ok := destAttrs["retry_interval_sec"].(int64)
-		if !ok {
-			resp.Diagnostics.AddError("Error converting destination_attributes", "retry_interval_sec must be an integer")
-			return
-		}
-
-		postgresAttrs := streams.PostgresAttributes{
-			Username:         username,
-			Password:         password,
-			Host:             host,
-			Port:             float32(port),
-			Database:         database,
-			AccessKey:        accessKey,
-			Sslmode:          streams.PostgresAttributesSslmode(sslmode),
-			TableName:        tableName,
-			MaxRetry:         float32(maxRetry),
-			RetryIntervalSec: float32(retryIntervalSec),
-		}
-		if err := destAttrsUnion.FromPostgresAttributes(postgresAttrs); err != nil {
+		if err := destAttrsUnion.FromPostgresAttributes(*postgresAttrs); err != nil {
 			resp.Diagnostics.AddError("Error creating Postgres destination_attributes", err.Error())
 			return
 		}
@@ -669,76 +760,28 @@ func (r *StreamResource) Create(ctx context.Context, req resource.CreateRequest,
 	}
 
 	// Read full stream data from API to get computed fields
-	readResp, err := r.client.FindOneWithResponse(ctx, data.Id.ValueString())
+	fullStreamData, err := r.readStreamFromAPI(ctx, data.Id.ValueString())
 	if err != nil {
 		resp.Diagnostics.AddError("Error reading stream", err.Error())
 		return
 	}
 
-	if readResp.StatusCode() != 200 {
-		resp.Diagnostics.AddError("Error reading stream", fmt.Sprintf("Response code: %d", readResp.StatusCode()))
-		return
+	// Update data with computed fields from API
+	data.Name = fullStreamData.Name
+	data.Network = fullStreamData.Network
+	data.Dataset = fullStreamData.Dataset
+	if data.StartRange.IsNull() {
+		data.StartRange = fullStreamData.StartRange
 	}
-
-	var fullStreamData map[string]interface{}
-	if err := json.Unmarshal(readResp.Body, &fullStreamData); err != nil {
-		resp.Diagnostics.AddError("Error decoding response", err.Error())
-		return
-	}
-
-	// Update data based on API response
-	if name, ok := fullStreamData["name"].(string); ok {
-		data.Name = types.StringValue(name)
-	}
-	if network, ok := fullStreamData["network"].(string); ok {
-		data.Network = types.StringValue(network)
-	}
-	if dataset, ok := fullStreamData["dataset"].(string); ok {
-		data.Dataset = types.StringValue(dataset)
-	}
-	if startRange, ok := fullStreamData["start_range"].(float64); ok {
-		if data.StartRange.IsNull() {
-			data.StartRange = types.Int64Value(int64(startRange))
-		}
-	}
-	if endRange, ok := fullStreamData["end_range"].(float64); ok {
-		if endRange == -1 {
-			data.EndRange = types.Int64Null()
-		} else {
-			data.EndRange = types.Int64Value(int64(endRange))
-		}
-	}
-	if datasetBatchSize, ok := fullStreamData["dataset_batch_size"].(float64); ok {
-		data.DatasetBatchSize = types.Int64Value(int64(datasetBatchSize))
-	}
-	if includeStreamMetadata, ok := fullStreamData["include_stream_metadata"].(string); ok {
-		data.IncludeStreamMetadata = types.StringValue(includeStreamMetadata)
-	}
-	if destination, ok := fullStreamData["destination"].(string); ok {
-		data.Destination = types.StringValue(destination)
-	}
-	if status, ok := fullStreamData["status"].(string); ok {
-		data.Status = types.StringValue(status)
-	}
-	if elasticBatchEnabled, ok := fullStreamData["elastic_batch_enabled"].(bool); ok {
-		data.ElasticBatchEnabled = types.BoolValue(elasticBatchEnabled)
-	}
-	if region, ok := fullStreamData["region"].(string); ok {
-		data.Region = types.StringValue(region)
-	}
-	if filterFunction, ok := fullStreamData["filter_function"].(string); ok {
-		data.FilterFunction = types.StringValue(filterFunction)
-	}
-
-	// Update destination_attributes
-	if destAttrs, ok := fullStreamData["destination_attributes"].(map[string]interface{}); ok {
-		obj, err := r.updateDestinationAttributesFromAPI(destAttrs)
-		if err != nil {
-			resp.Diagnostics.AddError("Error updating destination_attributes", err.Error())
-			return
-		}
-		data.DestinationAttributes = obj
-	}
+	data.EndRange = fullStreamData.EndRange
+	data.DatasetBatchSize = fullStreamData.DatasetBatchSize
+	data.IncludeStreamMetadata = fullStreamData.IncludeStreamMetadata
+	data.Destination = fullStreamData.Destination
+	data.Status = fullStreamData.Status
+	data.ElasticBatchEnabled = fullStreamData.ElasticBatchEnabled
+	data.Region = fullStreamData.Region
+	data.FilterFunction = fullStreamData.FilterFunction
+	data.DestinationAttributes = fullStreamData.DestinationAttributes
 
 	tflog.Trace(ctx, "created a resource")
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
@@ -781,8 +824,13 @@ func (r *StreamResource) Read(ctx context.Context, req resource.ReadRequest, res
 		return
 	}
 
-	res, err := r.client.FindOneWithResponse(ctx, data.Id.ValueString())
+	// Read stream data from API
+	streamData, err := r.readStreamFromAPI(ctx, data.Id.ValueString())
 	if err != nil {
+		if strings.Contains(err.Error(), "stream not found") {
+			resp.State.RemoveResource(ctx)
+			return
+		}
 		resp.Diagnostics.AddError(
 			fmt.Sprintf("%s - Reading Stream", utils.ClientErrorSummary),
 			utils.BuildClientErrorMessage(err),
@@ -790,78 +838,23 @@ func (r *StreamResource) Read(ctx context.Context, req resource.ReadRequest, res
 		return
 	}
 
-	if res.StatusCode() == 404 {
-		resp.State.RemoveResource(ctx)
-		return
-	}
-
-	if res.StatusCode() != 200 {
-		m, err := utils.BuildRequestErrorMessage(res.Status(), res.Body)
-		if err != nil {
-			resp.Diagnostics.AddWarning(fmt.Sprintf("%s - Reading Stream", utils.InternalErrorSummary), utils.BuildInternalErrorMessage(err))
-		}
-
-		resp.Diagnostics.AddError(
-			fmt.Sprintf("%s - Reading Stream", utils.RequestErrorSummary),
-			m,
-		)
-		return
-	}
-
-	var result map[string]interface{}
-	if err := json.Unmarshal(res.Body, &result); err != nil {
-		resp.Diagnostics.AddError("Error decoding response", err.Error())
-		return
-	}
-
-	// Update state based on response
-	if name, ok := result["name"].(string); ok {
-		data.Name = types.StringValue(name)
-	}
-	if network, ok := result["network"].(string); ok {
-		data.Network = types.StringValue(network)
-	}
-	if dataset, ok := result["dataset"].(string); ok {
-		data.Dataset = types.StringValue(dataset)
-	}
-	if startRange, ok := result["start_range"].(float64); ok {
-		data.StartRange = types.Int64Value(int64(startRange))
-	}
-	if endRange, ok := result["end_range"].(float64); ok {
-		if endRange == -1 {
-			data.EndRange = types.Int64Null()
-		} else {
-			data.EndRange = types.Int64Value(int64(endRange))
-		}
-	}
-	if datasetBatchSize, ok := result["dataset_batch_size"].(float64); ok {
-		data.DatasetBatchSize = types.Int64Value(int64(datasetBatchSize))
-	}
-	if includeStreamMetadata, ok := result["include_stream_metadata"].(string); ok {
-		data.IncludeStreamMetadata = types.StringValue(includeStreamMetadata)
-	}
-	if destination, ok := result["destination"].(string); ok {
-		data.Destination = types.StringValue(destination)
-	}
-	if status, ok := result["status"].(string); ok {
-		data.Status = types.StringValue(status)
-	}
-	if elasticBatchEnabled, ok := result["elastic_batch_enabled"].(bool); ok {
-		data.ElasticBatchEnabled = types.BoolValue(elasticBatchEnabled)
-	}
-	if filterFunction, ok := result["filter_function"].(string); ok {
-		data.FilterFunction = types.StringValue(filterFunction)
-	}
-
-	// Update destination_attributes
-	if destAttrs, ok := result["destination_attributes"].(map[string]interface{}); ok {
-		obj, err := r.updateDestinationAttributesFromAPI(destAttrs)
-		if err != nil {
-			resp.Diagnostics.AddError("Error updating destination_attributes", err.Error())
-			return
-		}
-		data.DestinationAttributes = obj
-	}
+	// Update state with data from API
+	data.Name = streamData.Name
+	data.Network = streamData.Network
+	data.Dataset = streamData.Dataset
+	data.StartRange = streamData.StartRange
+	data.EndRange = streamData.EndRange
+	data.DatasetBatchSize = streamData.DatasetBatchSize
+	data.IncludeStreamMetadata = streamData.IncludeStreamMetadata
+	data.Destination = streamData.Destination
+	data.Status = streamData.Status
+	data.ElasticBatchEnabled = streamData.ElasticBatchEnabled
+	data.Region = streamData.Region
+	data.FilterFunction = streamData.FilterFunction
+	data.FixBlockReorgs = streamData.FixBlockReorgs
+	data.KeepDistanceFromTip = streamData.KeepDistanceFromTip
+	data.NotificationEmail = streamData.NotificationEmail
+	data.DestinationAttributes = streamData.DestinationAttributes
 
 	resp.State.Set(ctx, &data)
 }
@@ -876,14 +869,24 @@ func (r *StreamResource) Update(ctx context.Context, req resource.UpdateRequest,
 		return
 	}
 
-	streamId := state.Id.ValueString()
+	// Determine stream ID - prefer plan.Id if available, otherwise use state.Id
+	var streamId string
+	if !plan.Id.IsNull() && !plan.Id.IsUnknown() {
+		streamId = plan.Id.ValueString()
+	} else if !state.Id.IsNull() && !state.Id.IsUnknown() {
+		streamId = state.Id.ValueString()
+	} else {
+		resp.Diagnostics.AddError("Invalid state", "Stream ID is null or unknown in both plan and state")
+		return
+	}
+
 	tflog.Info(ctx, "Starting stream update", map[string]interface{}{
 		"stream_id": streamId,
 		"name":      plan.Name.ValueString(),
 	})
 
 	// Check current stream status
-	readResp, err := r.client.FindOneWithResponse(ctx, streamId)
+	streamData, err := r.readStreamFromAPI(ctx, streamId)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			fmt.Sprintf("%s - Reading Stream Status", utils.ClientErrorSummary),
@@ -892,30 +895,7 @@ func (r *StreamResource) Update(ctx context.Context, req resource.UpdateRequest,
 		return
 	}
 
-	if readResp.StatusCode() != 200 {
-		m, err := utils.BuildRequestErrorMessage(readResp.Status(), readResp.Body)
-		if err != nil {
-			resp.Diagnostics.AddWarning(fmt.Sprintf("%s - Reading Stream Status", utils.InternalErrorSummary), utils.BuildInternalErrorMessage(err))
-		}
-
-		resp.Diagnostics.AddError(
-			fmt.Sprintf("%s - Reading Stream Status", utils.RequestErrorSummary),
-			m,
-		)
-		return
-	}
-
-	var streamData map[string]interface{}
-	if err := json.Unmarshal(readResp.Body, &streamData); err != nil {
-		resp.Diagnostics.AddError("Error decoding stream response", err.Error())
-		return
-	}
-
-	currentStatus, ok := streamData["status"].(string)
-	if !ok {
-		resp.Diagnostics.AddError("Error reading stream status", "Could not parse status from response")
-		return
-	}
+	currentStatus := streamData.Status.ValueString()
 
 	tflog.Info(ctx, "Current stream status", map[string]interface{}{
 		"stream_id": streamId,
@@ -1012,185 +992,34 @@ func (r *StreamResource) Update(ctx context.Context, req resource.UpdateRequest,
 
 		switch plan.Destination.ValueString() {
 		case "webhook":
-			url, ok := destAttrs["url"].(string)
-			if !ok {
-				resp.Diagnostics.AddError("Error converting destination_attributes", "url must be a string")
+			webhookAttrs, err := getWebhookAttributes(destAttrs)
+			if err != nil {
+				resp.Diagnostics.AddError("Error converting destination_attributes", err.Error())
 				return
 			}
-			compression, ok := destAttrs["compression"].(string)
-			if !ok {
-				resp.Diagnostics.AddError("Error converting destination_attributes", "compression must be a string")
-				return
-			}
-			headers, ok := destAttrs["headers"].(map[string]interface{})
-			if !ok {
-				resp.Diagnostics.AddError("Error converting destination_attributes", "headers must be a map")
-				return
-			}
-			maxRetry, ok := destAttrs["max_retry"].(int64)
-			if !ok {
-				resp.Diagnostics.AddError("Error converting destination_attributes", "max_retry must be an integer")
-				return
-			}
-			postTimeoutSec, ok := destAttrs["post_timeout_sec"].(int64)
-			if !ok {
-				resp.Diagnostics.AddError("Error converting destination_attributes", "post_timeout_sec must be an integer")
-				return
-			}
-			retryIntervalSec, ok := destAttrs["retry_interval_sec"].(int64)
-			if !ok {
-				resp.Diagnostics.AddError("Error converting destination_attributes", "retry_interval_sec must be an integer")
-				return
-			}
-
-			webhookAttrs := streams.WebhookAttributes{
-				Url:              url,
-				Compression:      compression,
-				Headers:          headers,
-				MaxRetry:         float32(maxRetry),
-				PostTimeoutSec:   float32(postTimeoutSec),
-				RetryIntervalSec: float32(retryIntervalSec),
-				SecurityToken:    "",
-			}
-			if err := union.FromWebhookAttributes(webhookAttrs); err != nil {
+			if err := union.FromWebhookAttributes(*webhookAttrs); err != nil {
 				resp.Diagnostics.AddError("Error creating webhook destination_attributes", err.Error())
 				return
 			}
 
 		case "s3":
-			endpoint, ok := destAttrs["endpoint"].(string)
-			if !ok {
-				resp.Diagnostics.AddError("Error converting destination_attributes", "endpoint must be a string")
+			s3Attrs, err := getS3Attributes(destAttrs)
+			if err != nil {
+				resp.Diagnostics.AddError("Error converting destination_attributes", err.Error())
 				return
 			}
-			accessKey, ok := destAttrs["access_key"].(string)
-			if !ok {
-				resp.Diagnostics.AddError("Error converting destination_attributes", "access_key must be a string")
-				return
-			}
-			secretKey, ok := destAttrs["secret_key"].(string)
-			if !ok {
-				resp.Diagnostics.AddError("Error converting destination_attributes", "secret_key must be a string")
-				return
-			}
-			bucket, ok := destAttrs["bucket"].(string)
-			if !ok {
-				resp.Diagnostics.AddError("Error converting destination_attributes", "bucket must be a string")
-				return
-			}
-			objectPrefix, ok := destAttrs["object_prefix"].(string)
-			if !ok {
-				resp.Diagnostics.AddError("Error converting destination_attributes", "object_prefix must be a string")
-				return
-			}
-			fileCompression, ok := destAttrs["file_compression"].(string)
-			if !ok {
-				resp.Diagnostics.AddError("Error converting destination_attributes", "file_compression must be a string")
-				return
-			}
-			fileType, ok := destAttrs["file_type"].(string)
-			if !ok {
-				resp.Diagnostics.AddError("Error converting destination_attributes", "file_type must be a string")
-				return
-			}
-			maxRetry, ok := destAttrs["max_retry"].(int64)
-			if !ok {
-				resp.Diagnostics.AddError("Error converting destination_attributes", "max_retry must be an integer")
-				return
-			}
-			retryIntervalSec, ok := destAttrs["retry_interval_sec"].(int64)
-			if !ok {
-				resp.Diagnostics.AddError("Error converting destination_attributes", "retry_interval_sec must be an integer")
-				return
-			}
-			useSsl, ok := destAttrs["use_ssl"].(bool)
-			if !ok {
-				resp.Diagnostics.AddError("Error converting destination_attributes", "use_ssl must be a boolean")
-				return
-			}
-
-			s3Attrs := streams.S3Attributes{
-				Endpoint:         endpoint,
-				AccessKey:        accessKey,
-				SecretKey:        secretKey,
-				Bucket:           bucket,
-				ObjectPrefix:     objectPrefix,
-				FileCompression:  fileCompression,
-				FileType:         streams.S3AttributesFileType(fileType),
-				MaxRetry:         float32(maxRetry),
-				RetryIntervalSec: float32(retryIntervalSec),
-				UseSsl:           useSsl,
-			}
-			if err := union.FromS3Attributes(s3Attrs); err != nil {
+			if err := union.FromS3Attributes(*s3Attrs); err != nil {
 				resp.Diagnostics.AddError("Error creating S3 destination_attributes", err.Error())
 				return
 			}
 
 		case "postgres":
-			username, ok := destAttrs["username"].(string)
-			if !ok {
-				resp.Diagnostics.AddError("Error converting destination_attributes", "username must be a string")
+			postgresAttrs, err := getPostgresAttributes(destAttrs)
+			if err != nil {
+				resp.Diagnostics.AddError("Error converting destination_attributes", err.Error())
 				return
 			}
-			password, ok := destAttrs["password"].(string)
-			if !ok {
-				resp.Diagnostics.AddError("Error converting destination_attributes", "password must be a string")
-				return
-			}
-			host, ok := destAttrs["host"].(string)
-			if !ok {
-				resp.Diagnostics.AddError("Error converting destination_attributes", "host must be a string")
-				return
-			}
-			port, ok := destAttrs["port"].(int64)
-			if !ok {
-				resp.Diagnostics.AddError("Error converting destination_attributes", "port must be an integer")
-				return
-			}
-			database, ok := destAttrs["database"].(string)
-			if !ok {
-				resp.Diagnostics.AddError("Error converting destination_attributes", "database must be a string")
-				return
-			}
-			accessKey, ok := destAttrs["access_key"].(string)
-			if !ok {
-				resp.Diagnostics.AddError("Error converting destination_attributes", "access_key must be a string")
-				return
-			}
-			sslmode, ok := destAttrs["sslmode"].(string)
-			if !ok {
-				resp.Diagnostics.AddError("Error converting destination_attributes", "sslmode must be a string")
-				return
-			}
-			tableName, ok := destAttrs["table_name"].(string)
-			if !ok {
-				resp.Diagnostics.AddError("Error converting destination_attributes", "table_name must be a string")
-				return
-			}
-			maxRetry, ok := destAttrs["max_retry"].(int64)
-			if !ok {
-				resp.Diagnostics.AddError("Error converting destination_attributes", "max_retry must be an integer")
-				return
-			}
-			retryIntervalSec, ok := destAttrs["retry_interval_sec"].(int64)
-			if !ok {
-				resp.Diagnostics.AddError("Error converting destination_attributes", "retry_interval_sec must be an integer")
-				return
-			}
-
-			postgresAttrs := streams.PostgresAttributes{
-				Username:         username,
-				Password:         password,
-				Host:             host,
-				Port:             float32(port),
-				Database:         database,
-				AccessKey:        accessKey,
-				Sslmode:          streams.PostgresAttributesSslmode(sslmode),
-				TableName:        tableName,
-				MaxRetry:         float32(maxRetry),
-				RetryIntervalSec: float32(retryIntervalSec),
-			}
-			if err := union.FromPostgresAttributes(postgresAttrs); err != nil {
+			if err := union.FromPostgresAttributes(*postgresAttrs); err != nil {
 				resp.Diagnostics.AddError("Error creating Postgres destination_attributes", err.Error())
 				return
 			}
@@ -1294,6 +1123,32 @@ func (r *StreamResource) Update(ctx context.Context, req resource.UpdateRequest,
 			"stream_id": streamId,
 		})
 	}
+
+	// Read full stream data from API to get computed fields
+	fullStreamData, err := r.readStreamFromAPI(ctx, streamId)
+	if err != nil {
+		resp.Diagnostics.AddError("Error reading stream after update", err.Error())
+		return
+	}
+
+	// Update plan with computed fields from API
+	plan.Id = fullStreamData.Id
+	plan.Name = fullStreamData.Name
+	plan.Network = fullStreamData.Network
+	plan.Dataset = fullStreamData.Dataset
+	plan.StartRange = fullStreamData.StartRange
+	plan.EndRange = fullStreamData.EndRange
+	plan.DatasetBatchSize = fullStreamData.DatasetBatchSize
+	plan.IncludeStreamMetadata = fullStreamData.IncludeStreamMetadata
+	plan.Destination = fullStreamData.Destination
+	plan.Status = fullStreamData.Status
+	plan.ElasticBatchEnabled = fullStreamData.ElasticBatchEnabled
+	plan.Region = fullStreamData.Region
+	plan.FilterFunction = fullStreamData.FilterFunction
+	plan.FixBlockReorgs = fullStreamData.FixBlockReorgs
+	plan.KeepDistanceFromTip = fullStreamData.KeepDistanceFromTip
+	plan.NotificationEmail = fullStreamData.NotificationEmail
+	plan.DestinationAttributes = fullStreamData.DestinationAttributes
 
 	// Save updated state
 	resp.State.Set(ctx, &plan)
