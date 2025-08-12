@@ -70,7 +70,7 @@ type StreamResourceModel struct {
 	Name                  types.String `tfsdk:"name"`
 	Network               types.String `tfsdk:"network"`
 	Dataset               types.String `tfsdk:"dataset"`
-	StartRange            types.Int64  `tfsdk:"start_range"`
+	StartRange            types.Int64 `tfsdk:"start_range"`
 	EndRange              types.Int64  `tfsdk:"end_range"`
 	DatasetBatchSize      types.Int64  `tfsdk:"dataset_batch_size"`
 	IncludeStreamMetadata types.String `tfsdk:"include_stream_metadata"`
@@ -83,6 +83,47 @@ type StreamResourceModel struct {
 	NotificationEmail     types.String `tfsdk:"notification_email"`
 	DestinationAttributes types.Object `tfsdk:"destination_attributes"`
 	FilterFunction        types.String `tfsdk:"filter_function"`
+}
+
+// OptionalFields represents optional fields that can be null or have values.
+type OptionalFields struct {
+	EndRange            *float32
+	FixBlockReorgs      *float32
+	KeepDistanceFromTip *float32
+	NotificationEmail   *string
+	FilterFunction      *string
+}
+
+// prepareOptionalFields extracts optional fields from StreamResourceModel and converts them to appropriate types.
+func (r *StreamResource) prepareOptionalFields(data StreamResourceModel) OptionalFields {
+	fields := OptionalFields{}
+	
+	if !data.EndRange.IsNull() {
+		val := float32(data.EndRange.ValueInt64())
+		fields.EndRange = &val
+	}
+	
+	if !data.FixBlockReorgs.IsNull() {
+		val := float32(data.FixBlockReorgs.ValueInt64())
+		fields.FixBlockReorgs = &val
+	}
+	
+	if !data.KeepDistanceFromTip.IsNull() {
+		val := float32(data.KeepDistanceFromTip.ValueInt64())
+		fields.KeepDistanceFromTip = &val
+	}
+	
+	if !data.NotificationEmail.IsNull() {
+		val := data.NotificationEmail.ValueString()
+		fields.NotificationEmail = &val
+	}
+	
+	if !data.FilterFunction.IsNull() {
+		val := data.FilterFunction.ValueString()
+		fields.FilterFunction = &val
+	}
+	
+	return fields
 }
 
 func NewStreamResource() resource.Resource {
@@ -548,6 +589,9 @@ func (r *StreamResource) readStreamFromAPI(ctx context.Context, streamID string)
 		data.Dataset = types.StringValue(dataset)
 	}
 	if startRange, ok := result["start_range"].(float64); ok {
+		tflog.Info(ctx, "Reading start_range from API", map[string]interface{}{
+			"raw_value": startRange,
+		})
 		data.StartRange = types.Int64Value(int64(startRange))
 	}
 	if endRange, ok := result["end_range"].(float64); ok {
@@ -576,16 +620,36 @@ func (r *StreamResource) readStreamFromAPI(ctx context.Context, streamID string)
 		data.Region = types.StringValue(region)
 	}
 	if filterFunction, ok := result["filter_function"].(string); ok {
-		data.FilterFunction = types.StringValue(filterFunction)
+		// Treat empty filter_function as null
+		if filterFunction == "" {
+			data.FilterFunction = types.StringNull()
+		} else {
+			data.FilterFunction = types.StringValue(filterFunction)
+		}
 	}
 	if fixBlockReorgs, ok := result["fix_block_reorgs"].(float64); ok {
-		data.FixBlockReorgs = types.Int64Value(int64(fixBlockReorgs))
+		// Treat 0 as null for optional fields
+		if fixBlockReorgs == 0 {
+			data.FixBlockReorgs = types.Int64Null()
+		} else {
+			data.FixBlockReorgs = types.Int64Value(int64(fixBlockReorgs))
+		}
 	}
 	if keepDistanceFromTip, ok := result["keep_distance_from_tip"].(float64); ok {
-		data.KeepDistanceFromTip = types.Int64Value(int64(keepDistanceFromTip))
+		// Treat 0 as null for optional fields
+		if keepDistanceFromTip == 0 {
+			data.KeepDistanceFromTip = types.Int64Null()
+		} else {
+			data.KeepDistanceFromTip = types.Int64Value(int64(keepDistanceFromTip))
+		}
 	}
 	if notificationEmail, ok := result["notification_email"].(string); ok {
-		data.NotificationEmail = types.StringValue(notificationEmail)
+		// Treat empty string as null for optional fields
+		if notificationEmail == "" {
+			data.NotificationEmail = types.StringNull()
+		} else {
+			data.NotificationEmail = types.StringValue(notificationEmail)
+		}
 	}
 
 	// Update destination_attributes
@@ -613,35 +677,19 @@ func (r *StreamResource) Create(ctx context.Context, req resource.CreateRequest,
 	startRange := float32(data.StartRange.ValueInt64())
 	startRangePtr := &startRange
 
-	var endRange *float32
-	if !data.EndRange.IsNull() {
-		val := float32(data.EndRange.ValueInt64())
-		endRange = &val
-	}
-
-	var fixBlockReorgs *float32
-	if !data.FixBlockReorgs.IsNull() {
-		val := float32(data.FixBlockReorgs.ValueInt64())
-		fixBlockReorgs = &val
-	}
-
-	var keepDistanceFromTip *float32
-	if !data.KeepDistanceFromTip.IsNull() {
-		val := float32(data.KeepDistanceFromTip.ValueInt64())
-		keepDistanceFromTip = &val
-	}
-
+	// Prepare optional fields using helper function
+	optionalFields := r.prepareOptionalFields(data)
+	endRange := optionalFields.EndRange
+	fixBlockReorgs := optionalFields.FixBlockReorgs
+	keepDistanceFromTip := optionalFields.KeepDistanceFromTip
+	notificationEmail := optionalFields.NotificationEmail
+	
+	// Handle filter_function separately as it's a string, not pointer
 	var filterFunction string
 	if !data.FilterFunction.IsNull() {
 		filterFunction = data.FilterFunction.ValueString()
 	} else {
 		filterFunction = ""
-	}
-
-	var notificationEmail *string
-	if !data.NotificationEmail.IsNull() {
-		val := data.NotificationEmail.ValueString()
-		notificationEmail = &val
 	}
 
 	// Convert destination_attributes to appropriate type based on destination
@@ -946,36 +994,18 @@ func (r *StreamResource) Update(ctx context.Context, req resource.UpdateRequest,
 	destination := streams.UpdateStreamDtoDestination(plan.Destination.ValueString())
 	status := streams.UpdateStreamDtoStatus(plan.Status.ValueString())
 
-	// Handle optional filter_function
+	// Prepare optional fields using helper function
+	optionalFields := r.prepareOptionalFields(plan)
+	endRange := optionalFields.EndRange
+	fixBlockReorgs := optionalFields.FixBlockReorgs
+	keepDistanceFromTip := optionalFields.KeepDistanceFromTip
+	notificationEmail := optionalFields.NotificationEmail
+	
+	// Handle filter_function separately as it's a string pointer
 	var filterFunction *string
 	if !plan.FilterFunction.IsNull() {
 		val := plan.FilterFunction.ValueString()
 		filterFunction = &val
-	}
-
-	// Handle optional fields as pointers
-	var endRange *float32
-	if !plan.EndRange.IsNull() {
-		val := float32(plan.EndRange.ValueInt64())
-		endRange = &val
-	}
-
-	var fixBlockReorgs *float32
-	if !plan.FixBlockReorgs.IsNull() {
-		val := float32(plan.FixBlockReorgs.ValueInt64())
-		fixBlockReorgs = &val
-	}
-
-	var keepDistanceFromTip *float32
-	if !plan.KeepDistanceFromTip.IsNull() {
-		val := float32(plan.KeepDistanceFromTip.ValueInt64())
-		keepDistanceFromTip = &val
-	}
-
-	var notificationEmail *string
-	if !plan.NotificationEmail.IsNull() {
-		val := plan.NotificationEmail.ValueString()
-		notificationEmail = &val
 	}
 
 	// Handle destination_attributes (optional)
