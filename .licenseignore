@@ -1,0 +1,4 @@
+# HashiCorp Terraform packages to ignore in license scanning
+pkg:golang/github.com/hashicorp/terraform-plugin-framework@v1.15.0
+pkg:golang/github.com/hashicorp/terraform-plugin-go@v0.27.0
+pkg:golang/github.com/hashicorp/terraform-registry-address@v0.2.5 
