@@ -100,10 +100,6 @@ func TestAccMinimalQuicknodeStreamResource(t *testing.T) {
 	})
 }
 
-
-
-
-
 func testAccQuickNodeStreamResource(name string, destination string) string {
 	return providerConfig + fmt.Sprintf(`
 resource "quicknode_stream" "main" {
