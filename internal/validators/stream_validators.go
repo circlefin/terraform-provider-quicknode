@@ -114,35 +114,6 @@ func (v Int64RangeValidator) ValidateInt64(ctx context.Context, req validator.In
 	}
 }
 
-type Float64RangeValidator struct {
-	min float64
-	max float64
-}
-
-func (v Float64RangeValidator) Description(ctx context.Context) string {
-	return fmt.Sprintf("value must be between %f and %f", v.min, v.max)
-}
-
-func (v Float64RangeValidator) MarkdownDescription(ctx context.Context) string {
-	return fmt.Sprintf("value must be between %f and %f", v.min, v.max)
-}
-
-func (v Float64RangeValidator) ValidateFloat64(ctx context.Context, req validator.Float64Request, resp *validator.Float64Response) {
-	if req.ConfigValue.IsNull() || req.ConfigValue.IsUnknown() {
-		return
-	}
-
-	value := req.ConfigValue.ValueFloat64()
-
-	if value < v.min || value > v.max {
-		resp.Diagnostics.AddAttributeError(
-			req.Path,
-			"Invalid value",
-			fmt.Sprintf("Expected value to be between %f and %f, got: %f", v.min, v.max, value),
-		)
-	}
-}
-
 var (
 	NetworkValidator = StringOneOfValidator{
 		values: []string{
