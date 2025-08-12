@@ -70,7 +70,7 @@ type StreamResourceModel struct {
 	Name                  types.String `tfsdk:"name"`
 	Network               types.String `tfsdk:"network"`
 	Dataset               types.String `tfsdk:"dataset"`
-	StartRange            types.Int64  `tfsdk:"start_range"`
+	StartRange            types.Int64 `tfsdk:"start_range"`
 	EndRange              types.Int64  `tfsdk:"end_range"`
 	DatasetBatchSize      types.Int64  `tfsdk:"dataset_batch_size"`
 	IncludeStreamMetadata types.String `tfsdk:"include_stream_metadata"`
@@ -95,34 +95,34 @@ type OptionalFields struct {
 }
 
 // prepareOptionalFields extracts optional fields from StreamResourceModel and converts them to appropriate types.
-func (r *StreamResource) prepareOptionalFields(data StreamResourceModel) OptionalFields {
+func prepareOptionalFields(data StreamResourceModel) OptionalFields {
 	fields := OptionalFields{}
-
+	
 	if !data.EndRange.IsNull() {
 		val := float32(data.EndRange.ValueInt64())
 		fields.EndRange = &val
 	}
-
+	
 	if !data.FixBlockReorgs.IsNull() {
 		val := float32(data.FixBlockReorgs.ValueInt64())
 		fields.FixBlockReorgs = &val
 	}
-
+	
 	if !data.KeepDistanceFromTip.IsNull() {
 		val := float32(data.KeepDistanceFromTip.ValueInt64())
 		fields.KeepDistanceFromTip = &val
 	}
-
+	
 	if !data.NotificationEmail.IsNull() {
 		val := data.NotificationEmail.ValueString()
 		fields.NotificationEmail = &val
 	}
-
+	
 	if !data.FilterFunction.IsNull() {
 		val := data.FilterFunction.ValueString()
 		fields.FilterFunction = &val
 	}
-
+	
 	return fields
 }
 
@@ -654,7 +654,7 @@ func (r *StreamResource) readStreamFromAPI(ctx context.Context, streamID string)
 
 	// Update destination_attributes
 	if destAttrs, ok := result["destination_attributes"].(map[string]interface{}); ok {
-		obj, err := r.updateDestinationAttributesFromAPI(destAttrs)
+		obj, err := updateDestinationAttributesFromAPI(destAttrs)
 		if err != nil {
 			return nil, fmt.Errorf("error updating destination_attributes: %w", err)
 		}
@@ -678,12 +678,8 @@ func (r *StreamResource) Create(ctx context.Context, req resource.CreateRequest,
 	startRangePtr := &startRange
 
 	// Prepare optional fields using helper function
-	optionalFields := r.prepareOptionalFields(data)
-	endRange := optionalFields.EndRange
-	fixBlockReorgs := optionalFields.FixBlockReorgs
-	keepDistanceFromTip := optionalFields.KeepDistanceFromTip
-	notificationEmail := optionalFields.NotificationEmail
-
+	optionalFields := prepareOptionalFields(data)
+	
 	// Handle filter_function separately as it's a string, not pointer
 	var filterFunction string
 	if !data.FilterFunction.IsNull() {
@@ -693,7 +689,7 @@ func (r *StreamResource) Create(ctx context.Context, req resource.CreateRequest,
 	}
 
 	// Convert destination_attributes to appropriate type based on destination
-	destAttrs, err := r.convertDestinationAttributes(data.DestinationAttributes)
+	destAttrs, err := convertDestinationAttributes(data.DestinationAttributes)
 	if err != nil {
 		resp.Diagnostics.AddError("Error converting destination_attributes", err.Error())
 		return
@@ -754,10 +750,10 @@ func (r *StreamResource) Create(ctx context.Context, req resource.CreateRequest,
 		FilterFunction:        filterFunction,
 		DestinationAttributes: destAttrsUnion,
 		Region:                streams.CreateStreamDtoRegion(data.Region.ValueString()),
-		NotificationEmail:     notificationEmail,
-		EndRange:              endRange,
-		FixBlockReorgs:        fixBlockReorgs,
-		KeepDistanceFromTip:   keepDistanceFromTip,
+		NotificationEmail:     optionalFields.NotificationEmail,
+		EndRange:              optionalFields.EndRange,
+		FixBlockReorgs:        optionalFields.FixBlockReorgs,
+		KeepDistanceFromTip:   optionalFields.KeepDistanceFromTip,
 	})
 
 	if err != nil {
@@ -995,12 +991,8 @@ func (r *StreamResource) Update(ctx context.Context, req resource.UpdateRequest,
 	status := streams.UpdateStreamDtoStatus(plan.Status.ValueString())
 
 	// Prepare optional fields using helper function
-	optionalFields := r.prepareOptionalFields(plan)
-	endRange := optionalFields.EndRange
-	fixBlockReorgs := optionalFields.FixBlockReorgs
-	keepDistanceFromTip := optionalFields.KeepDistanceFromTip
-	notificationEmail := optionalFields.NotificationEmail
-
+	optionalFields := prepareOptionalFields(plan)
+	
 	// Handle filter_function separately as it's a string pointer
 	var filterFunction *string
 	if !plan.FilterFunction.IsNull() {
@@ -1011,7 +1003,7 @@ func (r *StreamResource) Update(ctx context.Context, req resource.UpdateRequest,
 	// Handle destination_attributes (optional)
 	var destAttrsUnion *streams.UpdateStreamDto_DestinationAttributes
 	if !plan.DestinationAttributes.IsNull() {
-		destAttrs, err := r.convertDestinationAttributes(plan.DestinationAttributes)
+		destAttrs, err := convertDestinationAttributes(plan.DestinationAttributes)
 		if err != nil {
 			resp.Diagnostics.AddError("Error converting destination_attributes", err.Error())
 			return
@@ -1071,16 +1063,16 @@ func (r *StreamResource) Update(ctx context.Context, req resource.UpdateRequest,
 	updateResp, err := r.client.UpdateWithResponse(ctx, streamId, streams.UpdateJSONRequestBody{
 		Name:                  &name,
 		StartRange:            &startRange,
-		EndRange:              endRange,
+		EndRange:              optionalFields.EndRange,
 		DatasetBatchSize:      &datasetBatchSize,
 		IncludeStreamMetadata: &includeStreamMetadata,
 		Destination:           &destination,
 		ElasticBatchEnabled:   &elasticBatchEnabled,
 		Status:                &status,
 		FilterFunction:        filterFunction,
-		FixBlockReorgs:        fixBlockReorgs,
-		KeepDistanceFromTip:   keepDistanceFromTip,
-		NotificationEmail:     notificationEmail,
+		FixBlockReorgs:        optionalFields.FixBlockReorgs,
+		KeepDistanceFromTip:   optionalFields.KeepDistanceFromTip,
+		NotificationEmail:     optionalFields.NotificationEmail,
 		DestinationAttributes: destAttrsUnion,
 	})
 
@@ -1189,7 +1181,7 @@ func (r *StreamResource) ImportState(ctx context.Context, req resource.ImportSta
 }
 
 // updateDestinationAttributesFromAPI converts destination_attributes from API to Terraform format.
-func (r *StreamResource) updateDestinationAttributesFromAPI(destAttrs map[string]interface{}) (types.Object, error) {
+func updateDestinationAttributesFromAPI(destAttrs map[string]interface{}) (types.Object, error) {
 	attrs := make(map[string]attr.Value)
 
 	// Initialize all required fields with null values
@@ -1285,7 +1277,7 @@ func (r *StreamResource) updateDestinationAttributesFromAPI(destAttrs map[string
 }
 
 // convertDestinationAttributes converts destination_attributes from Terraform to API format.
-func (r *StreamResource) convertDestinationAttributes(attrs types.Object) (map[string]interface{}, error) {
+func convertDestinationAttributes(attrs types.Object) (map[string]interface{}, error) {
 	destAttrs := make(map[string]interface{})
 	attributes := attrs.Attributes()
 
