@@ -70,7 +70,7 @@ type StreamResourceModel struct {
 	Name                  types.String `tfsdk:"name"`
 	Network               types.String `tfsdk:"network"`
 	Dataset               types.String `tfsdk:"dataset"`
-	StartRange            types.Int64 `tfsdk:"start_range"`
+	StartRange            types.Int64  `tfsdk:"start_range"`
 	EndRange              types.Int64  `tfsdk:"end_range"`
 	DatasetBatchSize      types.Int64  `tfsdk:"dataset_batch_size"`
 	IncludeStreamMetadata types.String `tfsdk:"include_stream_metadata"`
@@ -97,32 +97,32 @@ type OptionalFields struct {
 // prepareOptionalFields extracts optional fields from StreamResourceModel and converts them to appropriate types.
 func prepareOptionalFields(data StreamResourceModel) OptionalFields {
 	fields := OptionalFields{}
-	
+
 	if !data.EndRange.IsNull() {
 		val := float32(data.EndRange.ValueInt64())
 		fields.EndRange = &val
 	}
-	
+
 	if !data.FixBlockReorgs.IsNull() {
 		val := float32(data.FixBlockReorgs.ValueInt64())
 		fields.FixBlockReorgs = &val
 	}
-	
+
 	if !data.KeepDistanceFromTip.IsNull() {
 		val := float32(data.KeepDistanceFromTip.ValueInt64())
 		fields.KeepDistanceFromTip = &val
 	}
-	
+
 	if !data.NotificationEmail.IsNull() {
 		val := data.NotificationEmail.ValueString()
 		fields.NotificationEmail = &val
 	}
-	
+
 	if !data.FilterFunction.IsNull() {
 		val := data.FilterFunction.ValueString()
 		fields.FilterFunction = &val
 	}
-	
+
 	return fields
 }
 
@@ -679,7 +679,7 @@ func (r *StreamResource) Create(ctx context.Context, req resource.CreateRequest,
 
 	// Prepare optional fields using helper function
 	optionalFields := prepareOptionalFields(data)
-	
+
 	// Handle filter_function separately as it's a string, not pointer
 	var filterFunction string
 	if !data.FilterFunction.IsNull() {
@@ -992,7 +992,7 @@ func (r *StreamResource) Update(ctx context.Context, req resource.UpdateRequest,
 
 	// Prepare optional fields using helper function
 	optionalFields := prepareOptionalFields(plan)
-	
+
 	// Handle filter_function separately as it's a string pointer
 	var filterFunction *string
 	if !plan.FilterFunction.IsNull() {
