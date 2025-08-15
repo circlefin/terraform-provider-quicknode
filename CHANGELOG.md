@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.6.0](https://github.com/circlefin/terraform-provider-quicknode/compare/v0.5.4...v0.6.0) (2025-08-15)
+
+
+### Features
+
+* add stream resource  ([#25](https://github.com/circlefin/terraform-provider-quicknode/issues/25)) ([a298965](https://github.com/circlefin/terraform-provider-quicknode/commit/a2989659d5dceba35bd6dce6f5648badb172485c))
+
+
+### Bug Fixes
+
+* add release actor gpg key fingerprint ([#36](https://github.com/circlefin/terraform-provider-quicknode/issues/36)) ([c1749a7](https://github.com/circlefin/terraform-provider-quicknode/commit/c1749a7d337228ad701e7e759e5e2b4226970ec5))
+
+
+### Miscellaneous Chores
+
+* optional fields & code deduplication ([#29](https://github.com/circlefin/terraform-provider-quicknode/issues/29)) ([8dd64d3](https://github.com/circlefin/terraform-provider-quicknode/commit/8dd64d3c7ddbc841c05f381c0c323e738a91e744))
+
 ## [0.5.4](https://github.com/circlefin/terraform-provider-quicknode/compare/v0.5.3...v0.5.4) (2025-02-24)
 
 
