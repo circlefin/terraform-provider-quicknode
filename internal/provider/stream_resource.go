@@ -676,8 +676,8 @@ func (r *StreamResource) Create(ctx context.Context, req resource.CreateRequest,
 
 	// Prepare data for API
 	datasetBatchSize := float32(data.DatasetBatchSize.ValueInt64())
-	startRangeInt64 := data.StartRange.ValueInt64()
-	startRangePtr := &startRangeInt64
+	startRange := data.StartRange.ValueInt64()
+	startRangePtr := &startRange
 
 	// Prepare optional fields using helper function
 	optionalFields := prepareOptionalFields(data)
@@ -985,7 +985,7 @@ func (r *StreamResource) Update(ctx context.Context, req resource.UpdateRequest,
 
 	// Prepare required fields as pointers
 	name := plan.Name.ValueString()
-	startRangeInt64 := plan.StartRange.ValueInt64()
+	startRange := plan.StartRange.ValueInt64()
 	datasetBatchSize := float32(plan.DatasetBatchSize.ValueInt64())
 	elasticBatchEnabled := plan.ElasticBatchEnabled.ValueBool()
 	includeStreamMetadata := streams.UpdateStreamDtoIncludeStreamMetadata(plan.IncludeStreamMetadata.ValueString())
@@ -1064,7 +1064,7 @@ func (r *StreamResource) Update(ctx context.Context, req resource.UpdateRequest,
 
 	updateResp, err := r.client.UpdateWithResponse(ctx, streamId, streams.UpdateJSONRequestBody{
 		Name:                  &name,
-		StartRange:            &startRangeInt64,
+		StartRange:            &startRange,
 		EndRange:              optionalFields.EndRange,
 		DatasetBatchSize:      &datasetBatchSize,
 		IncludeStreamMetadata: &includeStreamMetadata,
