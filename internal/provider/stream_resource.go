@@ -592,9 +592,7 @@ func (r *StreamResource) readStreamFromAPI(ctx context.Context, streamID string)
 		tflog.Info(ctx, "Reading start_range from API", map[string]interface{}{
 			"raw_value": startRange,
 		})
-		// Convert float64 to int64
-		startRangeInt64 := int64(startRange)
-		data.StartRange = types.Int64Value(startRangeInt64)
+		data.StartRange = types.Int64Value(int64(startRange))
 	}
 	if endRange, ok := result["end_range"].(float64); ok {
 		if endRange == -1 {
