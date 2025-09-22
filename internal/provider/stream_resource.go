@@ -87,7 +87,7 @@ type StreamResourceModel struct {
 
 // OptionalFields represents optional fields that can be null or have values.
 type OptionalFields struct {
-	EndRange            *float32
+	EndRange            *int64
 	FixBlockReorgs      *float32
 	KeepDistanceFromTip *float32
 	NotificationEmail   *string
@@ -99,7 +99,7 @@ func prepareOptionalFields(data StreamResourceModel) OptionalFields {
 	fields := OptionalFields{}
 
 	if !data.EndRange.IsNull() {
-		val := float32(data.EndRange.ValueInt64())
+		val := data.EndRange.ValueInt64()
 		fields.EndRange = &val
 	}
 
@@ -592,7 +592,7 @@ func (r *StreamResource) readStreamFromAPI(ctx context.Context, streamID string)
 		tflog.Info(ctx, "Reading start_range from API", map[string]interface{}{
 			"raw_value": startRange,
 		})
-		// Convert float64 to int64, handling precision issues
+		// Convert float64 to int64
 		startRangeInt64 := int64(startRange)
 		data.StartRange = types.Int64Value(startRangeInt64)
 	}
@@ -622,22 +622,12 @@ func (r *StreamResource) readStreamFromAPI(ctx context.Context, streamID string)
 		data.Region = types.StringValue(region)
 	}
 	if filterFunction, ok := result["filter_function"].(string); ok {
-		tflog.Info(ctx, "Processing filter_function from API", map[string]interface{}{
-			"filter_function_value": filterFunction,
-			"filter_function_type":  fmt.Sprintf("%T", filterFunction),
-			"is_empty":              filterFunction == "",
-		})
 		// Treat empty filter_function as null
 		if filterFunction == "" {
 			data.FilterFunction = types.StringNull()
 		} else {
 			data.FilterFunction = types.StringValue(filterFunction)
 		}
-	} else {
-		tflog.Info(ctx, "filter_function not found in API response or not a string", map[string]interface{}{
-			"filter_function_type":  fmt.Sprintf("%T", result["filter_function"]),
-			"filter_function_value": result["filter_function"],
-		})
 	}
 	if fixBlockReorgs, ok := result["fix_block_reorgs"].(float64); ok {
 		// Treat 0 as null for optional fields
@@ -996,7 +986,6 @@ func (r *StreamResource) Update(ctx context.Context, req resource.UpdateRequest,
 	// Prepare required fields as pointers
 	name := plan.Name.ValueString()
 	startRangeInt64 := plan.StartRange.ValueInt64()
-	startRangePtr := &startRangeInt64
 	datasetBatchSize := float32(plan.DatasetBatchSize.ValueInt64())
 	elasticBatchEnabled := plan.ElasticBatchEnabled.ValueBool()
 	includeStreamMetadata := streams.UpdateStreamDtoIncludeStreamMetadata(plan.IncludeStreamMetadata.ValueString())
@@ -1075,7 +1064,7 @@ func (r *StreamResource) Update(ctx context.Context, req resource.UpdateRequest,
 
 	updateResp, err := r.client.UpdateWithResponse(ctx, streamId, streams.UpdateJSONRequestBody{
 		Name:                  &name,
-		StartRange:            startRangePtr,
+		StartRange:            &startRangeInt64,
 		EndRange:              optionalFields.EndRange,
 		DatasetBatchSize:      &datasetBatchSize,
 		IncludeStreamMetadata: &includeStreamMetadata,

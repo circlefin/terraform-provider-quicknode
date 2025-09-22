@@ -334,7 +334,7 @@ type CreateStreamDto struct {
 	ElasticBatchEnabled   bool                                  `json:"elastic_batch_enabled"`
 
 	// EndRange Stream until block number
-	EndRange *float32 `json:"end_range,omitempty"`
+	EndRange *int64 `json:"end_range,omitempty"`
 
 	// FilterFunction JS/ECMAScript compliant filter encoded in base64
 	FilterFunction string `json:"filter_function"`
@@ -449,7 +449,7 @@ type UpdateStreamDto struct {
 	ElasticBatchEnabled   *bool                                  `json:"elastic_batch_enabled,omitempty"`
 
 	// EndRange Stream until block number
-	EndRange *float32 `json:"end_range,omitempty"`
+	EndRange *int64 `json:"end_range,omitempty"`
 
 	// FilterFunction JS/ECMAScript compliant filter encoded in base64
 	FilterFunction *string `json:"filter_function,omitempty"`
