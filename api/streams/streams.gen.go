@@ -353,7 +353,7 @@ type CreateStreamDto struct {
 	Region            CreateStreamDtoRegion `json:"region"`
 
 	// StartRange Stream start at block number. If not provided, the stream will start at the latest block.
-	StartRange *float32              `json:"start_range,omitempty"`
+	StartRange *int64                `json:"start_range,omitempty"`
 	Status     CreateStreamDtoStatus `json:"status"`
 }
 
@@ -466,7 +466,7 @@ type UpdateStreamDto struct {
 	NotificationEmail *string `json:"notification_email,omitempty"`
 
 	// StartRange Stream start at block number. If not provided, the stream will start at the latest block.
-	StartRange *float32               `json:"start_range,omitempty"`
+	StartRange *int64                 `json:"start_range,omitempty"`
 	Status     *UpdateStreamDtoStatus `json:"status,omitempty"`
 }
 
