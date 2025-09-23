@@ -87,7 +87,7 @@ type StreamResourceModel struct {
 
 // OptionalFields represents optional fields that can be null or have values.
 type OptionalFields struct {
-	EndRange            *float32
+	EndRange            *int64
 	FixBlockReorgs      *float32
 	KeepDistanceFromTip *float32
 	NotificationEmail   *string
@@ -99,7 +99,7 @@ func prepareOptionalFields(data StreamResourceModel) OptionalFields {
 	fields := OptionalFields{}
 
 	if !data.EndRange.IsNull() {
-		val := float32(data.EndRange.ValueInt64())
+		val := data.EndRange.ValueInt64()
 		fields.EndRange = &val
 	}
 
@@ -674,7 +674,7 @@ func (r *StreamResource) Create(ctx context.Context, req resource.CreateRequest,
 
 	// Prepare data for API
 	datasetBatchSize := float32(data.DatasetBatchSize.ValueInt64())
-	startRange := float32(data.StartRange.ValueInt64())
+	startRange := data.StartRange.ValueInt64()
 	startRangePtr := &startRange
 
 	// Prepare optional fields using helper function
@@ -983,7 +983,7 @@ func (r *StreamResource) Update(ctx context.Context, req resource.UpdateRequest,
 
 	// Prepare required fields as pointers
 	name := plan.Name.ValueString()
-	startRange := float32(plan.StartRange.ValueInt64())
+	startRange := plan.StartRange.ValueInt64()
 	datasetBatchSize := float32(plan.DatasetBatchSize.ValueInt64())
 	elasticBatchEnabled := plan.ElasticBatchEnabled.ValueBool()
 	includeStreamMetadata := streams.UpdateStreamDtoIncludeStreamMetadata(plan.IncludeStreamMetadata.ValueString())
