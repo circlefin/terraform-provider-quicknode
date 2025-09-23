@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.1](https://github.com/circlefin/terraform-provider-quicknode/compare/v0.6.0...v0.6.1) (2025-09-23)
+
+
+### Bug Fixes
+
+* **techops-19980:** resolve float32 precision loss in stream start_range and end_range ([#39](https://github.com/circlefin/terraform-provider-quicknode/issues/39)) ([a6ae3c7](https://github.com/circlefin/terraform-provider-quicknode/commit/a6ae3c7274a66a84da52c2c396b88f4458f8d47c))
+
 ## [0.6.0](https://github.com/circlefin/terraform-provider-quicknode/compare/v0.5.4...v0.6.0) (2025-08-15)
 
 
