@@ -117,7 +117,7 @@ func (v Int64RangeValidator) ValidateInt64(ctx context.Context, req validator.In
 var (
 	NetworkValidator = StringOneOfValidator{
 		values: []string{
-			"abstract-mainnet", "abstract-testnet", "arbitrum-mainnet", "arbitrum-sepolia",
+			"abstract-mainnet", "abstract-testnet", "arbitrum-mainnet", "arbitrum-sepolia", "arc-testnet",
 			"avalanche-fuji", "avalanche-mainnet", "b3-mainnet", "b3-sepolia",
 			"base-mainnet", "base-sepolia", "bera-mainnet", "bera-bepolia",
 			"bitcoin-mainnet", "blast-mainnet", "blast-sepolia", "bnbchain-mainnet",

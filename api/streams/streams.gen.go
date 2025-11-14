@@ -195,6 +195,7 @@ const (
 	TestFilterFunctionDtoNetworkAbstractTestnet    TestFilterFunctionDtoNetwork = "abstract-testnet"
 	TestFilterFunctionDtoNetworkArbitrumMainnet    TestFilterFunctionDtoNetwork = "arbitrum-mainnet"
 	TestFilterFunctionDtoNetworkArbitrumSepolia    TestFilterFunctionDtoNetwork = "arbitrum-sepolia"
+	TestFilterFunctionDtoNetworkArcTestnet         TestFilterFunctionDtoNetwork = "arc-testnet"
 	TestFilterFunctionDtoNetworkAvalancheFuji      TestFilterFunctionDtoNetwork = "avalanche-fuji"
 	TestFilterFunctionDtoNetworkAvalancheMainnet   TestFilterFunctionDtoNetwork = "avalanche-mainnet"
 	TestFilterFunctionDtoNetworkB3Mainnet          TestFilterFunctionDtoNetwork = "b3-mainnet"
