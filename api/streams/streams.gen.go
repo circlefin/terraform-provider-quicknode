@@ -20,6 +20,12 @@ const (
 	X_api_keyScopes = "x_api_key.Scopes"
 )
 
+// Defines values for AzureAttributesFileType.
+const (
+	AzureAttributesFileTypeDotJson    AzureAttributesFileType = ".json"
+	AzureAttributesFileTypeDotParquet AzureAttributesFileType = ".parquet"
+)
+
 // Defines values for CreateStreamDtoDataset.
 const (
 	CreateStreamDtoDatasetBlock                       CreateStreamDtoDataset = "block"
@@ -37,6 +43,7 @@ const (
 
 // Defines values for CreateStreamDtoDestination.
 const (
+	CreateStreamDtoDestinationAzure    CreateStreamDtoDestination = "azure"
 	CreateStreamDtoDestinationFunction CreateStreamDtoDestination = "function"
 	CreateStreamDtoDestinationPostgres CreateStreamDtoDestination = "postgres"
 	CreateStreamDtoDestinationS3       CreateStreamDtoDestination = "s3"
@@ -52,99 +59,114 @@ const (
 
 // Defines values for CreateStreamDtoNetwork.
 const (
-	CreateStreamDtoNetworkAbstractMainnet    CreateStreamDtoNetwork = "abstract-mainnet"
-	CreateStreamDtoNetworkAbstractTestnet    CreateStreamDtoNetwork = "abstract-testnet"
-	CreateStreamDtoNetworkArbitrumMainnet    CreateStreamDtoNetwork = "arbitrum-mainnet"
-	CreateStreamDtoNetworkArbitrumSepolia    CreateStreamDtoNetwork = "arbitrum-sepolia"
-	CreateStreamDtoNetworkAvalancheFuji      CreateStreamDtoNetwork = "avalanche-fuji"
-	CreateStreamDtoNetworkAvalancheMainnet   CreateStreamDtoNetwork = "avalanche-mainnet"
-	CreateStreamDtoNetworkB3Mainnet          CreateStreamDtoNetwork = "b3-mainnet"
-	CreateStreamDtoNetworkB3Sepolia          CreateStreamDtoNetwork = "b3-sepolia"
-	CreateStreamDtoNetworkBaseMainnet        CreateStreamDtoNetwork = "base-mainnet"
-	CreateStreamDtoNetworkBaseSepolia        CreateStreamDtoNetwork = "base-sepolia"
-	CreateStreamDtoNetworkBeraBepolia        CreateStreamDtoNetwork = "bera-bepolia"
-	CreateStreamDtoNetworkBeraMainnet        CreateStreamDtoNetwork = "bera-mainnet"
-	CreateStreamDtoNetworkBitcoinMainnet     CreateStreamDtoNetwork = "bitcoin-mainnet"
-	CreateStreamDtoNetworkBlastMainnet       CreateStreamDtoNetwork = "blast-mainnet"
-	CreateStreamDtoNetworkBlastSepolia       CreateStreamDtoNetwork = "blast-sepolia"
-	CreateStreamDtoNetworkBnbchainMainnet    CreateStreamDtoNetwork = "bnbchain-mainnet"
-	CreateStreamDtoNetworkBnbchainTestnet    CreateStreamDtoNetwork = "bnbchain-testnet"
-	CreateStreamDtoNetworkCeloMainnet        CreateStreamDtoNetwork = "celo-mainnet"
-	CreateStreamDtoNetworkCyberMainnet       CreateStreamDtoNetwork = "cyber-mainnet"
-	CreateStreamDtoNetworkCyberSepolia       CreateStreamDtoNetwork = "cyber-sepolia"
-	CreateStreamDtoNetworkEthereumHolesky    CreateStreamDtoNetwork = "ethereum-holesky"
-	CreateStreamDtoNetworkEthereumHoodi      CreateStreamDtoNetwork = "ethereum-hoodi"
-	CreateStreamDtoNetworkEthereumMainnet    CreateStreamDtoNetwork = "ethereum-mainnet"
-	CreateStreamDtoNetworkEthereumSepolia    CreateStreamDtoNetwork = "ethereum-sepolia"
-	CreateStreamDtoNetworkFantomMainnet      CreateStreamDtoNetwork = "fantom-mainnet"
-	CreateStreamDtoNetworkFlowMainnet        CreateStreamDtoNetwork = "flow-mainnet"
-	CreateStreamDtoNetworkFlowTestnet        CreateStreamDtoNetwork = "flow-testnet"
-	CreateStreamDtoNetworkGnosisMainnet      CreateStreamDtoNetwork = "gnosis-mainnet"
-	CreateStreamDtoNetworkGravityAlpham      CreateStreamDtoNetwork = "gravity-alpham"
-	CreateStreamDtoNetworkHederaMainnet      CreateStreamDtoNetwork = "hedera-mainnet"
-	CreateStreamDtoNetworkHederaTestnet      CreateStreamDtoNetwork = "hedera-testnet"
-	CreateStreamDtoNetworkHemiMainnet        CreateStreamDtoNetwork = "hemi-mainnet"
-	CreateStreamDtoNetworkHemiTestnet        CreateStreamDtoNetwork = "hemi-testnet"
-	CreateStreamDtoNetworkHyperliquidMainnet CreateStreamDtoNetwork = "hyperliquid-mainnet"
-	CreateStreamDtoNetworkImxMainnet         CreateStreamDtoNetwork = "imx-mainnet"
-	CreateStreamDtoNetworkImxTestnet         CreateStreamDtoNetwork = "imx-testnet"
-	CreateStreamDtoNetworkInjectiveMainnet   CreateStreamDtoNetwork = "injective-mainnet"
-	CreateStreamDtoNetworkInjectiveTestnet   CreateStreamDtoNetwork = "injective-testnet"
-	CreateStreamDtoNetworkInkMainnet         CreateStreamDtoNetwork = "ink-mainnet"
-	CreateStreamDtoNetworkInkSepolia         CreateStreamDtoNetwork = "ink-sepolia"
-	CreateStreamDtoNetworkJocMainnet         CreateStreamDtoNetwork = "joc-mainnet"
-	CreateStreamDtoNetworkKaiaMainnet        CreateStreamDtoNetwork = "kaia-mainnet"
-	CreateStreamDtoNetworkKaiaTestnet        CreateStreamDtoNetwork = "kaia-testnet"
-	CreateStreamDtoNetworkLensMainnet        CreateStreamDtoNetwork = "lens-mainnet"
-	CreateStreamDtoNetworkLensTestnet        CreateStreamDtoNetwork = "lens-testnet"
-	CreateStreamDtoNetworkLineaMainnet       CreateStreamDtoNetwork = "linea-mainnet"
-	CreateStreamDtoNetworkMantleMainnet      CreateStreamDtoNetwork = "mantle-mainnet"
-	CreateStreamDtoNetworkMantleSepolia      CreateStreamDtoNetwork = "mantle-sepolia"
-	CreateStreamDtoNetworkMonadTestnet       CreateStreamDtoNetwork = "monad-testnet"
-	CreateStreamDtoNetworkMorphHolesky       CreateStreamDtoNetwork = "morph-holesky"
-	CreateStreamDtoNetworkMorphMainnet       CreateStreamDtoNetwork = "morph-mainnet"
-	CreateStreamDtoNetworkNovaMainnet        CreateStreamDtoNetwork = "nova-mainnet"
-	CreateStreamDtoNetworkOmniMainnet        CreateStreamDtoNetwork = "omni-mainnet"
-	CreateStreamDtoNetworkOmniOmega          CreateStreamDtoNetwork = "omni-omega"
-	CreateStreamDtoNetworkOptimismMainnet    CreateStreamDtoNetwork = "optimism-mainnet"
-	CreateStreamDtoNetworkOptimismSepolia    CreateStreamDtoNetwork = "optimism-sepolia"
-	CreateStreamDtoNetworkPeaqMainnet        CreateStreamDtoNetwork = "peaq-mainnet"
-	CreateStreamDtoNetworkPlasmaTestnet      CreateStreamDtoNetwork = "plasma-testnet"
-	CreateStreamDtoNetworkPolygonAmoy        CreateStreamDtoNetwork = "polygon-amoy"
-	CreateStreamDtoNetworkPolygonMainnet     CreateStreamDtoNetwork = "polygon-mainnet"
-	CreateStreamDtoNetworkRaceMainnet        CreateStreamDtoNetwork = "race-mainnet"
-	CreateStreamDtoNetworkRaceTestnet        CreateStreamDtoNetwork = "race-testnet"
-	CreateStreamDtoNetworkSaharaTestnet      CreateStreamDtoNetwork = "sahara-testnet"
-	CreateStreamDtoNetworkScrollMainnet      CreateStreamDtoNetwork = "scroll-mainnet"
-	CreateStreamDtoNetworkScrollTestnet      CreateStreamDtoNetwork = "scroll-testnet"
-	CreateStreamDtoNetworkSeiMainnet         CreateStreamDtoNetwork = "sei-mainnet"
-	CreateStreamDtoNetworkSeiTestnet         CreateStreamDtoNetwork = "sei-testnet"
-	CreateStreamDtoNetworkSolanaDevnet       CreateStreamDtoNetwork = "solana-devnet"
-	CreateStreamDtoNetworkSolanaMainnet      CreateStreamDtoNetwork = "solana-mainnet"
-	CreateStreamDtoNetworkSolanaTestnet      CreateStreamDtoNetwork = "solana-testnet"
-	CreateStreamDtoNetworkSoneiumMainnet     CreateStreamDtoNetwork = "soneium-mainnet"
-	CreateStreamDtoNetworkSonicMainnet       CreateStreamDtoNetwork = "sonic-mainnet"
-	CreateStreamDtoNetworkSophonMainnet      CreateStreamDtoNetwork = "sophon-mainnet"
-	CreateStreamDtoNetworkSophonTestnet      CreateStreamDtoNetwork = "sophon-testnet"
-	CreateStreamDtoNetworkStoryAeneid        CreateStreamDtoNetwork = "story-aeneid"
-	CreateStreamDtoNetworkStoryMainnet       CreateStreamDtoNetwork = "story-mainnet"
-	CreateStreamDtoNetworkTronMainnet        CreateStreamDtoNetwork = "tron-mainnet"
-	CreateStreamDtoNetworkUnichainMainnet    CreateStreamDtoNetwork = "unichain-mainnet"
-	CreateStreamDtoNetworkUnichainSepolia    CreateStreamDtoNetwork = "unichain-sepolia"
-	CreateStreamDtoNetworkVanaMainnet        CreateStreamDtoNetwork = "vana-mainnet"
-	CreateStreamDtoNetworkVanaMoksha         CreateStreamDtoNetwork = "vana-moksha"
-	CreateStreamDtoNetworkWorldchainMainnet  CreateStreamDtoNetwork = "worldchain-mainnet"
-	CreateStreamDtoNetworkWorldchainSepolia  CreateStreamDtoNetwork = "worldchain-sepolia"
-	CreateStreamDtoNetworkXaiMainnet         CreateStreamDtoNetwork = "xai-mainnet"
-	CreateStreamDtoNetworkXaiSepolia         CreateStreamDtoNetwork = "xai-sepolia"
-	CreateStreamDtoNetworkXrpMainnet         CreateStreamDtoNetwork = "xrp-mainnet"
-	CreateStreamDtoNetworkXrpTestnet         CreateStreamDtoNetwork = "xrp-testnet"
-	CreateStreamDtoNetworkZerogGalileo       CreateStreamDtoNetwork = "zerog-galileo"
-	CreateStreamDtoNetworkZkevmCardona       CreateStreamDtoNetwork = "zkevm-cardona"
-	CreateStreamDtoNetworkZkevmMainnet       CreateStreamDtoNetwork = "zkevm-mainnet"
-	CreateStreamDtoNetworkZksyncMainnet      CreateStreamDtoNetwork = "zksync-mainnet"
-	CreateStreamDtoNetworkZksyncSepolia      CreateStreamDtoNetwork = "zksync-sepolia"
-	CreateStreamDtoNetworkZoraMainnet        CreateStreamDtoNetwork = "zora-mainnet"
+	CreateStreamDtoNetworkAbstractMainnet   CreateStreamDtoNetwork = "abstract-mainnet"
+	CreateStreamDtoNetworkAbstractTestnet   CreateStreamDtoNetwork = "abstract-testnet"
+	CreateStreamDtoNetworkArbitrumMainnet   CreateStreamDtoNetwork = "arbitrum-mainnet"
+	CreateStreamDtoNetworkArbitrumSepolia   CreateStreamDtoNetwork = "arbitrum-sepolia"
+	CreateStreamDtoNetworkArcTestnet        CreateStreamDtoNetwork = "arc-testnet"
+	CreateStreamDtoNetworkAvalancheFuji     CreateStreamDtoNetwork = "avalanche-fuji"
+	CreateStreamDtoNetworkAvalancheMainnet  CreateStreamDtoNetwork = "avalanche-mainnet"
+	CreateStreamDtoNetworkB3Mainnet         CreateStreamDtoNetwork = "b3-mainnet"
+	CreateStreamDtoNetworkB3Sepolia         CreateStreamDtoNetwork = "b3-sepolia"
+	CreateStreamDtoNetworkBaseMainnet       CreateStreamDtoNetwork = "base-mainnet"
+	CreateStreamDtoNetworkBaseSepolia       CreateStreamDtoNetwork = "base-sepolia"
+	CreateStreamDtoNetworkBchMainnet        CreateStreamDtoNetwork = "bch-mainnet"
+	CreateStreamDtoNetworkBchTestnet        CreateStreamDtoNetwork = "bch-testnet"
+	CreateStreamDtoNetworkBeraBepolia       CreateStreamDtoNetwork = "bera-bepolia"
+	CreateStreamDtoNetworkBeraMainnet       CreateStreamDtoNetwork = "bera-mainnet"
+	CreateStreamDtoNetworkBitcoinMainnet    CreateStreamDtoNetwork = "bitcoin-mainnet"
+	CreateStreamDtoNetworkBitcoinTestnet4   CreateStreamDtoNetwork = "bitcoin-testnet4"
+	CreateStreamDtoNetworkBlastMainnet      CreateStreamDtoNetwork = "blast-mainnet"
+	CreateStreamDtoNetworkBlastSepolia      CreateStreamDtoNetwork = "blast-sepolia"
+	CreateStreamDtoNetworkBnbchainMainnet   CreateStreamDtoNetwork = "bnbchain-mainnet"
+	CreateStreamDtoNetworkBnbchainTestnet   CreateStreamDtoNetwork = "bnbchain-testnet"
+	CreateStreamDtoNetworkCeloMainnet       CreateStreamDtoNetwork = "celo-mainnet"
+	CreateStreamDtoNetworkCyberMainnet      CreateStreamDtoNetwork = "cyber-mainnet"
+	CreateStreamDtoNetworkCyberSepolia      CreateStreamDtoNetwork = "cyber-sepolia"
+	CreateStreamDtoNetworkDogeMainnet       CreateStreamDtoNetwork = "doge-mainnet"
+	CreateStreamDtoNetworkEthereumHoodi     CreateStreamDtoNetwork = "ethereum-hoodi"
+	CreateStreamDtoNetworkEthereumMainnet   CreateStreamDtoNetwork = "ethereum-mainnet"
+	CreateStreamDtoNetworkEthereumSepolia   CreateStreamDtoNetwork = "ethereum-sepolia"
+	CreateStreamDtoNetworkFantomMainnet     CreateStreamDtoNetwork = "fantom-mainnet"
+	CreateStreamDtoNetworkFlareMainnet      CreateStreamDtoNetwork = "flare-mainnet"
+	CreateStreamDtoNetworkFlareTestnet      CreateStreamDtoNetwork = "flare-testnet"
+	CreateStreamDtoNetworkFlowMainnet       CreateStreamDtoNetwork = "flow-mainnet"
+	CreateStreamDtoNetworkFlowTestnet       CreateStreamDtoNetwork = "flow-testnet"
+	CreateStreamDtoNetworkFraxtalMainnet    CreateStreamDtoNetwork = "fraxtal-mainnet"
+	CreateStreamDtoNetworkGnosisMainnet     CreateStreamDtoNetwork = "gnosis-mainnet"
+	CreateStreamDtoNetworkGravityAlpham     CreateStreamDtoNetwork = "gravity-alpham"
+	CreateStreamDtoNetworkHemiMainnet       CreateStreamDtoNetwork = "hemi-mainnet"
+	CreateStreamDtoNetworkHemiTestnet       CreateStreamDtoNetwork = "hemi-testnet"
+	CreateStreamDtoNetworkHyperevmMainnet   CreateStreamDtoNetwork = "hyperevm-mainnet"
+	CreateStreamDtoNetworkImxMainnet        CreateStreamDtoNetwork = "imx-mainnet"
+	CreateStreamDtoNetworkImxTestnet        CreateStreamDtoNetwork = "imx-testnet"
+	CreateStreamDtoNetworkInjectiveMainnet  CreateStreamDtoNetwork = "injective-mainnet"
+	CreateStreamDtoNetworkInjectiveTestnet  CreateStreamDtoNetwork = "injective-testnet"
+	CreateStreamDtoNetworkInkMainnet        CreateStreamDtoNetwork = "ink-mainnet"
+	CreateStreamDtoNetworkInkSepolia        CreateStreamDtoNetwork = "ink-sepolia"
+	CreateStreamDtoNetworkJocMainnet        CreateStreamDtoNetwork = "joc-mainnet"
+	CreateStreamDtoNetworkKaiaMainnet       CreateStreamDtoNetwork = "kaia-mainnet"
+	CreateStreamDtoNetworkKaiaTestnet       CreateStreamDtoNetwork = "kaia-testnet"
+	CreateStreamDtoNetworkKatanaMainnet     CreateStreamDtoNetwork = "katana-mainnet"
+	CreateStreamDtoNetworkLensMainnet       CreateStreamDtoNetwork = "lens-mainnet"
+	CreateStreamDtoNetworkLensTestnet       CreateStreamDtoNetwork = "lens-testnet"
+	CreateStreamDtoNetworkLineaMainnet      CreateStreamDtoNetwork = "linea-mainnet"
+	CreateStreamDtoNetworkLiskMainnet       CreateStreamDtoNetwork = "lisk-mainnet"
+	CreateStreamDtoNetworkLitecoinMainnet   CreateStreamDtoNetwork = "litecoin-mainnet"
+	CreateStreamDtoNetworkLitecoinTestnet   CreateStreamDtoNetwork = "litecoin-testnet"
+	CreateStreamDtoNetworkMantleMainnet     CreateStreamDtoNetwork = "mantle-mainnet"
+	CreateStreamDtoNetworkMantleSepolia     CreateStreamDtoNetwork = "mantle-sepolia"
+	CreateStreamDtoNetworkModeMainnet       CreateStreamDtoNetwork = "mode-mainnet"
+	CreateStreamDtoNetworkMonadMainnet      CreateStreamDtoNetwork = "monad-mainnet"
+	CreateStreamDtoNetworkMonadTestnet      CreateStreamDtoNetwork = "monad-testnet"
+	CreateStreamDtoNetworkMorphHoodi        CreateStreamDtoNetwork = "morph-hoodi"
+	CreateStreamDtoNetworkMorphMainnet      CreateStreamDtoNetwork = "morph-mainnet"
+	CreateStreamDtoNetworkNovaMainnet       CreateStreamDtoNetwork = "nova-mainnet"
+	CreateStreamDtoNetworkOmniMainnet       CreateStreamDtoNetwork = "omni-mainnet"
+	CreateStreamDtoNetworkOmniOmega         CreateStreamDtoNetwork = "omni-omega"
+	CreateStreamDtoNetworkOptimismMainnet   CreateStreamDtoNetwork = "optimism-mainnet"
+	CreateStreamDtoNetworkOptimismSepolia   CreateStreamDtoNetwork = "optimism-sepolia"
+	CreateStreamDtoNetworkPeaqMainnet       CreateStreamDtoNetwork = "peaq-mainnet"
+	CreateStreamDtoNetworkPlasmaMainnet     CreateStreamDtoNetwork = "plasma-mainnet"
+	CreateStreamDtoNetworkPlasmaTestnet     CreateStreamDtoNetwork = "plasma-testnet"
+	CreateStreamDtoNetworkPolygonAmoy       CreateStreamDtoNetwork = "polygon-amoy"
+	CreateStreamDtoNetworkPolygonMainnet    CreateStreamDtoNetwork = "polygon-mainnet"
+	CreateStreamDtoNetworkRedstoneMainnet   CreateStreamDtoNetwork = "redstone-mainnet"
+	CreateStreamDtoNetworkSaharaTestnet     CreateStreamDtoNetwork = "sahara-testnet"
+	CreateStreamDtoNetworkScrollMainnet     CreateStreamDtoNetwork = "scroll-mainnet"
+	CreateStreamDtoNetworkScrollTestnet     CreateStreamDtoNetwork = "scroll-testnet"
+	CreateStreamDtoNetworkSeiMainnet        CreateStreamDtoNetwork = "sei-mainnet"
+	CreateStreamDtoNetworkSeiTestnet        CreateStreamDtoNetwork = "sei-testnet"
+	CreateStreamDtoNetworkSolanaDevnet      CreateStreamDtoNetwork = "solana-devnet"
+	CreateStreamDtoNetworkSolanaMainnet     CreateStreamDtoNetwork = "solana-mainnet"
+	CreateStreamDtoNetworkSolanaTestnet     CreateStreamDtoNetwork = "solana-testnet"
+	CreateStreamDtoNetworkSoneiumMainnet    CreateStreamDtoNetwork = "soneium-mainnet"
+	CreateStreamDtoNetworkSonicMainnet      CreateStreamDtoNetwork = "sonic-mainnet"
+	CreateStreamDtoNetworkSophonMainnet     CreateStreamDtoNetwork = "sophon-mainnet"
+	CreateStreamDtoNetworkSophonTestnet     CreateStreamDtoNetwork = "sophon-testnet"
+	CreateStreamDtoNetworkStoryAeneid       CreateStreamDtoNetwork = "story-aeneid"
+	CreateStreamDtoNetworkStoryMainnet      CreateStreamDtoNetwork = "story-mainnet"
+	CreateStreamDtoNetworkTronMainnet       CreateStreamDtoNetwork = "tron-mainnet"
+	CreateStreamDtoNetworkUnichainMainnet   CreateStreamDtoNetwork = "unichain-mainnet"
+	CreateStreamDtoNetworkUnichainSepolia   CreateStreamDtoNetwork = "unichain-sepolia"
+	CreateStreamDtoNetworkVanaMainnet       CreateStreamDtoNetwork = "vana-mainnet"
+	CreateStreamDtoNetworkVanaMoksha        CreateStreamDtoNetwork = "vana-moksha"
+	CreateStreamDtoNetworkWorldchainMainnet CreateStreamDtoNetwork = "worldchain-mainnet"
+	CreateStreamDtoNetworkWorldchainSepolia CreateStreamDtoNetwork = "worldchain-sepolia"
+	CreateStreamDtoNetworkXaiMainnet        CreateStreamDtoNetwork = "xai-mainnet"
+	CreateStreamDtoNetworkXaiSepolia        CreateStreamDtoNetwork = "xai-sepolia"
+	CreateStreamDtoNetworkXlayerMainnet     CreateStreamDtoNetwork = "xlayer-mainnet"
+	CreateStreamDtoNetworkXrpMainnet        CreateStreamDtoNetwork = "xrp-mainnet"
+	CreateStreamDtoNetworkXrpTestnet        CreateStreamDtoNetwork = "xrp-testnet"
+	CreateStreamDtoNetworkXrplevmMainnet    CreateStreamDtoNetwork = "xrplevm-mainnet"
+	CreateStreamDtoNetworkXrplevmTestnet    CreateStreamDtoNetwork = "xrplevm-testnet"
+	CreateStreamDtoNetworkZerogGalileo      CreateStreamDtoNetwork = "zerog-galileo"
+	CreateStreamDtoNetworkZerogMainnet      CreateStreamDtoNetwork = "zerog-mainnet"
+	CreateStreamDtoNetworkZkevmCardona      CreateStreamDtoNetwork = "zkevm-cardona"
+	CreateStreamDtoNetworkZkevmMainnet      CreateStreamDtoNetwork = "zkevm-mainnet"
+	CreateStreamDtoNetworkZksyncMainnet     CreateStreamDtoNetwork = "zksync-mainnet"
+	CreateStreamDtoNetworkZksyncSepolia     CreateStreamDtoNetwork = "zksync-sepolia"
+	CreateStreamDtoNetworkZoraMainnet       CreateStreamDtoNetwork = "zora-mainnet"
 )
 
 // Defines values for CreateStreamDtoRegion.
@@ -156,10 +178,8 @@ const (
 
 // Defines values for CreateStreamDtoStatus.
 const (
-	CreateStreamDtoStatusActive     CreateStreamDtoStatus = "active"
-	CreateStreamDtoStatusCompleted  CreateStreamDtoStatus = "completed"
-	CreateStreamDtoStatusPaused     CreateStreamDtoStatus = "paused"
-	CreateStreamDtoStatusTerminated CreateStreamDtoStatus = "terminated"
+	CreateStreamDtoStatusActive CreateStreamDtoStatus = "active"
+	CreateStreamDtoStatusPaused CreateStreamDtoStatus = "paused"
 )
 
 // Defines values for PostgresAttributesSslmode.
@@ -170,8 +190,8 @@ const (
 
 // Defines values for S3AttributesFileType.
 const (
-	DotJson    S3AttributesFileType = ".json"
-	DotParquet S3AttributesFileType = ".parquet"
+	S3AttributesFileTypeDotJson    S3AttributesFileType = ".json"
+	S3AttributesFileTypeDotParquet S3AttributesFileType = ".parquet"
 )
 
 // Defines values for TestFilterFunctionDtoDataset.
@@ -191,103 +211,119 @@ const (
 
 // Defines values for TestFilterFunctionDtoNetwork.
 const (
-	TestFilterFunctionDtoNetworkAbstractMainnet    TestFilterFunctionDtoNetwork = "abstract-mainnet"
-	TestFilterFunctionDtoNetworkAbstractTestnet    TestFilterFunctionDtoNetwork = "abstract-testnet"
-	TestFilterFunctionDtoNetworkArbitrumMainnet    TestFilterFunctionDtoNetwork = "arbitrum-mainnet"
-	TestFilterFunctionDtoNetworkArbitrumSepolia    TestFilterFunctionDtoNetwork = "arbitrum-sepolia"
-	TestFilterFunctionDtoNetworkAvalancheFuji      TestFilterFunctionDtoNetwork = "avalanche-fuji"
-	TestFilterFunctionDtoNetworkAvalancheMainnet   TestFilterFunctionDtoNetwork = "avalanche-mainnet"
-	TestFilterFunctionDtoNetworkB3Mainnet          TestFilterFunctionDtoNetwork = "b3-mainnet"
-	TestFilterFunctionDtoNetworkB3Sepolia          TestFilterFunctionDtoNetwork = "b3-sepolia"
-	TestFilterFunctionDtoNetworkBaseMainnet        TestFilterFunctionDtoNetwork = "base-mainnet"
-	TestFilterFunctionDtoNetworkBaseSepolia        TestFilterFunctionDtoNetwork = "base-sepolia"
-	TestFilterFunctionDtoNetworkBeraBepolia        TestFilterFunctionDtoNetwork = "bera-bepolia"
-	TestFilterFunctionDtoNetworkBeraMainnet        TestFilterFunctionDtoNetwork = "bera-mainnet"
-	TestFilterFunctionDtoNetworkBitcoinMainnet     TestFilterFunctionDtoNetwork = "bitcoin-mainnet"
-	TestFilterFunctionDtoNetworkBlastMainnet       TestFilterFunctionDtoNetwork = "blast-mainnet"
-	TestFilterFunctionDtoNetworkBlastSepolia       TestFilterFunctionDtoNetwork = "blast-sepolia"
-	TestFilterFunctionDtoNetworkBnbchainMainnet    TestFilterFunctionDtoNetwork = "bnbchain-mainnet"
-	TestFilterFunctionDtoNetworkBnbchainTestnet    TestFilterFunctionDtoNetwork = "bnbchain-testnet"
-	TestFilterFunctionDtoNetworkCeloMainnet        TestFilterFunctionDtoNetwork = "celo-mainnet"
-	TestFilterFunctionDtoNetworkCyberMainnet       TestFilterFunctionDtoNetwork = "cyber-mainnet"
-	TestFilterFunctionDtoNetworkCyberSepolia       TestFilterFunctionDtoNetwork = "cyber-sepolia"
-	TestFilterFunctionDtoNetworkEthereumHolesky    TestFilterFunctionDtoNetwork = "ethereum-holesky"
-	TestFilterFunctionDtoNetworkEthereumHoodi      TestFilterFunctionDtoNetwork = "ethereum-hoodi"
-	TestFilterFunctionDtoNetworkEthereumMainnet    TestFilterFunctionDtoNetwork = "ethereum-mainnet"
-	TestFilterFunctionDtoNetworkEthereumSepolia    TestFilterFunctionDtoNetwork = "ethereum-sepolia"
-	TestFilterFunctionDtoNetworkFantomMainnet      TestFilterFunctionDtoNetwork = "fantom-mainnet"
-	TestFilterFunctionDtoNetworkFlowMainnet        TestFilterFunctionDtoNetwork = "flow-mainnet"
-	TestFilterFunctionDtoNetworkFlowTestnet        TestFilterFunctionDtoNetwork = "flow-testnet"
-	TestFilterFunctionDtoNetworkGnosisMainnet      TestFilterFunctionDtoNetwork = "gnosis-mainnet"
-	TestFilterFunctionDtoNetworkGravityAlpham      TestFilterFunctionDtoNetwork = "gravity-alpham"
-	TestFilterFunctionDtoNetworkHederaMainnet      TestFilterFunctionDtoNetwork = "hedera-mainnet"
-	TestFilterFunctionDtoNetworkHederaTestnet      TestFilterFunctionDtoNetwork = "hedera-testnet"
-	TestFilterFunctionDtoNetworkHemiMainnet        TestFilterFunctionDtoNetwork = "hemi-mainnet"
-	TestFilterFunctionDtoNetworkHemiTestnet        TestFilterFunctionDtoNetwork = "hemi-testnet"
-	TestFilterFunctionDtoNetworkHyperliquidMainnet TestFilterFunctionDtoNetwork = "hyperliquid-mainnet"
-	TestFilterFunctionDtoNetworkImxMainnet         TestFilterFunctionDtoNetwork = "imx-mainnet"
-	TestFilterFunctionDtoNetworkImxTestnet         TestFilterFunctionDtoNetwork = "imx-testnet"
-	TestFilterFunctionDtoNetworkInjectiveMainnet   TestFilterFunctionDtoNetwork = "injective-mainnet"
-	TestFilterFunctionDtoNetworkInjectiveTestnet   TestFilterFunctionDtoNetwork = "injective-testnet"
-	TestFilterFunctionDtoNetworkInkMainnet         TestFilterFunctionDtoNetwork = "ink-mainnet"
-	TestFilterFunctionDtoNetworkInkSepolia         TestFilterFunctionDtoNetwork = "ink-sepolia"
-	TestFilterFunctionDtoNetworkJocMainnet         TestFilterFunctionDtoNetwork = "joc-mainnet"
-	TestFilterFunctionDtoNetworkKaiaMainnet        TestFilterFunctionDtoNetwork = "kaia-mainnet"
-	TestFilterFunctionDtoNetworkKaiaTestnet        TestFilterFunctionDtoNetwork = "kaia-testnet"
-	TestFilterFunctionDtoNetworkLensMainnet        TestFilterFunctionDtoNetwork = "lens-mainnet"
-	TestFilterFunctionDtoNetworkLensTestnet        TestFilterFunctionDtoNetwork = "lens-testnet"
-	TestFilterFunctionDtoNetworkLineaMainnet       TestFilterFunctionDtoNetwork = "linea-mainnet"
-	TestFilterFunctionDtoNetworkMantleMainnet      TestFilterFunctionDtoNetwork = "mantle-mainnet"
-	TestFilterFunctionDtoNetworkMantleSepolia      TestFilterFunctionDtoNetwork = "mantle-sepolia"
-	TestFilterFunctionDtoNetworkMonadTestnet       TestFilterFunctionDtoNetwork = "monad-testnet"
-	TestFilterFunctionDtoNetworkMorphHolesky       TestFilterFunctionDtoNetwork = "morph-holesky"
-	TestFilterFunctionDtoNetworkMorphMainnet       TestFilterFunctionDtoNetwork = "morph-mainnet"
-	TestFilterFunctionDtoNetworkNovaMainnet        TestFilterFunctionDtoNetwork = "nova-mainnet"
-	TestFilterFunctionDtoNetworkOmniMainnet        TestFilterFunctionDtoNetwork = "omni-mainnet"
-	TestFilterFunctionDtoNetworkOmniOmega          TestFilterFunctionDtoNetwork = "omni-omega"
-	TestFilterFunctionDtoNetworkOptimismMainnet    TestFilterFunctionDtoNetwork = "optimism-mainnet"
-	TestFilterFunctionDtoNetworkOptimismSepolia    TestFilterFunctionDtoNetwork = "optimism-sepolia"
-	TestFilterFunctionDtoNetworkPeaqMainnet        TestFilterFunctionDtoNetwork = "peaq-mainnet"
-	TestFilterFunctionDtoNetworkPlasmaTestnet      TestFilterFunctionDtoNetwork = "plasma-testnet"
-	TestFilterFunctionDtoNetworkPolygonAmoy        TestFilterFunctionDtoNetwork = "polygon-amoy"
-	TestFilterFunctionDtoNetworkPolygonMainnet     TestFilterFunctionDtoNetwork = "polygon-mainnet"
-	TestFilterFunctionDtoNetworkRaceMainnet        TestFilterFunctionDtoNetwork = "race-mainnet"
-	TestFilterFunctionDtoNetworkRaceTestnet        TestFilterFunctionDtoNetwork = "race-testnet"
-	TestFilterFunctionDtoNetworkSaharaTestnet      TestFilterFunctionDtoNetwork = "sahara-testnet"
-	TestFilterFunctionDtoNetworkScrollMainnet      TestFilterFunctionDtoNetwork = "scroll-mainnet"
-	TestFilterFunctionDtoNetworkScrollTestnet      TestFilterFunctionDtoNetwork = "scroll-testnet"
-	TestFilterFunctionDtoNetworkSeiMainnet         TestFilterFunctionDtoNetwork = "sei-mainnet"
-	TestFilterFunctionDtoNetworkSeiTestnet         TestFilterFunctionDtoNetwork = "sei-testnet"
-	TestFilterFunctionDtoNetworkSolanaDevnet       TestFilterFunctionDtoNetwork = "solana-devnet"
-	TestFilterFunctionDtoNetworkSolanaMainnet      TestFilterFunctionDtoNetwork = "solana-mainnet"
-	TestFilterFunctionDtoNetworkSolanaTestnet      TestFilterFunctionDtoNetwork = "solana-testnet"
-	TestFilterFunctionDtoNetworkSoneiumMainnet     TestFilterFunctionDtoNetwork = "soneium-mainnet"
-	TestFilterFunctionDtoNetworkSonicMainnet       TestFilterFunctionDtoNetwork = "sonic-mainnet"
-	TestFilterFunctionDtoNetworkSophonMainnet      TestFilterFunctionDtoNetwork = "sophon-mainnet"
-	TestFilterFunctionDtoNetworkSophonTestnet      TestFilterFunctionDtoNetwork = "sophon-testnet"
-	TestFilterFunctionDtoNetworkStoryAeneid        TestFilterFunctionDtoNetwork = "story-aeneid"
-	TestFilterFunctionDtoNetworkStoryMainnet       TestFilterFunctionDtoNetwork = "story-mainnet"
-	TestFilterFunctionDtoNetworkTronMainnet        TestFilterFunctionDtoNetwork = "tron-mainnet"
-	TestFilterFunctionDtoNetworkUnichainMainnet    TestFilterFunctionDtoNetwork = "unichain-mainnet"
-	TestFilterFunctionDtoNetworkUnichainSepolia    TestFilterFunctionDtoNetwork = "unichain-sepolia"
-	TestFilterFunctionDtoNetworkVanaMainnet        TestFilterFunctionDtoNetwork = "vana-mainnet"
-	TestFilterFunctionDtoNetworkVanaMoksha         TestFilterFunctionDtoNetwork = "vana-moksha"
-	TestFilterFunctionDtoNetworkWorldchainMainnet  TestFilterFunctionDtoNetwork = "worldchain-mainnet"
-	TestFilterFunctionDtoNetworkWorldchainSepolia  TestFilterFunctionDtoNetwork = "worldchain-sepolia"
-	TestFilterFunctionDtoNetworkXaiMainnet         TestFilterFunctionDtoNetwork = "xai-mainnet"
-	TestFilterFunctionDtoNetworkXaiSepolia         TestFilterFunctionDtoNetwork = "xai-sepolia"
-	TestFilterFunctionDtoNetworkXrpMainnet         TestFilterFunctionDtoNetwork = "xrp-mainnet"
-	TestFilterFunctionDtoNetworkXrpTestnet         TestFilterFunctionDtoNetwork = "xrp-testnet"
-	TestFilterFunctionDtoNetworkZerogGalileo       TestFilterFunctionDtoNetwork = "zerog-galileo"
-	TestFilterFunctionDtoNetworkZkevmCardona       TestFilterFunctionDtoNetwork = "zkevm-cardona"
-	TestFilterFunctionDtoNetworkZkevmMainnet       TestFilterFunctionDtoNetwork = "zkevm-mainnet"
-	TestFilterFunctionDtoNetworkZksyncMainnet      TestFilterFunctionDtoNetwork = "zksync-mainnet"
-	TestFilterFunctionDtoNetworkZksyncSepolia      TestFilterFunctionDtoNetwork = "zksync-sepolia"
-	TestFilterFunctionDtoNetworkZoraMainnet        TestFilterFunctionDtoNetwork = "zora-mainnet"
+	TestFilterFunctionDtoNetworkAbstractMainnet   TestFilterFunctionDtoNetwork = "abstract-mainnet"
+	TestFilterFunctionDtoNetworkAbstractTestnet   TestFilterFunctionDtoNetwork = "abstract-testnet"
+	TestFilterFunctionDtoNetworkArbitrumMainnet   TestFilterFunctionDtoNetwork = "arbitrum-mainnet"
+	TestFilterFunctionDtoNetworkArbitrumSepolia   TestFilterFunctionDtoNetwork = "arbitrum-sepolia"
+	TestFilterFunctionDtoNetworkArcTestnet        TestFilterFunctionDtoNetwork = "arc-testnet"
+	TestFilterFunctionDtoNetworkAvalancheFuji     TestFilterFunctionDtoNetwork = "avalanche-fuji"
+	TestFilterFunctionDtoNetworkAvalancheMainnet  TestFilterFunctionDtoNetwork = "avalanche-mainnet"
+	TestFilterFunctionDtoNetworkB3Mainnet         TestFilterFunctionDtoNetwork = "b3-mainnet"
+	TestFilterFunctionDtoNetworkB3Sepolia         TestFilterFunctionDtoNetwork = "b3-sepolia"
+	TestFilterFunctionDtoNetworkBaseMainnet       TestFilterFunctionDtoNetwork = "base-mainnet"
+	TestFilterFunctionDtoNetworkBaseSepolia       TestFilterFunctionDtoNetwork = "base-sepolia"
+	TestFilterFunctionDtoNetworkBchMainnet        TestFilterFunctionDtoNetwork = "bch-mainnet"
+	TestFilterFunctionDtoNetworkBchTestnet        TestFilterFunctionDtoNetwork = "bch-testnet"
+	TestFilterFunctionDtoNetworkBeraBepolia       TestFilterFunctionDtoNetwork = "bera-bepolia"
+	TestFilterFunctionDtoNetworkBeraMainnet       TestFilterFunctionDtoNetwork = "bera-mainnet"
+	TestFilterFunctionDtoNetworkBitcoinMainnet    TestFilterFunctionDtoNetwork = "bitcoin-mainnet"
+	TestFilterFunctionDtoNetworkBitcoinTestnet4   TestFilterFunctionDtoNetwork = "bitcoin-testnet4"
+	TestFilterFunctionDtoNetworkBlastMainnet      TestFilterFunctionDtoNetwork = "blast-mainnet"
+	TestFilterFunctionDtoNetworkBlastSepolia      TestFilterFunctionDtoNetwork = "blast-sepolia"
+	TestFilterFunctionDtoNetworkBnbchainMainnet   TestFilterFunctionDtoNetwork = "bnbchain-mainnet"
+	TestFilterFunctionDtoNetworkBnbchainTestnet   TestFilterFunctionDtoNetwork = "bnbchain-testnet"
+	TestFilterFunctionDtoNetworkCeloMainnet       TestFilterFunctionDtoNetwork = "celo-mainnet"
+	TestFilterFunctionDtoNetworkCyberMainnet      TestFilterFunctionDtoNetwork = "cyber-mainnet"
+	TestFilterFunctionDtoNetworkCyberSepolia      TestFilterFunctionDtoNetwork = "cyber-sepolia"
+	TestFilterFunctionDtoNetworkDogeMainnet       TestFilterFunctionDtoNetwork = "doge-mainnet"
+	TestFilterFunctionDtoNetworkEthereumHoodi     TestFilterFunctionDtoNetwork = "ethereum-hoodi"
+	TestFilterFunctionDtoNetworkEthereumMainnet   TestFilterFunctionDtoNetwork = "ethereum-mainnet"
+	TestFilterFunctionDtoNetworkEthereumSepolia   TestFilterFunctionDtoNetwork = "ethereum-sepolia"
+	TestFilterFunctionDtoNetworkFantomMainnet     TestFilterFunctionDtoNetwork = "fantom-mainnet"
+	TestFilterFunctionDtoNetworkFlareMainnet      TestFilterFunctionDtoNetwork = "flare-mainnet"
+	TestFilterFunctionDtoNetworkFlareTestnet      TestFilterFunctionDtoNetwork = "flare-testnet"
+	TestFilterFunctionDtoNetworkFlowMainnet       TestFilterFunctionDtoNetwork = "flow-mainnet"
+	TestFilterFunctionDtoNetworkFlowTestnet       TestFilterFunctionDtoNetwork = "flow-testnet"
+	TestFilterFunctionDtoNetworkFraxtalMainnet    TestFilterFunctionDtoNetwork = "fraxtal-mainnet"
+	TestFilterFunctionDtoNetworkGnosisMainnet     TestFilterFunctionDtoNetwork = "gnosis-mainnet"
+	TestFilterFunctionDtoNetworkGravityAlpham     TestFilterFunctionDtoNetwork = "gravity-alpham"
+	TestFilterFunctionDtoNetworkHemiMainnet       TestFilterFunctionDtoNetwork = "hemi-mainnet"
+	TestFilterFunctionDtoNetworkHemiTestnet       TestFilterFunctionDtoNetwork = "hemi-testnet"
+	TestFilterFunctionDtoNetworkHyperevmMainnet   TestFilterFunctionDtoNetwork = "hyperevm-mainnet"
+	TestFilterFunctionDtoNetworkImxMainnet        TestFilterFunctionDtoNetwork = "imx-mainnet"
+	TestFilterFunctionDtoNetworkImxTestnet        TestFilterFunctionDtoNetwork = "imx-testnet"
+	TestFilterFunctionDtoNetworkInjectiveMainnet  TestFilterFunctionDtoNetwork = "injective-mainnet"
+	TestFilterFunctionDtoNetworkInjectiveTestnet  TestFilterFunctionDtoNetwork = "injective-testnet"
+	TestFilterFunctionDtoNetworkInkMainnet        TestFilterFunctionDtoNetwork = "ink-mainnet"
+	TestFilterFunctionDtoNetworkInkSepolia        TestFilterFunctionDtoNetwork = "ink-sepolia"
+	TestFilterFunctionDtoNetworkJocMainnet        TestFilterFunctionDtoNetwork = "joc-mainnet"
+	TestFilterFunctionDtoNetworkKaiaMainnet       TestFilterFunctionDtoNetwork = "kaia-mainnet"
+	TestFilterFunctionDtoNetworkKaiaTestnet       TestFilterFunctionDtoNetwork = "kaia-testnet"
+	TestFilterFunctionDtoNetworkKatanaMainnet     TestFilterFunctionDtoNetwork = "katana-mainnet"
+	TestFilterFunctionDtoNetworkLensMainnet       TestFilterFunctionDtoNetwork = "lens-mainnet"
+	TestFilterFunctionDtoNetworkLensTestnet       TestFilterFunctionDtoNetwork = "lens-testnet"
+	TestFilterFunctionDtoNetworkLineaMainnet      TestFilterFunctionDtoNetwork = "linea-mainnet"
+	TestFilterFunctionDtoNetworkLiskMainnet       TestFilterFunctionDtoNetwork = "lisk-mainnet"
+	TestFilterFunctionDtoNetworkLitecoinMainnet   TestFilterFunctionDtoNetwork = "litecoin-mainnet"
+	TestFilterFunctionDtoNetworkLitecoinTestnet   TestFilterFunctionDtoNetwork = "litecoin-testnet"
+	TestFilterFunctionDtoNetworkMantleMainnet     TestFilterFunctionDtoNetwork = "mantle-mainnet"
+	TestFilterFunctionDtoNetworkMantleSepolia     TestFilterFunctionDtoNetwork = "mantle-sepolia"
+	TestFilterFunctionDtoNetworkModeMainnet       TestFilterFunctionDtoNetwork = "mode-mainnet"
+	TestFilterFunctionDtoNetworkMonadMainnet      TestFilterFunctionDtoNetwork = "monad-mainnet"
+	TestFilterFunctionDtoNetworkMonadTestnet      TestFilterFunctionDtoNetwork = "monad-testnet"
+	TestFilterFunctionDtoNetworkMorphHoodi        TestFilterFunctionDtoNetwork = "morph-hoodi"
+	TestFilterFunctionDtoNetworkMorphMainnet      TestFilterFunctionDtoNetwork = "morph-mainnet"
+	TestFilterFunctionDtoNetworkNovaMainnet       TestFilterFunctionDtoNetwork = "nova-mainnet"
+	TestFilterFunctionDtoNetworkOmniMainnet       TestFilterFunctionDtoNetwork = "omni-mainnet"
+	TestFilterFunctionDtoNetworkOmniOmega         TestFilterFunctionDtoNetwork = "omni-omega"
+	TestFilterFunctionDtoNetworkOptimismMainnet   TestFilterFunctionDtoNetwork = "optimism-mainnet"
+	TestFilterFunctionDtoNetworkOptimismSepolia   TestFilterFunctionDtoNetwork = "optimism-sepolia"
+	TestFilterFunctionDtoNetworkPeaqMainnet       TestFilterFunctionDtoNetwork = "peaq-mainnet"
+	TestFilterFunctionDtoNetworkPlasmaMainnet     TestFilterFunctionDtoNetwork = "plasma-mainnet"
+	TestFilterFunctionDtoNetworkPlasmaTestnet     TestFilterFunctionDtoNetwork = "plasma-testnet"
+	TestFilterFunctionDtoNetworkPolygonAmoy       TestFilterFunctionDtoNetwork = "polygon-amoy"
+	TestFilterFunctionDtoNetworkPolygonMainnet    TestFilterFunctionDtoNetwork = "polygon-mainnet"
+	TestFilterFunctionDtoNetworkRedstoneMainnet   TestFilterFunctionDtoNetwork = "redstone-mainnet"
+	TestFilterFunctionDtoNetworkSaharaTestnet     TestFilterFunctionDtoNetwork = "sahara-testnet"
+	TestFilterFunctionDtoNetworkScrollMainnet     TestFilterFunctionDtoNetwork = "scroll-mainnet"
+	TestFilterFunctionDtoNetworkScrollTestnet     TestFilterFunctionDtoNetwork = "scroll-testnet"
+	TestFilterFunctionDtoNetworkSeiMainnet        TestFilterFunctionDtoNetwork = "sei-mainnet"
+	TestFilterFunctionDtoNetworkSeiTestnet        TestFilterFunctionDtoNetwork = "sei-testnet"
+	TestFilterFunctionDtoNetworkSolanaDevnet      TestFilterFunctionDtoNetwork = "solana-devnet"
+	TestFilterFunctionDtoNetworkSolanaMainnet     TestFilterFunctionDtoNetwork = "solana-mainnet"
+	TestFilterFunctionDtoNetworkSolanaTestnet     TestFilterFunctionDtoNetwork = "solana-testnet"
+	TestFilterFunctionDtoNetworkSoneiumMainnet    TestFilterFunctionDtoNetwork = "soneium-mainnet"
+	TestFilterFunctionDtoNetworkSonicMainnet      TestFilterFunctionDtoNetwork = "sonic-mainnet"
+	TestFilterFunctionDtoNetworkSophonMainnet     TestFilterFunctionDtoNetwork = "sophon-mainnet"
+	TestFilterFunctionDtoNetworkSophonTestnet     TestFilterFunctionDtoNetwork = "sophon-testnet"
+	TestFilterFunctionDtoNetworkStoryAeneid       TestFilterFunctionDtoNetwork = "story-aeneid"
+	TestFilterFunctionDtoNetworkStoryMainnet      TestFilterFunctionDtoNetwork = "story-mainnet"
+	TestFilterFunctionDtoNetworkTronMainnet       TestFilterFunctionDtoNetwork = "tron-mainnet"
+	TestFilterFunctionDtoNetworkUnichainMainnet   TestFilterFunctionDtoNetwork = "unichain-mainnet"
+	TestFilterFunctionDtoNetworkUnichainSepolia   TestFilterFunctionDtoNetwork = "unichain-sepolia"
+	TestFilterFunctionDtoNetworkVanaMainnet       TestFilterFunctionDtoNetwork = "vana-mainnet"
+	TestFilterFunctionDtoNetworkVanaMoksha        TestFilterFunctionDtoNetwork = "vana-moksha"
+	TestFilterFunctionDtoNetworkWorldchainMainnet TestFilterFunctionDtoNetwork = "worldchain-mainnet"
+	TestFilterFunctionDtoNetworkWorldchainSepolia TestFilterFunctionDtoNetwork = "worldchain-sepolia"
+	TestFilterFunctionDtoNetworkXaiMainnet        TestFilterFunctionDtoNetwork = "xai-mainnet"
+	TestFilterFunctionDtoNetworkXaiSepolia        TestFilterFunctionDtoNetwork = "xai-sepolia"
+	TestFilterFunctionDtoNetworkXlayerMainnet     TestFilterFunctionDtoNetwork = "xlayer-mainnet"
+	TestFilterFunctionDtoNetworkXrpMainnet        TestFilterFunctionDtoNetwork = "xrp-mainnet"
+	TestFilterFunctionDtoNetworkXrpTestnet        TestFilterFunctionDtoNetwork = "xrp-testnet"
+	TestFilterFunctionDtoNetworkXrplevmMainnet    TestFilterFunctionDtoNetwork = "xrplevm-mainnet"
+	TestFilterFunctionDtoNetworkXrplevmTestnet    TestFilterFunctionDtoNetwork = "xrplevm-testnet"
+	TestFilterFunctionDtoNetworkZerogGalileo      TestFilterFunctionDtoNetwork = "zerog-galileo"
+	TestFilterFunctionDtoNetworkZerogMainnet      TestFilterFunctionDtoNetwork = "zerog-mainnet"
+	TestFilterFunctionDtoNetworkZkevmCardona      TestFilterFunctionDtoNetwork = "zkevm-cardona"
+	TestFilterFunctionDtoNetworkZkevmMainnet      TestFilterFunctionDtoNetwork = "zkevm-mainnet"
+	TestFilterFunctionDtoNetworkZksyncMainnet     TestFilterFunctionDtoNetwork = "zksync-mainnet"
+	TestFilterFunctionDtoNetworkZksyncSepolia     TestFilterFunctionDtoNetwork = "zksync-sepolia"
+	TestFilterFunctionDtoNetworkZoraMainnet       TestFilterFunctionDtoNetwork = "zora-mainnet"
 )
 
 // Defines values for UpdateStreamDtoDestination.
 const (
+	UpdateStreamDtoDestinationAzure    UpdateStreamDtoDestination = "azure"
 	UpdateStreamDtoDestinationFunction UpdateStreamDtoDestination = "function"
 	UpdateStreamDtoDestinationPostgres UpdateStreamDtoDestination = "postgres"
 	UpdateStreamDtoDestinationS3       UpdateStreamDtoDestination = "s3"
@@ -303,11 +339,24 @@ const (
 
 // Defines values for UpdateStreamDtoStatus.
 const (
-	UpdateStreamDtoStatusActive     UpdateStreamDtoStatus = "active"
-	UpdateStreamDtoStatusCompleted  UpdateStreamDtoStatus = "completed"
-	UpdateStreamDtoStatusPaused     UpdateStreamDtoStatus = "paused"
-	UpdateStreamDtoStatusTerminated UpdateStreamDtoStatus = "terminated"
+	UpdateStreamDtoStatusActive UpdateStreamDtoStatus = "active"
+	UpdateStreamDtoStatusPaused UpdateStreamDtoStatus = "paused"
 )
+
+// AzureAttributes defines model for AzureAttributes.
+type AzureAttributes struct {
+	BlobPrefix          string                  `json:"blob_prefix"`
+	Container           string                  `json:"container"`
+	FileCompressionType string                  `json:"file_compression_type"`
+	FileType            AzureAttributesFileType `json:"file_type"`
+	MaxRetry            float32                 `json:"max_retry"`
+	RetryIntervalSec    float32                 `json:"retry_interval_sec"`
+	SasToken            *string                 `json:"sas_token,omitempty"`
+	StorageAccount      string                  `json:"storage_account"`
+}
+
+// AzureAttributesFileType defines model for AzureAttributes.FileType.
+type AzureAttributesFileType string
 
 // CreateStreamDto defines model for CreateStreamDto.
 type CreateStreamDto struct {
@@ -318,7 +367,7 @@ type CreateStreamDto struct {
 	ElasticBatchEnabled   bool                                  `json:"elastic_batch_enabled"`
 
 	// EndRange Stream until block number
-	EndRange *int64 `json:"end_range,omitempty"`
+	EndRange *int `json:"end_range,omitempty"`
 
 	// FilterFunction JS/ECMAScript compliant filter encoded in base64
 	FilterFunction string `json:"filter_function"`
@@ -337,7 +386,7 @@ type CreateStreamDto struct {
 	Region            CreateStreamDtoRegion `json:"region"`
 
 	// StartRange Stream start at block number. If not provided, the stream will start at the latest block.
-	StartRange *int64                `json:"start_range,omitempty"`
+	StartRange *int                  `json:"start_range,omitempty"`
 	Status     CreateStreamDtoStatus `json:"status"`
 }
 
@@ -384,7 +433,7 @@ type PostgresAttributesSslmode string
 // QuickfunctionsAttributes defines model for QuickfunctionsAttributes.
 type QuickfunctionsAttributes struct {
 	Headers          map[string]interface{} `json:"headers"`
-	MaxEntry         float32                `json:"max_entry"`
+	MaxRetry         float32                `json:"max_retry"`
 	Name             string                 `json:"name"`
 	Namespace        string                 `json:"namespace"`
 	PostTimeoutSec   float32                `json:"post_timeout_sec"`
@@ -433,7 +482,7 @@ type UpdateStreamDto struct {
 	ElasticBatchEnabled   *bool                                  `json:"elastic_batch_enabled,omitempty"`
 
 	// EndRange Stream until block number
-	EndRange *int64 `json:"end_range,omitempty"`
+	EndRange *int `json:"end_range,omitempty"`
 
 	// FilterFunction JS/ECMAScript compliant filter encoded in base64
 	FilterFunction *string `json:"filter_function,omitempty"`
@@ -450,7 +499,7 @@ type UpdateStreamDto struct {
 	NotificationEmail *string `json:"notification_email,omitempty"`
 
 	// StartRange Stream start at block number. If not provided, the stream will start at the latest block.
-	StartRange *int64                 `json:"start_range,omitempty"`
+	StartRange *int                   `json:"start_range,omitempty"`
 	Status     *UpdateStreamDtoStatus `json:"status,omitempty"`
 }
 
@@ -598,6 +647,32 @@ func (t *CreateStreamDto_DestinationAttributes) MergePostgresAttributes(v Postgr
 	return err
 }
 
+// AsAzureAttributes returns the union data inside the CreateStreamDto_DestinationAttributes as a AzureAttributes
+func (t CreateStreamDto_DestinationAttributes) AsAzureAttributes() (AzureAttributes, error) {
+	var body AzureAttributes
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromAzureAttributes overwrites any union data inside the CreateStreamDto_DestinationAttributes as the provided AzureAttributes
+func (t *CreateStreamDto_DestinationAttributes) FromAzureAttributes(v AzureAttributes) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeAzureAttributes performs a merge with any union data inside the CreateStreamDto_DestinationAttributes, using the provided AzureAttributes
+func (t *CreateStreamDto_DestinationAttributes) MergeAzureAttributes(v AzureAttributes) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
 func (t CreateStreamDto_DestinationAttributes) MarshalJSON() ([]byte, error) {
 	b, err := t.union.MarshalJSON()
 	return b, err
@@ -702,6 +777,32 @@ func (t *UpdateStreamDto_DestinationAttributes) FromPostgresAttributes(v Postgre
 
 // MergePostgresAttributes performs a merge with any union data inside the UpdateStreamDto_DestinationAttributes, using the provided PostgresAttributes
 func (t *UpdateStreamDto_DestinationAttributes) MergePostgresAttributes(v PostgresAttributes) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsAzureAttributes returns the union data inside the UpdateStreamDto_DestinationAttributes as a AzureAttributes
+func (t UpdateStreamDto_DestinationAttributes) AsAzureAttributes() (AzureAttributes, error) {
+	var body AzureAttributes
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromAzureAttributes overwrites any union data inside the UpdateStreamDto_DestinationAttributes as the provided AzureAttributes
+func (t *UpdateStreamDto_DestinationAttributes) FromAzureAttributes(v AzureAttributes) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeAzureAttributes performs a merge with any union data inside the UpdateStreamDto_DestinationAttributes, using the provided AzureAttributes
+func (t *UpdateStreamDto_DestinationAttributes) MergeAzureAttributes(v AzureAttributes) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
