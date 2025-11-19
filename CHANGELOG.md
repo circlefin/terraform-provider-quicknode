@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.2](https://github.com/circlefin/terraform-provider-quicknode/compare/v0.6.1...v0.6.2) (2025-11-19)
+
+
+### Miscellaneous Chores
+
+* **no-ticket:** adding arc-testnet stream support ([#45](https://github.com/circlefin/terraform-provider-quicknode/issues/45)) ([72dbe94](https://github.com/circlefin/terraform-provider-quicknode/commit/72dbe941d79ea7dc0ec2c9a8dd3c381cda776f69))
+
 ## [0.6.1](https://github.com/circlefin/terraform-provider-quicknode/compare/v0.6.0...v0.6.1) (2025-09-23)
 
 
