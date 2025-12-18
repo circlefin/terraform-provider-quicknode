@@ -66,7 +66,7 @@ Optional:
 - `post_timeout_sec` (Number)
 - `region` (String)
 - `secret_key` (String, Sensitive)
-- `security_token` (String)
+- `security_token` (String, Sensitive)
 - `sslmode` (String)
 - `table_name` (String)
 - `url` (String)

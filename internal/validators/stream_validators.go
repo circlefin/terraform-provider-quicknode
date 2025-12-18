@@ -184,6 +184,11 @@ var (
 		values: []string{"disable", "require"},
 	}
 
+	SecurityTokenValidator = StringRegexpValidator{
+		regexp:  regexp.MustCompile(`^.{32,64}$`),
+		message: "security token must be between 32-64 characters",
+	}
+
 	EmailValidator = StringRegexpValidator{
 		regexp:  regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`),
 		message: "Invalid email format",

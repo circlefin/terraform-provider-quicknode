@@ -154,7 +154,7 @@ jobs:
           QUICKNODE_APIKEY: ${{ secrets.QUICKNODE_APIKEY }}
         run: go test -v -cover ./... -run TestAcc
         timeout-minutes: 10
-  
+
   rollup:
     name: Success Rollup
     if: always()
@@ -168,6 +168,5 @@ jobs:
     runs-on: ubuntu-latest
     permissions: {}
     steps:
-    - uses: GitHubSecurityLab/actions-permissions/monitor@e80931f0826124db0a241ba9876c8e8eb3ca4d75 # v1.0.2-beta2
     - run: exit 1
       if: ${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}

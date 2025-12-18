@@ -1,4 +1,15 @@
 # HashiCorp Terraform packages to ignore in license scanning
 pkg:golang/github.com/hashicorp/terraform-plugin-framework@v1.15.0
 pkg:golang/github.com/hashicorp/terraform-plugin-go@v0.27.0
-pkg:golang/github.com/hashicorp/terraform-registry-address@v0.2.5 
+pkg:golang/github.com/hashicorp/terraform-registry-address@v0.2.5
+
+# License scanner doesn't understand compound licenses:
+# License: BSD-3-Clause AND LicenseRef-scancode-google-patent-license-golang
+pkg:golang/golang.org/x/crypto
+pkg:golang/golang.org/x/mod
+pkg:golang/golang.org/x/net
+pkg:golang/golang.org/x/sync
+pkg:golang/golang.org/x/sys
+pkg:golang/golang.org/x/text
+pkg:golang/golang.org/x/time
+pkg:golang/golang.org/x/tools
