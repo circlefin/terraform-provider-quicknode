@@ -52,6 +52,7 @@ var (
 	fileCompressionValidator     = validators.FileCompressionValidator
 	fileTypeValidator            = validators.FileTypeValidator
 	sslmodeValidator             = validators.SslmodeValidator
+	securityTokenValidator       = validators.SecurityTokenValidator
 	emailValidator               = validators.EmailValidator
 	startRangeValidator          = validators.StartRangeValidator
 	endRangeValidator            = validators.EndRangeValidator
@@ -307,8 +308,11 @@ func (r *StreamResource) Schema(ctx context.Context, req resource.SchemaRequest,
 					},
 
 					"security_token": schema.StringAttribute{
-						Optional: true,
-						Computed: true,
+						Optional:  true,
+						Sensitive: true,
+						Validators: []validator.String{
+							securityTokenValidator,
+						},
 					},
 
 					"version": schema.StringAttribute{
@@ -426,6 +430,10 @@ func getWebhookAttributes(destAttrs map[string]interface{}) (*streams.WebhookAtt
 	if !ok {
 		return nil, fmt.Errorf("retry_interval_sec must be an integer")
 	}
+	securityToken, ok := destAttrs["security_token"].(string)
+	if !ok {
+		return nil, fmt.Errorf("security_token must be a string")
+	}
 
 	return &streams.WebhookAttributes{
 		Url:              url,
@@ -434,7 +442,7 @@ func getWebhookAttributes(destAttrs map[string]interface{}) (*streams.WebhookAtt
 		MaxRetry:         float32(maxRetry),
 		PostTimeoutSec:   float32(postTimeoutSec),
 		RetryIntervalSec: float32(retryIntervalSec),
-		SecurityToken:    "",
+		SecurityToken:    securityToken,
 	}, nil
 }
 
@@ -755,7 +763,6 @@ func (r *StreamResource) Create(ctx context.Context, req resource.CreateRequest,
 		FixBlockReorgs:        optionalFields.FixBlockReorgs,
 		KeepDistanceFromTip:   optionalFields.KeepDistanceFromTip,
 	})
-
 	if err != nil {
 		resp.Diagnostics.AddError(
 			fmt.Sprintf("%s - Creating Stream", utils.ClientErrorSummary),
@@ -1075,7 +1082,6 @@ func (r *StreamResource) Update(ctx context.Context, req resource.UpdateRequest,
 		NotificationEmail:     optionalFields.NotificationEmail,
 		DestinationAttributes: destAttrsUnion,
 	})
-
 	if err != nil {
 		resp.Diagnostics.AddError(
 			fmt.Sprintf("%s - Updating Stream", utils.ClientErrorSummary),
