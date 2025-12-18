@@ -1221,7 +1221,7 @@ func updateDestinationAttributesFromAPI(destAttrs map[string]interface{}) (types
 		switch val := v.(type) {
 		case string:
 			// Treat empty strings as null for optional fields that are not relevant for this destination type
-			if val == "" && (k == "access_key" || k == "secret_key" || k == "bucket" || k == "region" || k == "file_compression" || k == "sslmode") {
+			if val == "" && (k == "access_key" || k == "secret_key" || k == "bucket" || k == "region" || k == "file_compression" || k == "sslmode" || k == "security_token") {
 				attrs[k] = types.StringNull()
 			} else {
 				attrs[k] = types.StringValue(val)
