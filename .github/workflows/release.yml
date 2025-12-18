@@ -27,7 +27,7 @@ jobs:
     if: needs.conventional-commit-release.outputs.release_created == 'true'
     permissions:
       contents: write
-    runs-on: ubuntu-latest
+    runs-on: github-hosted-small
     env:
       GORELEASER_CURRENT_TAG: ${{ needs.conventional-commit-release.outputs.release_tag }}
     steps:

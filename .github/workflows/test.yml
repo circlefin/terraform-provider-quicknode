@@ -14,7 +14,7 @@ on:
 jobs:
   build:
     name: Build
-    runs-on: ubuntu-latest
+    runs-on: github-hosted-small
     permissions:
       contents: read
       actions: read
@@ -55,7 +55,7 @@ jobs:
 
   trivy-scan:
     name: Trivy Scan
-    runs-on: ubuntu-latest
+    runs-on: github-hosted-small
     permissions:
       security-events: write
       actions: read
@@ -78,7 +78,7 @@ jobs:
         sarif_file: 'trivy-results.sarif'
 
   generate:
-    runs-on: ubuntu-latest
+    runs-on: github-hosted-small
     permissions:
       contents: read
     steps:
@@ -105,7 +105,7 @@ jobs:
   test:
     name: Terraform Provider Unit Tests
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: github-hosted-small
     timeout-minutes: 5
     permissions:
       contents: read
@@ -125,7 +125,7 @@ jobs:
     if: ${{ github.actor != 'dependabot[bot]' && github.event.pull_request.head.repo.full_name == github.repository }}
     name: Terraform Provider Acceptance Tests
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: github-hosted-small
     timeout-minutes: 15
     strategy:
       fail-fast: false
@@ -165,7 +165,7 @@ jobs:
     - generate
     - test
     - acctest
-    runs-on: ubuntu-latest
+    runs-on: github-hosted-small
     permissions: {}
     steps:
     - run: exit 1
