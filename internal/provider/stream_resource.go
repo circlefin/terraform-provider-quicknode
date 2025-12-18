@@ -308,8 +308,10 @@ func (r *StreamResource) Schema(ctx context.Context, req resource.SchemaRequest,
 					},
 
 					"security_token": schema.StringAttribute{
+						// If unset, the server will generate one for you
 						Optional:  true,
 						Sensitive: true,
+						Computed:  true,
 						Validators: []validator.String{
 							securityTokenValidator,
 						},
