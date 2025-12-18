@@ -185,7 +185,7 @@ var (
 	}
 
 	SecurityTokenValidator = StringRegexpValidator{
-		regexp:  regexp.MustCompile(`^.{32,64}$`),
+		regexp:  regexp.MustCompile(`^(.{32,64}|)$`),
 		message: "security token must be between 32-64 characters",
 	}
 
