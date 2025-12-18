@@ -31,7 +31,6 @@ jobs:
     env:
       GORELEASER_CURRENT_TAG: ${{ needs.conventional-commit-release.outputs.release_tag }}
     steps:
-      - uses: GitHubSecurityLab/actions-permissions/monitor@e80931f0826124db0a241ba9876c8e8eb3ca4d75 # v1.0.2-beta2
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           fetch-depth: 0
