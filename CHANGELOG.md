@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.6.3](https://github.com/circlefin/terraform-provider-quicknode/compare/v0.6.2...v0.6.3) (2025-12-18)
+
+
+### Bug Fixes
+
+* allow setting stream security token ([#49](https://github.com/circlefin/terraform-provider-quicknode/issues/49)) ([9dd6b82](https://github.com/circlefin/terraform-provider-quicknode/commit/9dd6b82e26bd334409338ebaff478a974aba2403))
+* handle server side default for security token ([#53](https://github.com/circlefin/terraform-provider-quicknode/issues/53)) ([54a0086](https://github.com/circlefin/terraform-provider-quicknode/commit/54a00868846f78fd28cb5b4345fa3d5e9abfb3f9))
+
+
+### Miscellaneous Chores
+
+* remove GitHubSecurityLab/actions-permissions/monitor ([#51](https://github.com/circlefin/terraform-provider-quicknode/issues/51)) ([ec91722](https://github.com/circlefin/terraform-provider-quicknode/commit/ec9172296c4caa182189954fc0beae5f1e4b50fa))
+* **stepsecurity:** update workflows to use custom hosted runners with built-in StepSecurity ([#48](https://github.com/circlefin/terraform-provider-quicknode/issues/48)) ([c2577fb](https://github.com/circlefin/terraform-provider-quicknode/commit/c2577fbddaeac5778b42521cb59473fcc182cdaa))
+* treat security_token specially for empty / null ([#52](https://github.com/circlefin/terraform-provider-quicknode/issues/52)) ([5645140](https://github.com/circlefin/terraform-provider-quicknode/commit/5645140040e151b6ecda12078f35f4bfeeeacc1f))
+
 ## [0.6.2](https://github.com/circlefin/terraform-provider-quicknode/compare/v0.6.1...v0.6.2) (2025-11-19)
 
 
