@@ -16,4 +16,4 @@
 
 package streams
 
-//go:generate go run github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen --package streams --generate models,client -o streams.gen.go streams-openapi.json
+//go:generate go tool oapi-codegen --package streams --generate models,client -o streams.gen.go streams-openapi.json
