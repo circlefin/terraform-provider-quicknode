@@ -2,6 +2,7 @@
 
 This provider allows for managing [Quicknode](https://www.quicknode.com/) resources via Terraform.
 The structure of the repository is outlined below:
+
 - Resources and data sources (`internal/provider/`),
 - Examples (`examples/`)
 - Generated documentation (`docs/`),
@@ -31,6 +32,7 @@ go install
 ## Using the provider
 
 The provider is intended to be configured:
+
 ```hcl
 terraform {
   required_providers {
@@ -54,18 +56,28 @@ If you wish to work on the provider, you'll first need [Go](http://www.golang.or
 
 To compile the provider, run `go install`. This will build the provider and put the provider binary in the `$GOPATH/bin` directory.
 
-To generate or update documentation or other generated code, run `make generate`.
+### Updating generated api clients
+
+```sh
+# download the open api specs
+make vendor
+
+# regenerate the go clients
+make generate
+```
 
 ### Acceptance Tests
+
 In order to run the full suite of Acceptance tests, run `make testacc`, ensuring that the environment variable QUICKNODE_APIKEY is set with an apikey with at least the scope `CONSOLE_REST`.
 
-*Note:* Acceptance tests create real resources, and often cost money to run.
+_Note:_ Acceptance tests create real resources, and often cost money to run.
 
 ```shell
 QUICKNODE_APIKEY="qn_******" make testacc
 ```
 
 ### On My Machine
+
 In order to use a compiled provider for a local terraform plan/apply. Configure your `~.terraformrc` as follows:
 
 ```hcl
@@ -77,6 +89,7 @@ provider_installation {
 ```
 
 This made be done via the following command:
+
 ```shell
 tee ~/.terraformrc <<EOT
 provider_installation {

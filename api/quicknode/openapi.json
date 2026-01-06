@@ -1,1 +1,2935 @@
-{"openapi":"3.0.1","info":{"title":"API V0","version":"v0","description":"QuickNode Console API V0","contact":{"name":"QuickNode"}},"paths":{"/v0/billing/invoices":{"get":{"summary":"Retrieves list of invoices","tags":["Billing"],"description":"Retrieve list of invoices","operationId":"invoices","responses":{"200":{"description":"success","content":{"application/json":{"schema":{"type":"object","properties":{"data":{"type":"object","properties":{"invoices":{"type":"array","items":{"$ref":"#/components/schemas/invoice"}}}},"error":{"type":"string","nullable":true}}}}}}}}},"/v0/billing/payments":{"get":{"summary":"Retrieves list of payments","tags":["Billing"],"description":"Retrieve list of payments","operationId":"payments","responses":{"200":{"description":"success","content":{"application/json":{"schema":{"type":"object","properties":{"data":{"type":"object","properties":{"payments":{"type":"array","items":{"$ref":"#/components/schemas/payment"}}}},"error":{"type":"string","nullable":true}}}}}}}}},"/v0/chains":{"get":{"summary":"Fetch list of chains","tags":["Chains"],"description":"Fetch a list of chains","operationId":"chains","responses":{"200":{"description":"success","content":{"application/json":{"schema":{"type":"object","properties":{"data":{"type":"array","items":{"$ref":"#/components/schemas/chain"}},"error":{"type":"string","nullable":true}},"required":["data","error"]}}}}}}},"/v0/endpoints/{id}/method-rate-limits":{"get":{"summary":"Gets method rate limits","tags":["Endpoint Rate Limits"],"description":"Gets method rate limits","operationId":"getMethodRateLimits","parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"string"}}],"responses":{"200":{"description":"endpoints fetched","content":{"application/json":{"examples":{"rate_limiters_list":{"value":{"data":{"rate_limiters":[{"id":"a1b2c3d4-e5f6-4a5b-9c8d-7e6f5a4b3c2d","interval":"second","methods":["example_method"],"rate":10,"status":"enabled","created":"2024-01-01T12:00:00.000000Z"}]},"error":null}}}}}},"404":{"description":"returns empty when endpoint does not exist"}}},"post":{"summary":"Creates a method rate limit","tags":["Endpoint Rate Limits"],"description":"Creates a method rate limit","operationId":"createMethodRateLimit","parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"string"}}],"responses":{"200":{"description":"method rate limit created","content":{"application/json":{"examples":{"example_key":{"value":{"data":{"created":"2024-01-01T12:00:00.000000Z","id":"a1b2c3d4-e5f6-4a5b-9c8d-7e6f5a4b3c2d","interval":"second","methods":["example_method"],"rate":10,"status":"enabled"},"error":null}}}}}},"400":{"description":"invalid parameters"},"404":{"description":"endpoint not found"}},"requestBody":{"content":{"application/json":{"schema":{"type":"object","properties":{"interval":{"type":"string","enum":["second","minute","day"]},"methods":{"type":"array","items":{"type":"string"}},"rate":{"type":"integer"}},"required":["interval","methods","rate"]}}}}}},"/v0/endpoints/{id}/method-rate-limits/{method_rate_limit_id}":{"patch":{"summary":"Updates a method rate limit","tags":["Endpoint Rate Limits"],"description":"Updates a method rate limit","operationId":"updateMethodRateLimit","parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"string"}},{"name":"method_rate_limit_id","in":"path","required":true,"schema":{"type":"string"}}],"responses":{"200":{"description":"method rate limit updated","content":{"application/json":{"examples":{"single_rate_limiter":{"value":{"data":{"created":"2024-01-01T12:00:00.000000Z","id":"a1b2c3d4-e5f6-4a5b-9c8d-7e6f5a4b3c2d","interval":"day","methods":["example_method_1","example_method_2"],"rate":30,"status":"enabled"},"error":null}}}}}},"400":{"description":"invalid request"},"404":{"description":"rate limit not found"}},"requestBody":{"content":{"application/json":{"schema":{"type":"object","properties":{"methods":{"type":"array","items":{"type":"string"}},"status":{"type":"string","enum":["enabled","disabled"]},"rate":{"type":"integer"}}}}}}},"delete":{"summary":"Deletes a method rate limit","tags":["Endpoint Rate Limits"],"description":"Deletes a method rate limit","operationId":"deleteMethodRateLimit","parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"string"}},{"name":"method_rate_limit_id","in":"path","required":true,"schema":{"type":"string"}}],"responses":{"200":{"description":"method rate limit deleted","content":{"application/json":{"examples":{"rate_limiter_deletion":{"value":{"data":"Rate limit deleted successfully","error":null}}}}}},"404":{"description":"method rate limit not found"}}}},"/v0/endpoints/{id}/metrics":{"get":{"summary":"Fetch single metric","tags":["Endpoint Metrics"],"description":"Fetches a single metric for an endpoint","operationId":"fetchEndpointMetric","parameters":[{"name":"id","in":"path","required":true,"description":"Endpoint ID","schema":{"type":"string"}},{"name":"period","in":"query","schema":{"type":"string","enum":["hour","day","week","month"]},"required":true,"description":"hour, day, week, month"},{"name":"metric","in":"query","schema":{"type":"string","enum":["method_calls_over_time","response_status_over_time","method_call_breakdown","response_status_breakdown","method_response_time_max"]},"required":true,"description":"method_calls_over_time, response_status_over_time, method_call_breakdown, response_status_breakdown, method_response_time_max"}],"responses":{"200":{"description":"success","content":{"application/json":{"schema":{"type":"object","properties":{"data":{"type":"array","items":{"$ref":"#/components/schemas/endpoint_metric"}},"error":{"type":"string","nullable":true}},"required":["data","error"]}}}}}}},"/v0/endpoints/{id}/rate-limits":{"put":{"summary":"Updates rate limits","tags":["Endpoint Rate Limits"],"description":"Update rate limits on an endpoint","operationId":"updateRateLimits","parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"string"}}],"responses":{"200":{"description":"Rate limits updated"},"400":{"description":"Bad Request"},"404":{"description":"Endpoint not found"},"500":{"description":"Internal Server Error"}},"requestBody":{"content":{"application/json":{"schema":{"type":"object","required":["rate_limits"],"properties":{"rate_limits":{"type":"object","properties":{"rps":{"type":"integer"},"rpm":{"type":"integer"},"rpd":{"type":"integer"}},"minProperties":1}}}}}}}},"/v0/endpoints/{id}/security_options":{"get":{"summary":"Gets security options","tags":["Endpoint Security"],"description":"Gets security options for an endpoint","operationId":"getSecurityOptions","parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"string"}}],"responses":{"200":{"description":"security options fetched","content":{"application/json":{"examples":{"security_options_list":{"value":{"data":[{"option":"tokens","status":"enabled"},{"option":"referrers","status":"enabled"},{"option":"jwts","status":"enabled"},{"option":"ips","status":"enabled"},{"option":"domainMasks","status":"enabled"},{"option":"hsts","status":"enabled"},{"option":"cors","status":"enabled"}],"error":null}}}}}},"404":{"description":"endpoint not found"}}},"patch":{"summary":"Updates security options","tags":["Endpoint Security"],"description":"Updates security options for an endpoint","operationId":"updateSecurityOptions","parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"string"}}],"responses":{"200":{"description":"security options updated","content":{"application/json":{"examples":{"updated_security_options":{"value":{"data":[{"option":"tokens","status":"enabled"},{"option":"referrers","status":"enabled"},{"option":"jwts","status":"enabled"},{"option":"ips","status":"enabled"},{"option":"domainMasks","status":"enabled"},{"option":"hsts","status":"enabled"},{"option":"cors","status":"enabled"}],"error":null}}}}}},"400":{"description":"invalid request"},"404":{"description":"endpoint not found"}},"requestBody":{"content":{"application/json":{"schema":{"type":"object","properties":{"options":{"type":"object","properties":{"tokens":{"type":"string","enum":["enabled","disabled"]},"referrers":{"type":"string","enum":["enabled","disabled"]},"jwts":{"type":"string","enum":["enabled","disabled"]},"ips":{"type":"string","enum":["enabled","disabled"]},"domainMasks":{"type":"string","enum":["enabled","disabled"]},"hsts":{"type":"string","enum":["enabled","disabled"]},"cors":{"type":"string","enum":["enabled","disabled"]}},"additionalProperties":false}},"required":["options"]}}}}}},"/v0/endpoints/{id}/security/referrers":{"post":{"summary":"Creates a new endpoint referrer","description":"Create an endpoint referrer","operationId":"createReferrer","tags":["Endpoint Security"],"parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"string"}}],"responses":{"200":{"description":"referrer created"}},"requestBody":{"content":{"application/json":{"schema":{"type":"object","properties":{"referrer":{"type":"string"}}}}},"required":true}}},"/v0/endpoints/{id}/security/tokens":{"post":{"summary":"Creates a new endpoint authentication token","description":"Create an endpoint authentication token","operationId":"createAuthenticationToken","tags":["Endpoint Security"],"parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"string"}}],"responses":{"200":{"description":"success"}}}},"/v0/endpoints/{id}/security/ips":{"post":{"summary":"Creates a new endpoint ip","description":"Create an endpoint ip","operationId":"createIp","tags":["Endpoint Security"],"parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"string"}}],"responses":{"200":{"description":"success"}},"requestBody":{"content":{"application/json":{"schema":{"type":"object","properties":{"ip":{"type":"string"}}}}},"required":true}}},"/v0/endpoints/{id}/security/domain_masks":{"post":{"summary":"Creates a new endpoint domain_mask","description":"Create an endpoint domain_mask","operationId":"createDomainMask","tags":["Endpoint Security"],"parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"string"}}],"responses":{"200":{"description":"success"}},"requestBody":{"content":{"application/json":{"schema":{"type":"object","properties":{"domain_mask":{"type":"string"}}}}},"required":true}}},"/v0/endpoints/{id}/security/jwts":{"post":{"summary":"Creates a new endpoint jwt","description":"Create an endpoint jwt","operationId":"createJwt","tags":["Endpoint Security"],"parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"string"}}],"responses":{"200":{"description":"success"}},"requestBody":{"content":{"application/json":{"schema":{"type":"object","properties":{"public_key":{"type":"string"},"kid":{"type":"string"},"name":{"type":"string"}}}}},"required":true}}},"/v0/endpoints/{id}/security/jwts/{jwt_id}":{"delete":{"summary":"Deletes an existing endpoint jwt","description":"Deletes an existing endpoint jwt","operationId":"deleteJwt","tags":["Endpoint Security"],"parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"string"}},{"name":"jwt_id","in":"path","required":true,"schema":{"type":"string"}}],"responses":{"200":{"description":"success"}}}},"/v0/endpoints/{id}/security/domain_masks/{domain_mask_id}":{"delete":{"summary":"Deletes an existing endpoint domain_mask","description":"Deletes an existing endpoint domain mask","operationId":"deleteDomainMask","tags":["Endpoint Security"],"parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"string"}},{"name":"domain_mask_id","in":"path","required":true,"schema":{"type":"string"}}],"responses":{"200":{"description":"success"}}}},"/v0/endpoints/{id}/security/referrers/{referrer_id}":{"delete":{"summary":"Deletes an existing endpoint referrer","description":"Deletes an existing endpoint referrer","operationId":"deleteReferrer","tags":["Endpoint Security"],"parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"string"}},{"name":"referrer_id","in":"path","required":true,"schema":{"type":"string"}}],"responses":{"200":{"description":"success","content":{"application/json":{"schema":{"type":"object","properties":{"data":{"type":"boolean"},"error":{"type":"string","nullable":true}}}}}}}}},"/v0/endpoints/{id}/security/ips/{ip_id}":{"delete":{"summary":"Deletes an existing endpoint ip","description":"Deletes an existing endpoint ip","operationId":"deleteIp","tags":["Endpoint Security"],"parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"string"}},{"name":"ip_id","in":"path","required":true,"schema":{"type":"string"}}],"responses":{"200":{"description":"success","content":{"application/json":{"schema":{"type":"object","properties":{"data":{"type":"boolean"},"error":{"type":"string","nullable":true}}}}}}}}},"/v0/endpoints/{id}/security/tokens/{token_id}":{"delete":{"summary":"Deletes an existing endpoint token","description":"Deletes an existing endpoint token","operationId":"deleteToken","tags":["Endpoint Security"],"parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"string"}},{"name":"token_id","in":"path","required":true,"schema":{"type":"string"}}],"responses":{"200":{"description":"success","content":{"application/json":{"schema":{"type":"object","properties":{"data":{"type":"boolean"},"error":{"type":"string","nullable":true}}}}}}}}},"/v0/endpoints":{"post":{"summary":"Creates a new endpoint","tags":["Endpoints"],"parameters":[],"description":"Create a single endpoint","operationId":"createEndpoint","responses":{"200":{"description":"success","content":{"application/json":{"schema":{"type":"object","properties":{"data":{"$ref":"#/components/schemas/single_endpoint"},"error":{"type":"string","nullable":true}},"required":["data","error"]}}}}},"requestBody":{"content":{"application/json":{"schema":{"type":"object","properties":{"chain":{"type":"string"},"network":{"type":"string"}}}}},"required":true}},"get":{"summary":"Retrieves endpoints list","tags":["Endpoints"],"parameters":[{"name":"limit","in":"query","required":false,"schema":{"type":"integer"}},{"name":"offset","in":"query","required":false,"schema":{"type":"integer"}}],"description":"Retrieve endpoints list","operationId":"listEndpoints","responses":{"200":{"description":"success","content":{"application/json":{"schema":{"type":"object","properties":{"data":{"type":"array","items":{"$ref":"#/components/schemas/endpoint"},"nullable":true},"error":{"type":"string","nullable":true}},"required":["data","error"]}}}}}}},"/v0/endpoints/{id}":{"get":{"summary":"Show single endpoint","tags":["Endpoints"],"description":"Returns a single endpoint","operationId":"showEndpoint","parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"string"}}],"responses":{"200":{"description":"success","content":{"application/json":{"schema":{"type":"object","properties":{"data":{"$ref":"#/components/schemas/single_endpoint"},"error":{"type":"string","nullable":true}}}}}}}},"patch":{"summary":"Update endpoint","tags":["Endpoints"],"parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"string"}}],"description":"Update label for a single endpoint","operationId":"UpdateEndpoint","responses":{"200":{"description":"success"}},"requestBody":{"content":{"application/json":{"schema":{"type":"object","properties":{"label":{"type":"string"}}}}}}},"delete":{"summary":"Archive endpoint","tags":["Endpoints"],"parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"string"}}],"description":"Archive a single endpoint","operationId":"archiveEndpoint","responses":{"200":{"description":"success"}}}},"/v0/usage/rpc":{"get":{"summary":"Retrieves usage total for specified time range","tags":["Usage"],"description":"If start_time or end_time are missing, current billing period is used and remaining credits for the period are returned.","operationId":"usage","parameters":[{"name":"start_time","in":"query","description":"Start time","required":false,"schema":{"type":"integer"}},{"name":"end_time","in":"query","description":"End time","required":false,"schema":{"type":"integer"}}],"responses":{"200":{"description":"success","content":{"application/json":{"schema":{"type":"object","properties":{"data":{"type":"object","properties":{"credits_used":{"type":"integer"},"credits_remaining":{"type":"integer","nullable":true},"limit":{"type":"integer","nullable":true},"overages":{"type":"integer","nullable":true},"start_time":{"type":"integer","format":"timestamp"},"end_time":{"type":"integer","format":"timestamp"}},"required":["credits_used","start_time","end_time"]},"error":{"type":"string","nullable":true}}}}}},"400":{"description":"invalid time range"}}}},"/v0/usage/rpc/by-endpoint":{"get":{"summary":"Retrieves usage data by endpoint","tags":["Usage"],"description":"Retrieves usage data by endpoint","operationId":"usageByEndpoint","parameters":[{"name":"start_time","in":"query","description":"Start time","required":false,"schema":{"type":"integer"}},{"name":"end_time","in":"query","description":"End time","required":false,"schema":{"type":"integer"}}],"responses":{"200":{"description":"success","content":{"application/json":{"schema":{"type":"object","properties":{"data":{"type":"object","properties":{"endpoints":{"type":"array","items":{"$ref":"#/components/schemas/endpoint_usage"}},"start_time":{"type":"integer","format":"timestamp"},"end_time":{"type":"integer","format":"timestamp"}}},"error":{"type":"string","nullable":true}}}}}},"400":{"description":"invalid time range"}}}},"/v0/usage/rpc/by-method":{"get":{"summary":"Retrieves usage data grouped by method","tags":["Usage"],"description":"Retrieves usage data grouped by method","operationId":"usageByMethod","parameters":[{"name":"start_time","in":"query","description":"Start time","required":false,"schema":{"type":"integer"}},{"name":"end_time","in":"query","description":"End time","required":false,"schema":{"type":"integer"}}],"responses":{"200":{"description":"success","content":{"application/json":{"schema":{"type":"object","properties":{"data":{"type":"object","properties":{"methods":{"type":"array","items":{"$ref":"#/components/schemas/method_usage"}},"start_time":{"type":"integer","format":"timestamp"},"end_time":{"type":"integer","format":"timestamp"}}},"error":{"type":"string","nullable":true}}}}}},"400":{"description":"invalid time range"}}}},"/v0/usage/rpc/by-chain":{"get":{"summary":"Retrieves usage data by chain","tags":["Usage"],"description":"Retrieves usage data by chain","operationId":"usageByChain","parameters":[{"name":"start_time","in":"query","description":"Start time","required":false,"schema":{"type":"integer"}},{"name":"end_time","in":"query","description":"End time","required":false,"schema":{"type":"integer"}}],"responses":{"200":{"description":"success","content":{"application/json":{"schema":{"type":"object","properties":{"data":{"type":"object","properties":{"chains":{"type":"array","items":{"$ref":"#/components/schemas/chain_usage"}},"start_time":{"type":"integer","format":"timestamp"},"end_time":{"type":"integer","format":"timestamp"}}},"error":{"type":"string","nullable":true}},"required":["data","error"]}}}},"400":{"description":"invalid time range"}}}}},"servers":[{"url":"https://api.quicknode.com"}],"tags":[{"name":"Usage"},{"name":"Endpoints"},{"name":"Chains"},{"name":"Endpoint Security"},{"name":"Billing"},{"name":"Endpoint Rate Limits"},{"name":"Endpoint Metrics"}],"components":{"securitySchemes":{"bearer_auth":{"type":"http","scheme":"bearer","bearerFormat":"JWT"},"api_key":{"type":"apiKey","name":"x-api-key","in":"header"}},"schemas":{"chain":{"type":"object","properties":{"slug":{"type":"string"},"networks":{"type":"array","items":{"$ref":"#/components/schemas/network"}},"is_select_chain":{"type":"boolean"}}},"network":{"type":"object","properties":{"slug":{"type":"string"},"name":{"type":"string"}}},"chain_usage":{"type":"object","properties":{"name":{"type":"string"},"credits_used":{"type":"integer"}}},"endpoint_usage":{"type":"object","properties":{"name":{"type":"string"},"chain":{"type":"string"},"network":{"type":"string"},"credits_used":{"type":"integer"},"label":{"type":"string","nullable":true},"methods_breakdown":{"type":"array","items":{"$ref":"#/components/schemas/method_usage"}}}},"method_usage":{"type":"object","properties":{"method_name":{"type":"string"},"credits_used":{"type":"integer"},"archive":{"type":"boolean","nullable":true}}},"endpoint":{"type":"object","properties":{"id":{"type":"string"},"label":{"type":"string","nullable":true},"chain":{"type":"string","example":"eth","description":"chain slug"},"network":{"type":"string","example":"mainnet","description":"network slug"},"http_url":{"type":"string"},"wss_url":{"type":"string","nullable":true}},"required":["id","chain","network","http_url"]},"single_endpoint":{"type":"object","properties":{"id":{"type":"string"},"label":{"type":"string","nullable":true},"chain":{"type":"string","example":"eth","description":"chain slug"},"network":{"type":"string","example":"mainnet","description":"network slug"},"http_url":{"type":"string"},"wss_url":{"type":"string","nullable":true},"security":{"$ref":"#/components/schemas/endpoint_security"},"rate_limits":{"$ref":"#/components/schemas/endpoint_rate_limits"}},"required":["id","chain","network","http_url","security"]},"endpoint_rate_limits":{"type":"object","properties":{"rate_limit_by_ip":{"type":"boolean","nullable":true},"account":{"type":"integer","nullable":true},"rps":{"type":"integer","nullable":true},"rpm":{"type":"integer","nullable":true},"rpd":{"type":"integer","nullable":true}}},"endpoint_security":{"type":"object","properties":{"options":{"type":"object","properties":{"tokens":{"type":"boolean","nullable":true},"jwts":{"type":"boolean","nullable":true},"domainMasks":{"type":"boolean","nullable":true},"ips":{"type":"boolean","nullable":true},"referrers":{"type":"boolean","nullable":true}}},"jwts":{"type":"array","items":{"$ref":"#/components/schemas/endpoint_jwt"}},"tokens":{"type":"array","items":{"$ref":"#/components/schemas/endpoint_token"}},"referrers":{"type":"array","items":{"$ref":"#/components/schemas/endpoint_referrer"}},"domain_masks":{"type":"array","items":{"$ref":"#/components/schemas/endpoint_domain_mask"}},"ips":{"type":"array","items":{"$ref":"#/components/schemas/endpoint_ip"}}}},"endpoint_jwt":{"type":"object","properties":{"id":{"type":"string"},"public_key":{"type":"string"},"kid":{"type":"string"},"name":{"type":"string"}}},"endpoint_token":{"type":"object","properties":{"id":{"type":"string"},"token":{"type":"string"}}},"endpoint_referrer":{"type":"object","properties":{"id":{"type":"string"},"referrer":{"type":"string"}}},"endpoint_domain_mask":{"type":"object","properties":{"id":{"type":"string"},"domain":{"type":"string"}}},"endpoint_ip":{"type":"object","properties":{"id":{"type":"string"},"ip":{"type":"string"}}},"invoice":{"type":"object","properties":{"id":{"type":"string"},"status":{"type":"string"},"billing_reason":{"type":"string"},"lines":{"type":"array","items":{"type":"object","properties":{"description":{"type":"string"},"amount":{"type":"integer"}}}},"amount_due":{"type":"integer"},"amount_paid":{"type":"integer"},"period_start":{"type":"integer"},"period_end":{"type":"integer"},"created":{"type":"integer"},"subtotal":{"type":"integer"}}},"payment":{"type":"object","properties":{"amount":{"type":"string"},"card_last_4":{"type":"string","nullable":true},"created_at":{"type":"string"},"currency":{"type":"string"},"status":{"type":"string"},"marketplace_amount":{"type":"integer","nullable":true}}},"endpoint_metric":{"type":"object","properties":{"data":{"type":"array","items":{"type":"array","items":{"type":"integer"}}},"tag":{"type":"string"}}}}},"security":[{"bearer_auth":[]},{"api_key":[]}],"host":"www.quicknode.com"}
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "API V0",
+    "version": "v0",
+    "description": "QuickNode Console API V0",
+    "contact": {
+      "name": "QuickNode"
+    }
+  },
+  "paths": {
+    "/v0/billing/invoices": {
+      "get": {
+        "summary": "Retrieves list of invoices",
+        "tags": [
+          "Billing"
+        ],
+        "description": "Retrieve list of invoices",
+        "operationId": "invoices",
+        "responses": {
+          "200": {
+            "description": "success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "invoices": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/invoice"
+                          }
+                        }
+                      }
+                    },
+                    "error": {
+                      "type": "string",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v0/billing/payments": {
+      "get": {
+        "summary": "Retrieves list of payments",
+        "tags": [
+          "Billing"
+        ],
+        "description": "Retrieve list of payments",
+        "operationId": "payments",
+        "responses": {
+          "200": {
+            "description": "success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "payments": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/payment"
+                          }
+                        }
+                      }
+                    },
+                    "error": {
+                      "type": "string",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v0/chains": {
+      "get": {
+        "summary": "Fetch list of chains",
+        "tags": [
+          "Chains"
+        ],
+        "description": "Fetch a list of chains",
+        "operationId": "chains",
+        "responses": {
+          "200": {
+            "description": "success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/chain"
+                      }
+                    },
+                    "error": {
+                      "type": "string",
+                      "nullable": true
+                    }
+                  },
+                  "required": [
+                    "data",
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v0/endpoints/{id}/logs": {
+      "get": {
+        "summary": "Gets endpoint logs",
+        "tags": [
+          "Endpoint Logs"
+        ],
+        "description": "Retrieves logs for a specific endpoint",
+        "operationId": "getEndpointLogs",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "include_details",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "next_at",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "logs retrieved successfully",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "logs_response": {
+                    "value": {
+                      "data": [
+                        {
+                          "timestamp": "2025-04-29T12:39:25.543Z",
+                          "method": "eth_sendRawTransaction",
+                          "network": "xdai",
+                          "http_method": "POST",
+                          "status": 200,
+                          "error_code": null,
+                          "url": "/",
+                          "request_id": "fbecafc8-24f6-11f0-b300-484b1a416a3f",
+                          "details": {
+                            "request": "{\"jsonrpc\": \"2.0\", \"method\": \"eth_sendRawTransaction\", \"params\": [\"0x02f9051364824553843b9aca0084ee6b2800839896809469c0669f3b5df0f2e2644f01098b4465f565210180b904a46a761202000000000000000000000000a238cbeb142c10ef7ad8442c6d1f9e89e07e776100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000140000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000036000000000000000000000000000000000000000000000000000000000000001e48d80ff0a0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000019200552cea7bc33cbbeb9f1d90c1d11d2c6daeffd053000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000c44954bbf142be1354a90d0ca1804fa5a595bd660dcee74cd6544b21759a1f5f0f8937efc20000000000000000000000000000000000000000000000000000000000000080000000000000000000000000998defafd094817ef329f6dc79c703f1cf18bc9000000000000000000000000000000000000000000000000000000000000003cf000000000000000000000000000000000000000000000000000000000000002034d4c8c2a0dd1cf3a4e0f93ccf8bd133a5551858eb631c2ffdb498a21b064d3c00694e62bdf7ff510a4ee66662cf4866a961a31653000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000245b34eba00e61d8e891e53169dd53017bf27e85e0e72418fa8bc0198eeb31990dc5d155ec00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001047f3797395663a7e45089db42caf92bb87fc5667dba0720559eb436fb90f946ce55632dbc31613ff37e376\"]",
+                            "response": "{\"jsonrpc\":\"2.0\",\"result\":\"0x346465fe1518d3a2dc0a45fe51ca3052097397708f242c063c256c13182cf214\",\"id\":0}"
+                          }
+                        },
+                        {
+                          "timestamp": "2025-04-29T12:39:15.627Z",
+                          "method": "eth_call",
+                          "network": "xdai",
+                          "http_method": "POST",
+                          "status": 200,
+                          "error_code": -32015,
+                          "url": "/",
+                          "request_id": "f6038dca-24f6-11f0-b2d8-484b1a416a3f",
+                          "details": {
+                            "request": "{\"jsonrpc\": \"2.0\", \"method\": \"eth_call\", \"params\": [{\"to\": \"0xE49CB081e8d96920C38aA7AB90cb0294ab4Bc8EA\", \"data\": \"0x02a8ca100000000000000000000000000000000000000000000000000000000000000000\"}, \"latest\"], \"id\": 1}",
+                            "response": "{\"jsonrpc\":\"2.0\",\"error\":{\"code\":-32015,\"message\":\"VM execution error.\",\"data\":\"\\u000E\\u0797Y\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\"},\"id\":1}"
+                          }
+                        }
+                      ],
+                      "next_at": "MTc0NTkzMDM1NTYwOTAwMDAwMHxmNjAwZDgxZS0yNGY2LTExZjAtYjJkNy03OTQwZmE2MDc2NWM="
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "invalid parameters"
+          },
+          "404": {
+            "description": "endpoint not found"
+          }
+        }
+      }
+    },
+    "/v0/endpoints/{id}/log_details": {
+      "get": {
+        "summary": "Gets log details",
+        "tags": [
+          "Endpoint Logs"
+        ],
+        "description": "Retrieves detailed information for a specific log entry",
+        "operationId": "getLogDetails",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "request_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "log details retrieved successfully",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "log_details_response": {
+                    "value": {
+                      "data": {
+                        "request": "{\"jsonrpc\": \"2.0\", \"method\": \"eth_call\", \"params\": [{\"to\": \"0x62cCf8eE8756a7c6022C10Cb6Ee167F420d87A25\", \"from\": \"0xcb2434A1732Ed962E0c4232953c13eEe6719fff3\", \"value\": \"0x0\", \"data\": \"0x6a761202000000000000000000000000a238cbeb142c10ef7ad8442c6d1f9e89e07e7761000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001400000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000024000000000000000000000000000000000000000000000000000000000000000c48d80ff0a0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000007900694e62bdf7ff510a4ee66662cf4866a961a31653000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000245b34eba0fcdeea0990fd076f3cca9061bfebc302e4febc1a6aeb9cc7e10b735424c8bcb50000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010426a6e1e913784ae25ea661d0dcb4ce13bbd990693c3ebadb0a8e866afb8b1dd52152d784372b9320a76fa6fdb50f6101072f1f05a788eb4ce71bc90a712552e41ce1b52eb77fb8b95efbeb2511299534e92bd891f9694dc41d669be446411294fd72d8c2056c4f71065d9d9abc0f613eae8f5c36e3df73f1a8d838fb917bd5d39d1b5b2330dd098dd48b43df57dbdb1a8cb4228274062e91e6d4efc51ed2d5d26aaf1f00872cfc79b630ec5adb943fe34491a67bc88b41baf1e7667cc8a49a0acc1d1c97394f2ac9bc249d35e093111f3906f229e57937ce21a4be147f5fe39f2964e05d6d0de3294c642d459cd9aa2cd8e54fe81ae396aaa9c4222c83d6545877c7271c00000000000000000000000000000000000000000000000000000000\"}, \"0x25f68d6\"], \"id\": 321}",
+                        "response": "{\"jsonrpc\":\"2.0\",\"id\":321,\"error\":{\"code\":3,\"message\":\"execution reverted: GS026\",\"data\":\"0x08c379a0000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000054753303236000000000000000000000000000000000000000000000000000000\"}}\\n"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "invalid request_id format"
+          },
+          "404": {
+            "description": "endpoint not found"
+          }
+        }
+      }
+    },
+    "/v0/endpoints/{id}/method-rate-limits": {
+      "get": {
+        "summary": "Gets method rate limits",
+        "tags": [
+          "Endpoint Rate Limits"
+        ],
+        "description": "Gets method rate limits",
+        "operationId": "getMethodRateLimits",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "endpoints fetched",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "rate_limiters_list": {
+                    "value": {
+                      "data": {
+                        "rate_limiters": [
+                          {
+                            "id": "a1b2c3d4-e5f6-4a5b-9c8d-7e6f5a4b3c2d",
+                            "interval": "second",
+                            "methods": [
+                              "example_method"
+                            ],
+                            "rate": 10,
+                            "status": "enabled",
+                            "created": "2024-01-01T12:00:00.000000Z"
+                          }
+                        ]
+                      },
+                      "error": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "returns empty when endpoint does not exist"
+          }
+        }
+      },
+      "post": {
+        "summary": "Creates a method rate limit",
+        "tags": [
+          "Endpoint Rate Limits"
+        ],
+        "description": "Creates a method rate limit",
+        "operationId": "createMethodRateLimit",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "method rate limit created",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "example_key": {
+                    "value": {
+                      "data": {
+                        "created": "2024-01-01T12:00:00.000000Z",
+                        "id": "a1b2c3d4-e5f6-4a5b-9c8d-7e6f5a4b3c2d",
+                        "interval": "second",
+                        "methods": [
+                          "example_method"
+                        ],
+                        "rate": 10,
+                        "status": "enabled"
+                      },
+                      "error": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "invalid parameters"
+          },
+          "404": {
+            "description": "endpoint not found"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "interval": {
+                    "type": "string",
+                    "enum": [
+                      "second",
+                      "minute",
+                      "day"
+                    ]
+                  },
+                  "methods": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "rate": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "interval",
+                  "methods",
+                  "rate"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v0/endpoints/{id}/method-rate-limits/{method_rate_limit_id}": {
+      "patch": {
+        "summary": "Updates a method rate limit",
+        "tags": [
+          "Endpoint Rate Limits"
+        ],
+        "description": "Updates a method rate limit",
+        "operationId": "updateMethodRateLimit",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "method_rate_limit_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "method rate limit updated",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "single_rate_limiter": {
+                    "value": {
+                      "data": {
+                        "created": "2024-01-01T12:00:00.000000Z",
+                        "id": "a1b2c3d4-e5f6-4a5b-9c8d-7e6f5a4b3c2d",
+                        "interval": "day",
+                        "methods": [
+                          "example_method_1",
+                          "example_method_2"
+                        ],
+                        "rate": 30,
+                        "status": "enabled"
+                      },
+                      "error": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "invalid request"
+          },
+          "404": {
+            "description": "rate limit not found"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "methods": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "enabled",
+                      "disabled"
+                    ]
+                  },
+                  "rate": {
+                    "type": "integer"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Deletes a method rate limit",
+        "tags": [
+          "Endpoint Rate Limits"
+        ],
+        "description": "Deletes a method rate limit",
+        "operationId": "deleteMethodRateLimit",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "method_rate_limit_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "method rate limit deleted",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "rate_limiter_deletion": {
+                    "value": {
+                      "data": "Rate limit deleted successfully",
+                      "error": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "method rate limit not found"
+          }
+        }
+      }
+    },
+    "/v0/endpoints/{id}/metrics": {
+      "get": {
+        "summary": "Fetch single metric",
+        "tags": [
+          "Endpoint Metrics"
+        ],
+        "description": "Fetches a single metric for an endpoint",
+        "operationId": "fetchEndpointMetric",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Endpoint ID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "period",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "hour",
+                "day",
+                "week",
+                "month"
+              ]
+            },
+            "required": true,
+            "description": "hour, day, week, month"
+          },
+          {
+            "name": "metric",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "method_calls_over_time",
+                "response_status_over_time",
+                "method_call_breakdown",
+                "response_status_breakdown",
+                "method_response_time_max",
+                "request_errors_over_time",
+                "total_request_errors_over_time"
+              ]
+            },
+            "required": true,
+            "description": "method_calls_over_time, response_status_over_time, method_call_breakdown, response_status_breakdown, method_response_time_max, request_errors_over_time, total_request_errors_over_time"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/endpoint_metric"
+                      }
+                    },
+                    "error": {
+                      "type": "string",
+                      "nullable": true
+                    }
+                  },
+                  "required": [
+                    "data",
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v0/endpoints/{id}/rate-limits": {
+      "put": {
+        "summary": "Updates rate limits",
+        "tags": [
+          "Endpoint Rate Limits"
+        ],
+        "description": "Update rate limits on an endpoint",
+        "operationId": "updateRateLimits",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Rate limits updated"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "404": {
+            "description": "Endpoint not found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "rate_limits"
+                ],
+                "properties": {
+                  "rate_limits": {
+                    "type": "object",
+                    "properties": {
+                      "rps": {
+                        "type": "integer"
+                      },
+                      "rpm": {
+                        "type": "integer"
+                      },
+                      "rpd": {
+                        "type": "integer"
+                      }
+                    },
+                    "minProperties": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v0/endpoints/{id}/security_options": {
+      "get": {
+        "summary": "Gets security options",
+        "tags": [
+          "Endpoint Security"
+        ],
+        "description": "Gets security options for an endpoint",
+        "operationId": "getSecurityOptions",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "security options fetched",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "security_options_list": {
+                    "value": {
+                      "data": [
+                        {
+                          "option": "tokens",
+                          "status": "enabled"
+                        },
+                        {
+                          "option": "referrers",
+                          "status": "enabled"
+                        },
+                        {
+                          "option": "jwts",
+                          "status": "enabled"
+                        },
+                        {
+                          "option": "ips",
+                          "status": "enabled"
+                        },
+                        {
+                          "option": "domainMasks",
+                          "status": "enabled"
+                        },
+                        {
+                          "option": "hsts",
+                          "status": "enabled"
+                        },
+                        {
+                          "option": "cors",
+                          "status": "enabled"
+                        },
+                        {
+                          "option": "requestFilters",
+                          "status": "enabled"
+                        },
+                        {
+                          "option": "ipCustomHeader",
+                          "status": "enabled",
+                          "value": "CF-Connecting-IP"
+                        }
+                      ],
+                      "error": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "endpoint not found"
+          }
+        }
+      },
+      "patch": {
+        "summary": "Updates security options",
+        "tags": [
+          "Endpoint Security"
+        ],
+        "description": "Updates security options for an endpoint",
+        "operationId": "updateSecurityOptions",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "security options updated",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "updated_security_options": {
+                    "value": {
+                      "data": [
+                        {
+                          "option": "tokens",
+                          "status": "enabled"
+                        },
+                        {
+                          "option": "referrers",
+                          "status": "enabled"
+                        },
+                        {
+                          "option": "jwts",
+                          "status": "enabled"
+                        },
+                        {
+                          "option": "ips",
+                          "status": "enabled"
+                        },
+                        {
+                          "option": "domainMasks",
+                          "status": "enabled"
+                        },
+                        {
+                          "option": "hsts",
+                          "status": "enabled"
+                        },
+                        {
+                          "option": "cors",
+                          "status": "enabled"
+                        },
+                        {
+                          "option": "requestFilters",
+                          "status": "enabled"
+                        },
+                        {
+                          "option": "ipCustomHeader",
+                          "status": "enabled",
+                          "value": "CF-Connecting-IP"
+                        }
+                      ],
+                      "error": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "invalid request"
+          },
+          "404": {
+            "description": "endpoint not found"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "options": {
+                    "type": "object",
+                    "properties": {
+                      "tokens": {
+                        "type": "string",
+                        "enum": [
+                          "enabled",
+                          "disabled"
+                        ]
+                      },
+                      "referrers": {
+                        "type": "string",
+                        "enum": [
+                          "enabled",
+                          "disabled"
+                        ]
+                      },
+                      "jwts": {
+                        "type": "string",
+                        "enum": [
+                          "enabled",
+                          "disabled"
+                        ]
+                      },
+                      "ips": {
+                        "type": "string",
+                        "enum": [
+                          "enabled",
+                          "disabled"
+                        ]
+                      },
+                      "domainMasks": {
+                        "type": "string",
+                        "enum": [
+                          "enabled",
+                          "disabled"
+                        ]
+                      },
+                      "hsts": {
+                        "type": "string",
+                        "enum": [
+                          "enabled",
+                          "disabled"
+                        ]
+                      },
+                      "cors": {
+                        "type": "string",
+                        "enum": [
+                          "enabled",
+                          "disabled"
+                        ]
+                      },
+                      "requestFilters": {
+                        "type": "string",
+                        "enum": [
+                          "enabled",
+                          "disabled"
+                        ]
+                      },
+                      "ipCustomHeader": {
+                        "type": "string",
+                        "enum": [
+                          "enabled",
+                          "disabled"
+                        ]
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "options"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v0/endpoints/{id}/security/referrers": {
+      "post": {
+        "summary": "Creates a new endpoint referrer",
+        "description": "Create an endpoint referrer",
+        "operationId": "createReferrer",
+        "tags": [
+          "Endpoint Security"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "referrer created"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "referrer": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    },
+    "/v0/endpoints/{id}/security/request_filters": {
+      "post": {
+        "summary": "Creates a new endpoint request filter",
+        "description": "Create an endpoint request filter",
+        "operationId": "createRequestFilter",
+        "tags": [
+          "Endpoint Security"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "error": {
+                      "type": "string",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "method": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Array of method names for whitelisting"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    },
+    "/v0/endpoints/{id}/security/request_filters/{request_filter_id}": {
+      "put": {
+        "summary": "Updates an existing endpoint request filter",
+        "description": "Update an endpoint request filter",
+        "operationId": "updateRequestFilter",
+        "tags": [
+          "Endpoint Security"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "request_filter_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "success - no content"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "method": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Array of method names for whitelisting"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        }
+      },
+      "delete": {
+        "summary": "Deletes an existing endpoint request filter",
+        "description": "Deletes an existing endpoint request filter",
+        "operationId": "deleteRequestFilter",
+        "tags": [
+          "Endpoint Security"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "request_filter_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "success - no content"
+          }
+        }
+      }
+    },
+    "/v0/endpoints/{id}/security/tokens": {
+      "post": {
+        "summary": "Creates a new endpoint authentication token",
+        "description": "Create an endpoint authentication token",
+        "operationId": "createAuthenticationToken",
+        "tags": [
+          "Endpoint Security"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "success"
+          }
+        }
+      }
+    },
+    "/v0/endpoints/{id}/security/ips": {
+      "post": {
+        "summary": "Creates a new endpoint ip",
+        "description": "Create an endpoint ip",
+        "operationId": "createIp",
+        "tags": [
+          "Endpoint Security"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "success"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "ip": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    },
+    "/v0/endpoints/{id}/security/domain_masks": {
+      "post": {
+        "summary": "Creates a new endpoint domain_mask",
+        "description": "Create an endpoint domain_mask",
+        "operationId": "createDomainMask",
+        "tags": [
+          "Endpoint Security"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "success"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "domain_mask": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    },
+    "/v0/endpoints/{id}/security/jwts": {
+      "post": {
+        "summary": "Creates a new endpoint jwt",
+        "description": "Create an endpoint jwt",
+        "operationId": "createJwt",
+        "tags": [
+          "Endpoint Security"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "success"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "public_key": {
+                    "type": "string"
+                  },
+                  "kid": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    },
+    "/v0/endpoints/{id}/security/jwts/{jwt_id}": {
+      "delete": {
+        "summary": "Deletes an existing endpoint jwt",
+        "description": "Deletes an existing endpoint jwt",
+        "operationId": "deleteJwt",
+        "tags": [
+          "Endpoint Security"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "jwt_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "success"
+          }
+        }
+      }
+    },
+    "/v0/endpoints/{id}/security/domain_masks/{domain_mask_id}": {
+      "delete": {
+        "summary": "Deletes an existing endpoint domain_mask",
+        "description": "Deletes an existing endpoint domain mask",
+        "operationId": "deleteDomainMask",
+        "tags": [
+          "Endpoint Security"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "domain_mask_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "success"
+          }
+        }
+      }
+    },
+    "/v0/endpoints/{id}/security/referrers/{referrer_id}": {
+      "delete": {
+        "summary": "Deletes an existing endpoint referrer",
+        "description": "Deletes an existing endpoint referrer",
+        "operationId": "deleteReferrer",
+        "tags": [
+          "Endpoint Security"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "referrer_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "boolean"
+                    },
+                    "error": {
+                      "type": "string",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v0/endpoints/{id}/security/ips/{ip_id}": {
+      "delete": {
+        "summary": "Deletes an existing endpoint ip",
+        "description": "Deletes an existing endpoint ip",
+        "operationId": "deleteIp",
+        "tags": [
+          "Endpoint Security"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "ip_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "boolean"
+                    },
+                    "error": {
+                      "type": "string",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v0/endpoints/{id}/security/tokens/{token_id}": {
+      "delete": {
+        "summary": "Deletes an existing endpoint token",
+        "description": "Deletes an existing endpoint token",
+        "operationId": "deleteToken",
+        "tags": [
+          "Endpoint Security"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "token_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "boolean"
+                    },
+                    "error": {
+                      "type": "string",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v0/endpoints/{id}/enable_multichain": {
+      "post": {
+        "summary": "Enable multichain for endpoint",
+        "description": "Enables multichain",
+        "operationId": "enableMultichain",
+        "tags": [
+          "Endpoint Security"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "success"
+          }
+        }
+      }
+    },
+    "/v0/endpoints/{id}/disable_multichain": {
+      "post": {
+        "summary": "Disable multichain for endpoint",
+        "description": "Disables multichain",
+        "operationId": "disableMultichain",
+        "tags": [
+          "Endpoint Security"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "success"
+          }
+        }
+      }
+    },
+    "/v0/endpoints/{id}/ip_custom_header": {
+      "patch": {
+        "summary": "Updates or creates an IP custom header",
+        "description": "Create or update an IP custom header",
+        "operationId": "createOrUpdateIpCustomHeader",
+        "tags": [
+          "Endpoint Security"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "header_name": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "error": {
+                      "type": "string",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "header_name": {
+                    "type": "string",
+                    "description": "IP custom header name"
+                  }
+                },
+                "required": [
+                  "header_name"
+                ]
+              }
+            }
+          },
+          "required": true
+        }
+      },
+      "delete": {
+        "summary": "Deletes the IP custom header",
+        "description": "Delete the IP custom header",
+        "operationId": "deleteIpCustomHeader",
+        "tags": [
+          "Endpoint Security"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "boolean"
+                    },
+                    "error": {
+                      "type": "string",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v0/endpoints/{id}/tags": {
+      "post": {
+        "summary": "Creates endpoint tag",
+        "tags": [
+          "Endpoint Tags"
+        ],
+        "description": "Create tag on an endpoint",
+        "operationId": "createTag",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Tag created"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "404": {
+            "description": "Endpoint not found"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "label": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    },
+    "/v0/endpoints": {
+      "post": {
+        "summary": "Creates a new endpoint",
+        "tags": [
+          "Endpoints"
+        ],
+        "parameters": [],
+        "description": "Create a single endpoint",
+        "operationId": "createEndpoint",
+        "responses": {
+          "200": {
+            "description": "success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/single_endpoint"
+                    },
+                    "error": {
+                      "type": "string",
+                      "nullable": true
+                    }
+                  },
+                  "required": [
+                    "data",
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "chain": {
+                    "type": "string"
+                  },
+                  "network": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        }
+      },
+      "get": {
+        "summary": "Retrieves endpoints list",
+        "tags": [
+          "Endpoints"
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "tag_ids",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            }
+          },
+          {
+            "name": "tag_labels",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        ],
+        "description": "Retrieve endpoints list",
+        "operationId": "listEndpoints",
+        "responses": {
+          "200": {
+            "description": "success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/endpoint"
+                      },
+                      "nullable": true
+                    },
+                    "error": {
+                      "type": "string",
+                      "nullable": true
+                    }
+                  },
+                  "required": [
+                    "data",
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v0/endpoints/{id}": {
+      "get": {
+        "summary": "Show single endpoint",
+        "tags": [
+          "Endpoints"
+        ],
+        "description": "Returns a single endpoint",
+        "operationId": "showEndpoint",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/single_endpoint"
+                    },
+                    "error": {
+                      "type": "string",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update endpoint",
+        "tags": [
+          "Endpoints"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "description": "Update label for a single endpoint",
+        "operationId": "UpdateEndpoint",
+        "responses": {
+          "200": {
+            "description": "success"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "label": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Archive endpoint",
+        "tags": [
+          "Endpoints"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "description": "Archive a single endpoint",
+        "operationId": "archiveEndpoint",
+        "responses": {
+          "200": {
+            "description": "success"
+          }
+        }
+      }
+    },
+    "/v0/endpoints/{id}/status": {
+      "patch": {
+        "summary": "Update endpoint status",
+        "tags": [
+          "Endpoints"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "description": "Pause or activate an endpoint",
+        "operationId": "UpdateEndpointStatus",
+        "responses": {
+          "200": {
+            "description": "success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "error": {
+                      "type": "string",
+                      "nullable": true
+                    }
+                  },
+                  "required": [
+                    "data",
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "boolean",
+                      "nullable": true
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "data",
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "active",
+                      "paused"
+                    ]
+                  }
+                },
+                "required": [
+                  "status"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v0/metrics": {
+      "get": {
+        "summary": "Fetch account-level metrics",
+        "tags": [
+          "Account Metrics"
+        ],
+        "description": "Fetches metrics aggregated across all endpoints for an account",
+        "operationId": "fetchAccountMetrics",
+        "parameters": [
+          {
+            "name": "period",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "hour",
+                "day",
+                "week",
+                "month"
+              ]
+            },
+            "required": true,
+            "description": "hour, day, week, month"
+          },
+          {
+            "name": "metric",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "method_calls_over_time",
+                "response_status_over_time",
+                "method_call_breakdown",
+                "response_status_breakdown",
+                "method_response_time_max",
+                "request_errors_over_time",
+                "total_request_errors_over_time"
+              ]
+            },
+            "required": true,
+            "description": "method_calls_over_time, response_status_over_time, method_call_breakdown, response_status_breakdown, method_response_time_max, request_errors_over_time, total_request_errors_over_time"
+          },
+          {
+            "name": "percentile",
+            "in": "query",
+            "required": false,
+            "description": "Percentile for response time metrics",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "total_request_errors_over_time metric",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/endpoint_metric"
+                      }
+                    },
+                    "error": {
+                      "type": "string",
+                      "nullable": true
+                    }
+                  },
+                  "required": [
+                    "data",
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v0/usage/rpc": {
+      "get": {
+        "summary": "Retrieves usage total for specified time range",
+        "tags": [
+          "Usage"
+        ],
+        "description": "If start_time or end_time are missing, current billing period is used and remaining credits for the period are returned.",
+        "operationId": "usage",
+        "parameters": [
+          {
+            "name": "start_time",
+            "in": "query",
+            "description": "Start time",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "end_time",
+            "in": "query",
+            "description": "End time",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "credits_used": {
+                          "type": "integer"
+                        },
+                        "credits_remaining": {
+                          "type": "integer",
+                          "nullable": true
+                        },
+                        "limit": {
+                          "type": "integer",
+                          "nullable": true
+                        },
+                        "overages": {
+                          "type": "integer",
+                          "nullable": true
+                        },
+                        "start_time": {
+                          "type": "integer",
+                          "format": "timestamp"
+                        },
+                        "end_time": {
+                          "type": "integer",
+                          "format": "timestamp"
+                        }
+                      },
+                      "required": [
+                        "credits_used",
+                        "start_time",
+                        "end_time"
+                      ]
+                    },
+                    "error": {
+                      "type": "string",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "invalid time range"
+          }
+        }
+      }
+    },
+    "/v0/usage/rpc/by-endpoint": {
+      "get": {
+        "summary": "Retrieves usage data by endpoint",
+        "tags": [
+          "Usage"
+        ],
+        "description": "Retrieves usage data by endpoint",
+        "operationId": "usageByEndpoint",
+        "parameters": [
+          {
+            "name": "start_time",
+            "in": "query",
+            "description": "Start time",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "end_time",
+            "in": "query",
+            "description": "End time",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "endpoints": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/endpoint_usage"
+                          }
+                        },
+                        "start_time": {
+                          "type": "integer",
+                          "format": "timestamp"
+                        },
+                        "end_time": {
+                          "type": "integer",
+                          "format": "timestamp"
+                        }
+                      }
+                    },
+                    "error": {
+                      "type": "string",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "invalid time range"
+          }
+        }
+      }
+    },
+    "/v0/usage/rpc/by-method": {
+      "get": {
+        "summary": "Retrieves usage data grouped by method",
+        "tags": [
+          "Usage"
+        ],
+        "description": "Retrieves usage data grouped by method",
+        "operationId": "usageByMethod",
+        "parameters": [
+          {
+            "name": "start_time",
+            "in": "query",
+            "description": "Start time",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "end_time",
+            "in": "query",
+            "description": "End time",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "methods": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/method_usage"
+                          }
+                        },
+                        "start_time": {
+                          "type": "integer",
+                          "format": "timestamp"
+                        },
+                        "end_time": {
+                          "type": "integer",
+                          "format": "timestamp"
+                        }
+                      }
+                    },
+                    "error": {
+                      "type": "string",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "invalid time range"
+          }
+        }
+      }
+    },
+    "/v0/usage/rpc/by-chain": {
+      "get": {
+        "summary": "Retrieves usage data by chain",
+        "tags": [
+          "Usage"
+        ],
+        "description": "Retrieves usage data by chain",
+        "operationId": "usageByChain",
+        "parameters": [
+          {
+            "name": "start_time",
+            "in": "query",
+            "description": "Start time",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "end_time",
+            "in": "query",
+            "description": "End time",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "chains": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/chain_usage"
+                          }
+                        },
+                        "start_time": {
+                          "type": "integer",
+                          "format": "timestamp"
+                        },
+                        "end_time": {
+                          "type": "integer",
+                          "format": "timestamp"
+                        }
+                      }
+                    },
+                    "error": {
+                      "type": "string",
+                      "nullable": true
+                    }
+                  },
+                  "required": [
+                    "data",
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "invalid time range"
+          }
+        }
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.quicknode.com"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Usage"
+    },
+    {
+      "name": "Endpoints"
+    },
+    {
+      "name": "Chains"
+    },
+    {
+      "name": "Endpoint Security"
+    },
+    {
+      "name": "Billing"
+    },
+    {
+      "name": "Endpoint Rate Limits"
+    },
+    {
+      "name": "Endpoint Metrics"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearer_auth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "api_key": {
+        "type": "apiKey",
+        "name": "x-api-key",
+        "in": "header"
+      }
+    },
+    "schemas": {
+      "chain": {
+        "type": "object",
+        "properties": {
+          "slug": {
+            "type": "string"
+          },
+          "networks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/network"
+            }
+          },
+          "is_select_chain": {
+            "type": "boolean"
+          }
+        }
+      },
+      "network": {
+        "type": "object",
+        "properties": {
+          "slug": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "chain_id": {
+            "type": "integer",
+            "nullable": true
+          }
+        }
+      },
+      "chain_usage": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "credits_used": {
+            "type": "integer"
+          }
+        }
+      },
+      "endpoint_usage": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "chain": {
+            "type": "string"
+          },
+          "network": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "credits_used": {
+            "type": "integer"
+          },
+          "label": {
+            "type": "string",
+            "nullable": true
+          },
+          "methods_breakdown": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/method_usage"
+            }
+          },
+          "requests": {
+            "type": "integer"
+          }
+        }
+      },
+      "method_usage": {
+        "type": "object",
+        "properties": {
+          "method_name": {
+            "type": "string"
+          },
+          "credits_used": {
+            "type": "integer"
+          },
+          "archive": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "network": {
+            "type": "string"
+          },
+          "chain": {
+            "type": "string"
+          }
+        }
+      },
+      "endpoint": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string",
+            "nullable": true
+          },
+          "chain": {
+            "type": "string",
+            "example": "eth",
+            "description": "chain slug"
+          },
+          "network": {
+            "type": "string",
+            "example": "mainnet",
+            "description": "network slug"
+          },
+          "http_url": {
+            "type": "string"
+          },
+          "wss_url": {
+            "type": "string",
+            "nullable": true
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "tag_id": {
+                  "type": "integer",
+                  "nullable": false
+                },
+                "label": {
+                  "type": "string",
+                  "nullable": false
+                }
+              }
+            }
+          }
+        },
+        "required": [
+          "id",
+          "chain",
+          "network",
+          "http_url"
+        ]
+      },
+      "single_endpoint": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "string"
+          },
+          "chain": {
+            "type": "string",
+            "example": "eth",
+            "description": "chain slug"
+          },
+          "network": {
+            "type": "string",
+            "example": "mainnet",
+            "description": "network slug"
+          },
+          "http_url": {
+            "type": "string"
+          },
+          "wss_url": {
+            "type": "string",
+            "nullable": true
+          },
+          "security": {
+            "$ref": "#/components/schemas/endpoint_security"
+          },
+          "rate_limits": {
+            "$ref": "#/components/schemas/endpoint_rate_limits"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "tag_id": {
+                  "type": "integer",
+                  "nullable": false
+                },
+                "label": {
+                  "type": "string",
+                  "nullable": false
+                }
+              }
+            }
+          }
+        },
+        "required": [
+          "id",
+          "chain",
+          "network",
+          "http_url",
+          "security"
+        ]
+      },
+      "endpoint_rate_limits": {
+        "type": "object",
+        "properties": {
+          "rate_limit_by_ip": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "account": {
+            "type": "integer",
+            "nullable": true
+          },
+          "rps": {
+            "type": "integer",
+            "nullable": true
+          },
+          "rpm": {
+            "type": "integer",
+            "nullable": true
+          },
+          "rpd": {
+            "type": "integer",
+            "nullable": true
+          }
+        }
+      },
+      "endpoint_security": {
+        "type": "object",
+        "properties": {
+          "options": {
+            "type": "object",
+            "properties": {
+              "tokens": {
+                "type": "boolean",
+                "nullable": true
+              },
+              "jwts": {
+                "type": "boolean",
+                "nullable": true
+              },
+              "domainMasks": {
+                "type": "boolean",
+                "nullable": true
+              },
+              "ips": {
+                "type": "boolean",
+                "nullable": true
+              },
+              "referrers": {
+                "type": "boolean",
+                "nullable": true
+              },
+              "requestFilters": {
+                "type": "boolean",
+                "nullable": true
+              },
+              "ipCustomHeader": {
+                "type": "object",
+                "properties": {
+                  "value": {
+                    "type": "string",
+                    "nullable": true
+                  }
+                }
+              }
+            }
+          },
+          "tokens": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/endpoint_token"
+            }
+          },
+          "jwts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/endpoint_jwt"
+            }
+          },
+          "referrers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/endpoint_referrer"
+            }
+          },
+          "domain_masks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/endpoint_domain_mask"
+            }
+          },
+          "ips": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/endpoint_ip"
+            }
+          },
+          "request_filters": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/endpoint_request_filter"
+            }
+          }
+        }
+      },
+      "endpoint_jwt": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "public_key": {
+            "type": "string"
+          },
+          "kid": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "endpoint_token": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "token": {
+            "type": "string"
+          }
+        }
+      },
+      "endpoint_referrer": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "referrer": {
+            "type": "string"
+          }
+        }
+      },
+      "endpoint_domain_mask": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "domain": {
+            "type": "string"
+          }
+        }
+      },
+      "endpoint_ip": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "ip": {
+            "type": "string"
+          }
+        }
+      },
+      "endpoint_request_filter": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "method": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "params": {
+            "type": "object"
+          }
+        }
+      },
+      "invoice": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "billing_reason": {
+            "type": "string"
+          },
+          "lines": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "description": {
+                  "type": "string"
+                },
+                "amount": {
+                  "type": "integer"
+                }
+              }
+            }
+          },
+          "amount_due": {
+            "type": "integer"
+          },
+          "amount_paid": {
+            "type": "integer"
+          },
+          "period_start": {
+            "type": "integer"
+          },
+          "period_end": {
+            "type": "integer"
+          },
+          "created": {
+            "type": "integer"
+          },
+          "subtotal": {
+            "type": "integer"
+          }
+        }
+      },
+      "payment": {
+        "type": "object",
+        "properties": {
+          "amount": {
+            "type": "string"
+          },
+          "card_last_4": {
+            "type": "string",
+            "nullable": true
+          },
+          "created_at": {
+            "type": "string"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "marketplace_amount": {
+            "type": "integer",
+            "nullable": true
+          }
+        }
+      },
+      "endpoint_metric": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            }
+          },
+          "tag": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "security": [
+    {
+      "bearer_auth": []
+    },
+    {
+      "api_key": []
+    }
+  ],
+  "host": "www.quicknode.com"
+}

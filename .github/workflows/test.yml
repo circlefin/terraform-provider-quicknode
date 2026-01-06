@@ -29,15 +29,12 @@ jobs:
         uses: github/codeql-action/init@f6091c0113d1dcf9b98e269ee48e8a7e51b7bdd4 # v3.28.5
         with:
           languages: go
-          build-mode: manual
+          build-mode: manual # go build must be run between this step and the analysis step
           queries: security-extended,security-and-quality
       - run: go mod download
       - run: go build -v .
-      - name: Run linters
-        uses: golangci/golangci-lint-action@ec5d18412c0aeab7936cb16880d708ba2a64e1ae # v6.2.0
-        with:
-          version: latest
-          skip-cache: true
+      - run: go vet ./...
+      - run: go tool staticcheck ./...
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@f6091c0113d1dcf9b98e269ee48e8a7e51b7bdd4 # v3.28.5
         with:
