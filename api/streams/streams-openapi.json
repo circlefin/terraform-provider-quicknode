@@ -1,1 +1,1055 @@
-{"openapi":"3.0.0","paths":{"/streams/rest/v1/streams":{"post":{"operationId":"create","summary":"Create a new stream","parameters":[],"requestBody":{"required":true,"content":{"application/json":{"schema":{"$ref":"#/components/schemas/CreateStreamDto"}}}},"responses":{"201":{"description":""}},"tags":["Streams"],"security":[{"x-api-key":[]}]},"get":{"operationId":"findAll","summary":"Retrieve all streams","parameters":[{"name":"limit","required":true,"in":"query","schema":{"default":20,"type":"number"}},{"name":"offset","required":true,"in":"query","schema":{"default":0,"type":"number"}}],"responses":{"200":{"description":""}},"tags":["Streams"],"security":[{"x-api-key":[]}]},"delete":{"operationId":"removeStreamsByAccountId","summary":"Remove all streams","parameters":[],"responses":{"200":{"description":""}},"tags":["Streams"],"security":[{"x-api-key":[]}]}},"/streams/rest/v1/streams/{id}":{"patch":{"operationId":"update","summary":"Update a stream","parameters":[{"name":"id","required":true,"in":"path","schema":{"type":"string"}}],"requestBody":{"required":true,"content":{"application/json":{"schema":{"$ref":"#/components/schemas/UpdateStreamDto"}}}},"responses":{"200":{"description":""}},"tags":["Streams"],"security":[{"x-api-key":[]}]},"get":{"operationId":"findOne","summary":"Retrieve a stream by ID","parameters":[{"name":"id","required":true,"in":"path","schema":{"type":"string"}}],"responses":{"200":{"description":""}},"tags":["Streams"],"security":[{"x-api-key":[]}]},"delete":{"operationId":"remove","summary":"Remove a stream by ID","parameters":[{"name":"id","required":true,"in":"path","schema":{"type":"string"}}],"responses":{"200":{"description":""}},"tags":["Streams"],"security":[{"x-api-key":[]}]}},"/streams/rest/v1/streams/test_filter":{"post":{"operationId":"testFilterFunction","summary":"Test a filter","parameters":[],"requestBody":{"required":true,"content":{"application/json":{"schema":{"$ref":"#/components/schemas/TestFilterFunctionDto"}}}},"responses":{"201":{"description":""}},"tags":["Streams"],"security":[{"x-api-key":[]}]}},"/streams/rest/v1/streams/{id}/pause":{"post":{"operationId":"pauseStream","summary":"Pause stream","parameters":[{"name":"id","required":true,"in":"path","schema":{"type":"string"}}],"responses":{"201":{"description":""}},"tags":["Streams"],"security":[{"x-api-key":[]}]}},"/streams/rest/v1/streams/{id}/activate":{"post":{"operationId":"activateStream","summary":"Activate stream","parameters":[{"name":"id","required":true,"in":"path","schema":{"type":"string"}}],"responses":{"201":{"description":""}},"tags":["Streams"],"security":[{"x-api-key":[]}]}},"/streams/rest/v1/streams/enabled_count":{"get":{"operationId":"getEnabledStreams","summary":"Retrieve enable streams","parameters":[],"responses":{"200":{"description":""}},"tags":["Streams"],"security":[{"x-api-key":[]}]}}},"info":{"title":"Streams REST API","description":"","version":"1.0","contact":{}},"tags":[{"name":"Streams","description":""}],"servers":[],"components":{"securitySchemes":{"x-api-key":{"type":"apiKey","in":"header","name":"x-api-key"}},"schemas":{"S3Attributes":{"type":"object","properties":{"endpoint":{"type":"string"},"access_key":{"type":"string"},"secret_key":{"type":"string"},"bucket":{"type":"string"},"object_prefix":{"type":"string"},"file_compression":{"type":"string"},"file_type":{"type":"string","enum":[".json",".parquet"],"example":".json"},"max_retry":{"type":"number"},"retry_interval_sec":{"type":"number"},"use_ssl":{"type":"boolean"}},"required":["endpoint","access_key","secret_key","bucket","object_prefix","file_compression","file_type","max_retry","retry_interval_sec","use_ssl"]},"WebhookAttributes":{"type":"object","properties":{"url":{"type":"string"},"security_token":{"type":"string"},"compression":{"type":"string"},"headers":{"type":"object"},"max_retry":{"type":"number"},"retry_interval_sec":{"type":"number"},"post_timeout_sec":{"type":"number"}},"required":["url","security_token","compression","headers","max_retry","retry_interval_sec","post_timeout_sec"]},"PostgresAttributes":{"type":"object","properties":{"username":{"type":"string"},"password":{"type":"string"},"host":{"type":"string"},"port":{"type":"number"},"database":{"type":"string"},"access_key":{"type":"string"},"sslmode":{"type":"string","enum":["disable","require"]},"table_name":{"type":"string"},"max_retry":{"type":"number"},"retry_interval_sec":{"type":"number"}},"required":["username","password","host","port","database","access_key","sslmode","table_name","max_retry","retry_interval_sec"]},"QuickfunctionsAttributes":{"type":"object","properties":{"name":{"type":"string"},"namespace":{"type":"string"},"headers":{"type":"object"},"max_retry":{"type":"number"},"retry_interval_sec":{"type":"number"},"post_timeout_sec":{"type":"number"},"security_token":{"type":"string"}},"required":["name","namespace","headers","max_retry","retry_interval_sec","post_timeout_sec","security_token"]},"AzureAttributes":{"type":"object","properties":{"storage_account":{"type":"string"},"container":{"type":"string"},"sas_token":{"type":"string"},"blob_prefix":{"type":"string"},"file_compression_type":{"type":"string"},"file_type":{"type":"string","enum":[".json",".parquet"]},"max_retry":{"type":"number"},"retry_interval_sec":{"type":"number"}},"required":["storage_account","container","blob_prefix","file_compression_type","file_type","max_retry","retry_interval_sec"]},"CreateStreamDto":{"type":"object","properties":{"name":{"type":"string","example":"My Stream"},"network":{"type":"string","enum":["abstract-mainnet","abstract-testnet","arbitrum-mainnet","arbitrum-sepolia","arc-testnet","avalanche-fuji","avalanche-mainnet","b3-mainnet","b3-sepolia","base-mainnet","base-sepolia","bera-mainnet","bera-bepolia","bch-mainnet","bch-testnet","bitcoin-mainnet","bitcoin-testnet4","blast-mainnet","blast-sepolia","bnbchain-mainnet","bnbchain-testnet","celo-mainnet","cyber-mainnet","cyber-sepolia","doge-mainnet","ethereum-hoodi","ethereum-mainnet","ethereum-sepolia","fantom-mainnet","flare-mainnet","flare-testnet","flow-mainnet","flow-testnet","fraxtal-mainnet","gnosis-mainnet","gravity-alpham","hemi-mainnet","hemi-testnet","hyperevm-mainnet","imx-mainnet","imx-testnet","injective-mainnet","injective-testnet","ink-mainnet","ink-sepolia","joc-mainnet","kaia-mainnet","kaia-testnet","katana-mainnet","lens-mainnet","lens-testnet","linea-mainnet","lisk-mainnet","litecoin-mainnet","litecoin-testnet","mantle-mainnet","mantle-sepolia","mode-mainnet","monad-mainnet","monad-testnet","morph-hoodi","morph-mainnet","nova-mainnet","omni-mainnet","omni-omega","optimism-mainnet","optimism-sepolia","peaq-mainnet","plasma-testnet","plasma-mainnet","polygon-amoy","polygon-mainnet","redstone-mainnet","sahara-testnet","scroll-mainnet","scroll-testnet","sei-mainnet","sei-testnet","solana-devnet","solana-mainnet","solana-testnet","soneium-mainnet","sonic-mainnet","sophon-mainnet","sophon-testnet","story-aeneid","story-mainnet","tron-mainnet","unichain-mainnet","unichain-sepolia","vana-mainnet","vana-moksha","worldchain-mainnet","worldchain-sepolia","xai-mainnet","xai-sepolia","xlayer-mainnet","xrp-mainnet","xrp-testnet","xrplevm-mainnet","xrplevm-testnet","zerog-galileo","zerog-mainnet","zkevm-cardona","zkevm-mainnet","zksync-mainnet","zksync-sepolia","zora-mainnet"],"example":"ethereum-mainnet"},"dataset":{"type":"string","enum":["block","block_with_receipts","receipts","logs","transactions","trace_blocks","debug_traces","block_with_receipts_debug_trace","block_with_receipts_trace_block","programs_with_logs","ledger"],"example":"block"},"filter_function":{"type":"string","example":"dHJ5IHsKICAgIHZhciBkYXRhID0gSlNPTi5wYXJzZShzdHJlYW1EYXRhKTsKICAgIC8vIENvbnZlcnQgaGV4IG51bWJlciB0byBkZWNpbWFsCiAgICB2YXIgbnVtYmVyRGVjaW1hbCA9IHBhcnNlSW50KGRhdGEubnVtYmVyLCAxNik7CiAgICB2YXIgZmlsdGVyZWREYXRhID0ge2hhc2g6IGRhdGEuaGFzaCwgbnVtYmVyOiBudW1iZXJEZWNpbWFsfTsKICAgIEpTT04uc3RyaW5naWZ5KGZpbHRlcmVkRGF0YSk7Cn0gY2F0Y2ggKGUpIHsKICAgIEpTT04uc3RyaW5naWZ5KHtlcnJvcjogZS5tZXNzYWdlfSk7Cn0K","description":"JS/ECMAScript compliant filter encoded in base64","format":"base64"},"region":{"type":"string","enum":["usa_east","europe_central","asia_east"],"example":"usa_east"},"start_range":{"type":"integer","example":100,"description":"Stream start at block number. If not provided, the stream will start at the latest block."},"end_range":{"type":"integer","example":200,"description":"Stream until block number"},"dataset_batch_size":{"type":"number","example":1},"elastic_batch_enabled":{"type":"boolean","example":true},"include_stream_metadata":{"type":"string","enum":["body","header","none"],"example":"body"},"destination":{"type":"string","enum":["webhook","s3","azure","function","postgres"],"example":"webhook"},"fix_block_reorgs":{"type":"number","example":0,"description":"Fix block reorgs by streaming correct blocks: 1. Ignore reorgs: 0"},"keep_distance_from_tip":{"type":"number","example":0,"description":"Stay away from tip by N blocks"},"notification_email":{"type":"string","example":"contact@example.com","description":"Notify when stream is terminated"},"destination_attributes":{"oneOf":[{"$ref":"#/components/schemas/S3Attributes"},{"$ref":"#/components/schemas/WebhookAttributes"},{"$ref":"#/components/schemas/QuickfunctionsAttributes"},{"$ref":"#/components/schemas/PostgresAttributes"},{"$ref":"#/components/schemas/AzureAttributes"}],"example":{"url":"http://localhost:8080/test","security_token":"sample-security-token","compression":"none","headers":{"Content-Type":"Test","Authorization":"again"},"max_retry":3,"retry_interval_sec":1,"post_timeout_sec":10}},"status":{"type":"string","enum":["active","paused"],"example":"active"}},"required":["name","network","dataset","filter_function","region","dataset_batch_size","elastic_batch_enabled","include_stream_metadata","destination","destination_attributes","status"]},"UpdateStreamDto":{"type":"object","properties":{"name":{"type":"string","example":"My Stream"},"filter_function":{"type":"string","example":"dHJ5IHsKICAgIHZhciBkYXRhID0gSlNPTi5wYXJzZShzdHJlYW1EYXRhKTsKICAgIC8vIENvbnZlcnQgaGV4IG51bWJlciB0byBkZWNpbWFsCiAgICB2YXIgbnVtYmVyRGVjaW1hbCA9IHBhcnNlSW50KGRhdGEubnVtYmVyLCAxNik7CiAgICB2YXIgZmlsdGVyZWREYXRhID0ge2hhc2g6IGRhdGEuaGFzaCwgbnVtYmVyOiBudW1iZXJEZWNpbWFsfTsKICAgIEpTT04uc3RyaW5naWZ5KGZpbHRlcmVkRGF0YSk7Cn0gY2F0Y2ggKGUpIHsKICAgIEpTT04uc3RyaW5naWZ5KHtlcnJvcjogZS5tZXNzYWdlfSk7Cn0K","description":"JS/ECMAScript compliant filter encoded in base64","format":"base64"},"start_range":{"type":"integer","example":100,"description":"Stream start at block number. If not provided, the stream will start at the latest block."},"end_range":{"type":"integer","example":200,"description":"Stream until block number"},"dataset_batch_size":{"type":"number","example":1},"elastic_batch_enabled":{"type":"boolean","example":true},"include_stream_metadata":{"type":"string","enum":["body","header","none"],"example":"body"},"destination":{"type":"string","enum":["webhook","s3","azure","function","postgres"],"example":"webhook"},"fix_block_reorgs":{"type":"number","example":0,"description":"Fix block reorgs by streaming correct blocks: 1. Ignore reorgs: 0"},"keep_distance_from_tip":{"type":"number","example":0,"description":"Stay away from tip by N blocks"},"notification_email":{"type":"string","example":"contact@example.com","description":"Notify when stream is terminated"},"destination_attributes":{"oneOf":[{"$ref":"#/components/schemas/S3Attributes"},{"$ref":"#/components/schemas/WebhookAttributes"},{"$ref":"#/components/schemas/QuickfunctionsAttributes"},{"$ref":"#/components/schemas/PostgresAttributes"},{"$ref":"#/components/schemas/AzureAttributes"}],"example":{"url":"http://localhost:8080/test","security_token":"sample-security-token","compression":"none","headers":{"Content-Type":"Test","Authorization":"again"},"max_retry":3,"retry_interval_sec":1,"post_timeout_sec":10}},"status":{"type":"string","enum":["active","paused"],"example":"active"}}},"TestFilterFunctionDto":{"type":"object","properties":{"network":{"type":"string","enum":["abstract-mainnet","abstract-testnet","arbitrum-mainnet","arbitrum-sepolia","arc-testnet","avalanche-fuji","avalanche-mainnet","b3-mainnet","b3-sepolia","base-mainnet","base-sepolia","bera-mainnet","bera-bepolia","bch-mainnet","bch-testnet","bitcoin-mainnet","bitcoin-testnet4","blast-mainnet","blast-sepolia","bnbchain-mainnet","bnbchain-testnet","celo-mainnet","cyber-mainnet","cyber-sepolia","doge-mainnet","ethereum-hoodi","ethereum-mainnet","ethereum-sepolia","fantom-mainnet","flare-mainnet","flare-testnet","flow-mainnet","flow-testnet","fraxtal-mainnet","gnosis-mainnet","gravity-alpham","hemi-mainnet","hemi-testnet","hyperevm-mainnet","imx-mainnet","imx-testnet","injective-mainnet","injective-testnet","ink-mainnet","ink-sepolia","joc-mainnet","kaia-mainnet","kaia-testnet","katana-mainnet","lens-mainnet","lens-testnet","linea-mainnet","lisk-mainnet","litecoin-mainnet","litecoin-testnet","mantle-mainnet","mantle-sepolia","mode-mainnet","monad-mainnet","monad-testnet","morph-hoodi","morph-mainnet","nova-mainnet","omni-mainnet","omni-omega","optimism-mainnet","optimism-sepolia","peaq-mainnet","plasma-testnet","plasma-mainnet","polygon-amoy","polygon-mainnet","redstone-mainnet","sahara-testnet","scroll-mainnet","scroll-testnet","sei-mainnet","sei-testnet","solana-devnet","solana-mainnet","solana-testnet","soneium-mainnet","sonic-mainnet","sophon-mainnet","sophon-testnet","story-aeneid","story-mainnet","tron-mainnet","unichain-mainnet","unichain-sepolia","vana-mainnet","vana-moksha","worldchain-mainnet","worldchain-sepolia","xai-mainnet","xai-sepolia","xlayer-mainnet","xrp-mainnet","xrp-testnet","xrplevm-mainnet","xrplevm-testnet","zerog-galileo","zerog-mainnet","zkevm-cardona","zkevm-mainnet","zksync-mainnet","zksync-sepolia","zora-mainnet"],"example":"ethereum-mainnet"},"block":{"type":"string","example":"17811625"},"dataset":{"type":"string","enum":["block","block_with_receipts","receipts","logs","transactions","trace_blocks","debug_traces","block_with_receipts_debug_trace","block_with_receipts_trace_block","programs_with_logs","ledger"],"example":"block"},"filter_function":{"type":"string","example":"ZnVuY3Rpb24gbWFpbihzdHJlYW0pIHsKICAvLyBJZiBzdHJlYW0gaXMgY29uZmlndXJlZCB3aXRoIG1ldGFkYXRhIGluIHRoZSBib2R5LCB0aGUgZGF0YSBtYXkgYmUgbmVzdGVkIHVuZGVyICJkYXRhIiBrZXkKICBjb25zdCBkYXRhID0gc3RyZWFtLmRhdGEgPyBzdHJlYW0uZGF0YSA6IHN0cmVhbTsKCiAgcmV0dXJuIGRhdGE7Cn0=","description":"JS/ECMAScript compliant filter encoded in base64","format":"base64"}},"required":["network","block","dataset","filter_function"]}}}}
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/streams/rest/v1/streams": {
+      "post": {
+        "operationId": "create",
+        "summary": "Create a new stream",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateStreamDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Streams"
+        ],
+        "security": [
+          {
+            "x-api-key": []
+          }
+        ]
+      },
+      "get": {
+        "operationId": "findAll",
+        "summary": "Retrieve all streams",
+        "parameters": [
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "default": 20,
+              "type": "number"
+            }
+          },
+          {
+            "name": "offset",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "default": 0,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Streams"
+        ],
+        "security": [
+          {
+            "x-api-key": []
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "removeStreamsByAccountId",
+        "summary": "Remove all streams",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Streams"
+        ],
+        "security": [
+          {
+            "x-api-key": []
+          }
+        ]
+      }
+    },
+    "/streams/rest/v1/streams/{id}": {
+      "patch": {
+        "operationId": "update",
+        "summary": "Update a stream",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateStreamDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Streams"
+        ],
+        "security": [
+          {
+            "x-api-key": []
+          }
+        ]
+      },
+      "get": {
+        "operationId": "findOne",
+        "summary": "Retrieve a stream by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Streams"
+        ],
+        "security": [
+          {
+            "x-api-key": []
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "remove",
+        "summary": "Remove a stream by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Streams"
+        ],
+        "security": [
+          {
+            "x-api-key": []
+          }
+        ]
+      }
+    },
+    "/streams/rest/v1/streams/test_filter": {
+      "post": {
+        "operationId": "testFilterFunction",
+        "summary": "Test a filter",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TestFilterFunctionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Streams"
+        ],
+        "security": [
+          {
+            "x-api-key": []
+          }
+        ]
+      }
+    },
+    "/streams/rest/v1/streams/{id}/pause": {
+      "post": {
+        "operationId": "pauseStream",
+        "summary": "Pause stream",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Streams"
+        ],
+        "security": [
+          {
+            "x-api-key": []
+          }
+        ]
+      }
+    },
+    "/streams/rest/v1/streams/{id}/activate": {
+      "post": {
+        "operationId": "activateStream",
+        "summary": "Activate stream",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Streams"
+        ],
+        "security": [
+          {
+            "x-api-key": []
+          }
+        ]
+      }
+    },
+    "/streams/rest/v1/streams/enabled_count": {
+      "get": {
+        "operationId": "getEnabledStreams",
+        "summary": "Retrieve enable streams",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Streams"
+        ],
+        "security": [
+          {
+            "x-api-key": []
+          }
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "Streams REST API",
+    "description": "",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [
+    {
+      "name": "Streams",
+      "description": ""
+    }
+  ],
+  "servers": [],
+  "components": {
+    "securitySchemes": {
+      "x-api-key": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-api-key"
+      }
+    },
+    "schemas": {
+      "S3Attributes": {
+        "type": "object",
+        "properties": {
+          "endpoint": {
+            "type": "string"
+          },
+          "access_key": {
+            "type": "string"
+          },
+          "secret_key": {
+            "type": "string"
+          },
+          "bucket": {
+            "type": "string"
+          },
+          "object_prefix": {
+            "type": "string"
+          },
+          "file_compression": {
+            "type": "string"
+          },
+          "file_type": {
+            "type": "string",
+            "enum": [
+              ".json",
+              ".parquet"
+            ],
+            "example": ".json"
+          },
+          "max_retry": {
+            "type": "number"
+          },
+          "retry_interval_sec": {
+            "type": "number"
+          },
+          "use_ssl": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "endpoint",
+          "access_key",
+          "secret_key",
+          "bucket",
+          "object_prefix",
+          "file_compression",
+          "file_type",
+          "max_retry",
+          "retry_interval_sec",
+          "use_ssl"
+        ]
+      },
+      "WebhookAttributes": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string"
+          },
+          "security_token": {
+            "type": "string"
+          },
+          "compression": {
+            "type": "string"
+          },
+          "headers": {
+            "type": "object"
+          },
+          "max_retry": {
+            "type": "number"
+          },
+          "retry_interval_sec": {
+            "type": "number"
+          },
+          "post_timeout_sec": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "url",
+          "security_token",
+          "compression",
+          "headers",
+          "max_retry",
+          "retry_interval_sec",
+          "post_timeout_sec"
+        ]
+      },
+      "PostgresAttributes": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          },
+          "host": {
+            "type": "string"
+          },
+          "port": {
+            "type": "number"
+          },
+          "database": {
+            "type": "string"
+          },
+          "access_key": {
+            "type": "string"
+          },
+          "sslmode": {
+            "type": "string",
+            "enum": [
+              "disable",
+              "require"
+            ]
+          },
+          "table_name": {
+            "type": "string"
+          },
+          "max_retry": {
+            "type": "number"
+          },
+          "retry_interval_sec": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "username",
+          "password",
+          "host",
+          "port",
+          "database",
+          "access_key",
+          "sslmode",
+          "table_name",
+          "max_retry",
+          "retry_interval_sec"
+        ]
+      },
+      "QuickfunctionsAttributes": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "namespace": {
+            "type": "string"
+          },
+          "headers": {
+            "type": "object"
+          },
+          "max_retry": {
+            "type": "number"
+          },
+          "retry_interval_sec": {
+            "type": "number"
+          },
+          "post_timeout_sec": {
+            "type": "number"
+          },
+          "security_token": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "namespace",
+          "headers",
+          "max_retry",
+          "retry_interval_sec",
+          "post_timeout_sec",
+          "security_token"
+        ]
+      },
+      "AzureAttributes": {
+        "type": "object",
+        "properties": {
+          "storage_account": {
+            "type": "string"
+          },
+          "container": {
+            "type": "string"
+          },
+          "sas_token": {
+            "type": "string"
+          },
+          "blob_prefix": {
+            "type": "string"
+          },
+          "file_compression_type": {
+            "type": "string"
+          },
+          "file_type": {
+            "type": "string",
+            "enum": [
+              ".json",
+              ".parquet"
+            ]
+          },
+          "max_retry": {
+            "type": "number"
+          },
+          "retry_interval_sec": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "storage_account",
+          "container",
+          "blob_prefix",
+          "file_compression_type",
+          "file_type",
+          "max_retry",
+          "retry_interval_sec"
+        ]
+      },
+      "CreateStreamDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "My Stream"
+          },
+          "network": {
+            "type": "string",
+            "enum": [
+              "abstract-mainnet",
+              "abstract-testnet",
+              "arbitrum-mainnet",
+              "arbitrum-sepolia",
+              "arc-testnet",
+              "avalanche-fuji",
+              "avalanche-mainnet",
+              "b3-mainnet",
+              "b3-sepolia",
+              "base-mainnet",
+              "base-sepolia",
+              "bera-mainnet",
+              "bera-bepolia",
+              "bch-mainnet",
+              "bch-testnet",
+              "bitcoin-mainnet",
+              "bitcoin-testnet4",
+              "blast-mainnet",
+              "blast-sepolia",
+              "bnbchain-mainnet",
+              "bnbchain-testnet",
+              "celo-mainnet",
+              "cyber-mainnet",
+              "cyber-sepolia",
+              "doge-mainnet",
+              "ethereum-hoodi",
+              "ethereum-mainnet",
+              "ethereum-sepolia",
+              "fantom-mainnet",
+              "flare-mainnet",
+              "flare-testnet",
+              "flow-mainnet",
+              "flow-testnet",
+              "fraxtal-mainnet",
+              "gnosis-mainnet",
+              "gravity-alpham",
+              "hemi-mainnet",
+              "hemi-testnet",
+              "hyperevm-mainnet",
+              "hypercore-mainnet",
+              "imx-mainnet",
+              "imx-testnet",
+              "injective-mainnet",
+              "injective-testnet",
+              "ink-mainnet",
+              "ink-sepolia",
+              "joc-mainnet",
+              "kaia-mainnet",
+              "kaia-testnet",
+              "katana-mainnet",
+              "lens-mainnet",
+              "lens-testnet",
+              "linea-mainnet",
+              "lisk-mainnet",
+              "litecoin-mainnet",
+              "litecoin-testnet",
+              "mantle-mainnet",
+              "mantle-sepolia",
+              "mode-mainnet",
+              "monad-mainnet",
+              "monad-testnet",
+              "morph-hoodi",
+              "morph-mainnet",
+              "nova-mainnet",
+              "omni-mainnet",
+              "omni-omega",
+              "optimism-mainnet",
+              "optimism-sepolia",
+              "peaq-mainnet",
+              "plasma-testnet",
+              "plasma-mainnet",
+              "polygon-amoy",
+              "polygon-mainnet",
+              "redstone-mainnet",
+              "sahara-testnet",
+              "scroll-mainnet",
+              "scroll-testnet",
+              "sei-mainnet",
+              "sei-testnet",
+              "solana-devnet",
+              "solana-mainnet",
+              "solana-testnet",
+              "soneium-mainnet",
+              "sonic-mainnet",
+              "sophon-mainnet",
+              "sophon-testnet",
+              "story-aeneid",
+              "story-mainnet",
+              "tron-mainnet",
+              "unichain-mainnet",
+              "unichain-sepolia",
+              "vana-mainnet",
+              "vana-moksha",
+              "worldchain-mainnet",
+              "worldchain-sepolia",
+              "xai-mainnet",
+              "xai-sepolia",
+              "xlayer-mainnet",
+              "xrp-mainnet",
+              "xrp-testnet",
+              "xrplevm-mainnet",
+              "xrplevm-testnet",
+              "zerog-galileo",
+              "zerog-mainnet",
+              "zkevm-cardona",
+              "zkevm-mainnet",
+              "zksync-mainnet",
+              "zksync-sepolia",
+              "zora-mainnet"
+            ],
+            "example": "ethereum-mainnet"
+          },
+          "dataset": {
+            "type": "string",
+            "enum": [
+              "block",
+              "block_with_receipts",
+              "receipts",
+              "logs",
+              "transactions",
+              "trace_blocks",
+              "debug_traces",
+              "block_with_receipts_debug_trace",
+              "block_with_receipts_trace_block",
+              "programs_with_logs",
+              "ledger",
+              "events",
+              "orders"
+            ],
+            "example": "block"
+          },
+          "filter_function": {
+            "type": "string",
+            "example": "dHJ5IHsKICAgIHZhciBkYXRhID0gSlNPTi5wYXJzZShzdHJlYW1EYXRhKTsKICAgIC8vIENvbnZlcnQgaGV4IG51bWJlciB0byBkZWNpbWFsCiAgICB2YXIgbnVtYmVyRGVjaW1hbCA9IHBhcnNlSW50KGRhdGEubnVtYmVyLCAxNik7CiAgICB2YXIgZmlsdGVyZWREYXRhID0ge2hhc2g6IGRhdGEuaGFzaCwgbnVtYmVyOiBudW1iZXJEZWNpbWFsfTsKICAgIEpTT04uc3RyaW5naWZ5KGZpbHRlcmVkRGF0YSk7Cn0gY2F0Y2ggKGUpIHsKICAgIEpTT04uc3RyaW5naWZ5KHtlcnJvcjogZS5tZXNzYWdlfSk7Cn0K",
+            "description": "JS/ECMAScript compliant filter encoded in base64",
+            "format": "base64"
+          },
+          "region": {
+            "type": "string",
+            "enum": [
+              "usa_east",
+              "europe_central",
+              "asia_east"
+            ],
+            "example": "usa_east"
+          },
+          "start_range": {
+            "type": "integer",
+            "example": 100,
+            "description": "Stream start at block number. If not provided, the stream will start at the latest block."
+          },
+          "end_range": {
+            "type": "integer",
+            "example": 200,
+            "description": "Stream until block number"
+          },
+          "dataset_batch_size": {
+            "type": "number",
+            "example": 1
+          },
+          "elastic_batch_enabled": {
+            "type": "boolean",
+            "example": true
+          },
+          "include_stream_metadata": {
+            "type": "string",
+            "enum": [
+              "body",
+              "header",
+              "none"
+            ],
+            "example": "body"
+          },
+          "destination": {
+            "type": "string",
+            "enum": [
+              "webhook",
+              "s3",
+              "azure",
+              "function",
+              "postgres"
+            ],
+            "example": "webhook"
+          },
+          "fix_block_reorgs": {
+            "type": "number",
+            "example": 0,
+            "description": "Fix block reorgs by streaming correct blocks: 1. Ignore reorgs: 0"
+          },
+          "keep_distance_from_tip": {
+            "type": "number",
+            "example": 0,
+            "description": "Stay away from tip by N blocks"
+          },
+          "notification_email": {
+            "type": "string",
+            "example": "contact@example.com",
+            "description": "Notify when stream is terminated"
+          },
+          "destination_attributes": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/S3Attributes"
+              },
+              {
+                "$ref": "#/components/schemas/WebhookAttributes"
+              },
+              {
+                "$ref": "#/components/schemas/QuickfunctionsAttributes"
+              },
+              {
+                "$ref": "#/components/schemas/PostgresAttributes"
+              },
+              {
+                "$ref": "#/components/schemas/AzureAttributes"
+              }
+            ],
+            "example": {
+              "url": "http://localhost:8080/test",
+              "security_token": "sample-security-token",
+              "compression": "none",
+              "headers": {
+                "Content-Type": "Test",
+                "Authorization": "again"
+              },
+              "max_retry": 3,
+              "retry_interval_sec": 1,
+              "post_timeout_sec": 10
+            }
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "paused"
+            ],
+            "example": "active"
+          }
+        },
+        "required": [
+          "name",
+          "network",
+          "dataset",
+          "filter_function",
+          "region",
+          "dataset_batch_size",
+          "elastic_batch_enabled",
+          "include_stream_metadata",
+          "destination",
+          "destination_attributes",
+          "status"
+        ]
+      },
+      "UpdateStreamDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "My Stream"
+          },
+          "filter_function": {
+            "type": "string",
+            "example": "dHJ5IHsKICAgIHZhciBkYXRhID0gSlNPTi5wYXJzZShzdHJlYW1EYXRhKTsKICAgIC8vIENvbnZlcnQgaGV4IG51bWJlciB0byBkZWNpbWFsCiAgICB2YXIgbnVtYmVyRGVjaW1hbCA9IHBhcnNlSW50KGRhdGEubnVtYmVyLCAxNik7CiAgICB2YXIgZmlsdGVyZWREYXRhID0ge2hhc2g6IGRhdGEuaGFzaCwgbnVtYmVyOiBudW1iZXJEZWNpbWFsfTsKICAgIEpTT04uc3RyaW5naWZ5KGZpbHRlcmVkRGF0YSk7Cn0gY2F0Y2ggKGUpIHsKICAgIEpTT04uc3RyaW5naWZ5KHtlcnJvcjogZS5tZXNzYWdlfSk7Cn0K",
+            "description": "JS/ECMAScript compliant filter encoded in base64",
+            "format": "base64"
+          },
+          "start_range": {
+            "type": "integer",
+            "example": 100,
+            "description": "Stream start at block number. If not provided, the stream will start at the latest block."
+          },
+          "end_range": {
+            "type": "integer",
+            "example": 200,
+            "description": "Stream until block number"
+          },
+          "dataset_batch_size": {
+            "type": "number",
+            "example": 1
+          },
+          "elastic_batch_enabled": {
+            "type": "boolean",
+            "example": true
+          },
+          "include_stream_metadata": {
+            "type": "string",
+            "enum": [
+              "body",
+              "header",
+              "none"
+            ],
+            "example": "body"
+          },
+          "destination": {
+            "type": "string",
+            "enum": [
+              "webhook",
+              "s3",
+              "azure",
+              "function",
+              "postgres"
+            ],
+            "example": "webhook"
+          },
+          "fix_block_reorgs": {
+            "type": "number",
+            "example": 0,
+            "description": "Fix block reorgs by streaming correct blocks: 1. Ignore reorgs: 0"
+          },
+          "keep_distance_from_tip": {
+            "type": "number",
+            "example": 0,
+            "description": "Stay away from tip by N blocks"
+          },
+          "notification_email": {
+            "type": "string",
+            "example": "contact@example.com",
+            "description": "Notify when stream is terminated"
+          },
+          "destination_attributes": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/S3Attributes"
+              },
+              {
+                "$ref": "#/components/schemas/WebhookAttributes"
+              },
+              {
+                "$ref": "#/components/schemas/QuickfunctionsAttributes"
+              },
+              {
+                "$ref": "#/components/schemas/PostgresAttributes"
+              },
+              {
+                "$ref": "#/components/schemas/AzureAttributes"
+              }
+            ],
+            "example": {
+              "url": "http://localhost:8080/test",
+              "security_token": "sample-security-token",
+              "compression": "none",
+              "headers": {
+                "Content-Type": "Test",
+                "Authorization": "again"
+              },
+              "max_retry": 3,
+              "retry_interval_sec": 1,
+              "post_timeout_sec": 10
+            }
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "paused"
+            ],
+            "example": "active"
+          }
+        }
+      },
+      "TestFilterFunctionDto": {
+        "type": "object",
+        "properties": {
+          "network": {
+            "type": "string",
+            "enum": [
+              "abstract-mainnet",
+              "abstract-testnet",
+              "arbitrum-mainnet",
+              "arbitrum-sepolia",
+              "arc-testnet",
+              "avalanche-fuji",
+              "avalanche-mainnet",
+              "b3-mainnet",
+              "b3-sepolia",
+              "base-mainnet",
+              "base-sepolia",
+              "bera-mainnet",
+              "bera-bepolia",
+              "bch-mainnet",
+              "bch-testnet",
+              "bitcoin-mainnet",
+              "bitcoin-testnet4",
+              "blast-mainnet",
+              "blast-sepolia",
+              "bnbchain-mainnet",
+              "bnbchain-testnet",
+              "celo-mainnet",
+              "cyber-mainnet",
+              "cyber-sepolia",
+              "doge-mainnet",
+              "ethereum-hoodi",
+              "ethereum-mainnet",
+              "ethereum-sepolia",
+              "fantom-mainnet",
+              "flare-mainnet",
+              "flare-testnet",
+              "flow-mainnet",
+              "flow-testnet",
+              "fraxtal-mainnet",
+              "gnosis-mainnet",
+              "gravity-alpham",
+              "hemi-mainnet",
+              "hemi-testnet",
+              "hyperevm-mainnet",
+              "hypercore-mainnet",
+              "imx-mainnet",
+              "imx-testnet",
+              "injective-mainnet",
+              "injective-testnet",
+              "ink-mainnet",
+              "ink-sepolia",
+              "joc-mainnet",
+              "kaia-mainnet",
+              "kaia-testnet",
+              "katana-mainnet",
+              "lens-mainnet",
+              "lens-testnet",
+              "linea-mainnet",
+              "lisk-mainnet",
+              "litecoin-mainnet",
+              "litecoin-testnet",
+              "mantle-mainnet",
+              "mantle-sepolia",
+              "mode-mainnet",
+              "monad-mainnet",
+              "monad-testnet",
+              "morph-hoodi",
+              "morph-mainnet",
+              "nova-mainnet",
+              "omni-mainnet",
+              "omni-omega",
+              "optimism-mainnet",
+              "optimism-sepolia",
+              "peaq-mainnet",
+              "plasma-testnet",
+              "plasma-mainnet",
+              "polygon-amoy",
+              "polygon-mainnet",
+              "redstone-mainnet",
+              "sahara-testnet",
+              "scroll-mainnet",
+              "scroll-testnet",
+              "sei-mainnet",
+              "sei-testnet",
+              "solana-devnet",
+              "solana-mainnet",
+              "solana-testnet",
+              "soneium-mainnet",
+              "sonic-mainnet",
+              "sophon-mainnet",
+              "sophon-testnet",
+              "story-aeneid",
+              "story-mainnet",
+              "tron-mainnet",
+              "unichain-mainnet",
+              "unichain-sepolia",
+              "vana-mainnet",
+              "vana-moksha",
+              "worldchain-mainnet",
+              "worldchain-sepolia",
+              "xai-mainnet",
+              "xai-sepolia",
+              "xlayer-mainnet",
+              "xrp-mainnet",
+              "xrp-testnet",
+              "xrplevm-mainnet",
+              "xrplevm-testnet",
+              "zerog-galileo",
+              "zerog-mainnet",
+              "zkevm-cardona",
+              "zkevm-mainnet",
+              "zksync-mainnet",
+              "zksync-sepolia",
+              "zora-mainnet"
+            ],
+            "example": "ethereum-mainnet"
+          },
+          "block": {
+            "type": "string",
+            "example": "17811625"
+          },
+          "dataset": {
+            "type": "string",
+            "enum": [
+              "block",
+              "block_with_receipts",
+              "receipts",
+              "logs",
+              "transactions",
+              "trace_blocks",
+              "debug_traces",
+              "block_with_receipts_debug_trace",
+              "block_with_receipts_trace_block",
+              "programs_with_logs",
+              "ledger",
+              "events",
+              "orders"
+            ],
+            "example": "block"
+          },
+          "filter_function": {
+            "type": "string",
+            "example": "ZnVuY3Rpb24gbWFpbihzdHJlYW0pIHsKICAvLyBJZiBzdHJlYW0gaXMgY29uZmlndXJlZCB3aXRoIG1ldGFkYXRhIGluIHRoZSBib2R5LCB0aGUgZGF0YSBtYXkgYmUgbmVzdGVkIHVuZGVyICJkYXRhIiBrZXkKICBjb25zdCBkYXRhID0gc3RyZWFtLmRhdGEgPyBzdHJlYW0uZGF0YSA6IHN0cmVhbTsKCiAgcmV0dXJuIGRhdGE7Cn0=",
+            "description": "JS/ECMAScript compliant filter encoded in base64",
+            "format": "base64"
+          }
+        },
+        "required": [
+          "network",
+          "block",
+          "dataset",
+          "filter_function"
+        ]
+      }
+    }
+  }
+}

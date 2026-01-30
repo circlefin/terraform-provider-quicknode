@@ -48,11 +48,13 @@ const (
 
 // Defines values for FetchEndpointMetricParamsMetric.
 const (
-	MethodCallBreakdown     FetchEndpointMetricParamsMetric = "method_call_breakdown"
-	MethodCallsOverTime     FetchEndpointMetricParamsMetric = "method_calls_over_time"
-	MethodResponseTimeMax   FetchEndpointMetricParamsMetric = "method_response_time_max"
-	ResponseStatusBreakdown FetchEndpointMetricParamsMetric = "response_status_breakdown"
-	ResponseStatusOverTime  FetchEndpointMetricParamsMetric = "response_status_over_time"
+	FetchEndpointMetricParamsMetricMethodCallBreakdown        FetchEndpointMetricParamsMetric = "method_call_breakdown"
+	FetchEndpointMetricParamsMetricMethodCallsOverTime        FetchEndpointMetricParamsMetric = "method_calls_over_time"
+	FetchEndpointMetricParamsMetricMethodResponseTimeMax      FetchEndpointMetricParamsMetric = "method_response_time_max"
+	FetchEndpointMetricParamsMetricRequestErrorsOverTime      FetchEndpointMetricParamsMetric = "request_errors_over_time"
+	FetchEndpointMetricParamsMetricResponseStatusBreakdown    FetchEndpointMetricParamsMetric = "response_status_breakdown"
+	FetchEndpointMetricParamsMetricResponseStatusOverTime     FetchEndpointMetricParamsMetric = "response_status_over_time"
+	FetchEndpointMetricParamsMetricTotalRequestErrorsOverTime FetchEndpointMetricParamsMetric = "total_request_errors_over_time"
 )
 
 // Defines values for UpdateSecurityOptionsJSONBodyOptionsCors.
@@ -73,6 +75,12 @@ const (
 	UpdateSecurityOptionsJSONBodyOptionsHstsEnabled  UpdateSecurityOptionsJSONBodyOptionsHsts = "enabled"
 )
 
+// Defines values for UpdateSecurityOptionsJSONBodyOptionsIpCustomHeader.
+const (
+	UpdateSecurityOptionsJSONBodyOptionsIpCustomHeaderDisabled UpdateSecurityOptionsJSONBodyOptionsIpCustomHeader = "disabled"
+	UpdateSecurityOptionsJSONBodyOptionsIpCustomHeaderEnabled  UpdateSecurityOptionsJSONBodyOptionsIpCustomHeader = "enabled"
+)
+
 // Defines values for UpdateSecurityOptionsJSONBodyOptionsIps.
 const (
 	UpdateSecurityOptionsJSONBodyOptionsIpsDisabled UpdateSecurityOptionsJSONBodyOptionsIps = "disabled"
@@ -91,10 +99,41 @@ const (
 	UpdateSecurityOptionsJSONBodyOptionsReferrersEnabled  UpdateSecurityOptionsJSONBodyOptionsReferrers = "enabled"
 )
 
+// Defines values for UpdateSecurityOptionsJSONBodyOptionsRequestFilters.
+const (
+	UpdateSecurityOptionsJSONBodyOptionsRequestFiltersDisabled UpdateSecurityOptionsJSONBodyOptionsRequestFilters = "disabled"
+	UpdateSecurityOptionsJSONBodyOptionsRequestFiltersEnabled  UpdateSecurityOptionsJSONBodyOptionsRequestFilters = "enabled"
+)
+
 // Defines values for UpdateSecurityOptionsJSONBodyOptionsTokens.
 const (
 	UpdateSecurityOptionsJSONBodyOptionsTokensDisabled UpdateSecurityOptionsJSONBodyOptionsTokens = "disabled"
 	UpdateSecurityOptionsJSONBodyOptionsTokensEnabled  UpdateSecurityOptionsJSONBodyOptionsTokens = "enabled"
+)
+
+// Defines values for UpdateEndpointStatusJSONBodyStatus.
+const (
+	Active UpdateEndpointStatusJSONBodyStatus = "active"
+	Paused UpdateEndpointStatusJSONBodyStatus = "paused"
+)
+
+// Defines values for FetchAccountMetricsParamsPeriod.
+const (
+	Day   FetchAccountMetricsParamsPeriod = "day"
+	Hour  FetchAccountMetricsParamsPeriod = "hour"
+	Month FetchAccountMetricsParamsPeriod = "month"
+	Week  FetchAccountMetricsParamsPeriod = "week"
+)
+
+// Defines values for FetchAccountMetricsParamsMetric.
+const (
+	FetchAccountMetricsParamsMetricMethodCallBreakdown        FetchAccountMetricsParamsMetric = "method_call_breakdown"
+	FetchAccountMetricsParamsMetricMethodCallsOverTime        FetchAccountMetricsParamsMetric = "method_calls_over_time"
+	FetchAccountMetricsParamsMetricMethodResponseTimeMax      FetchAccountMetricsParamsMetric = "method_response_time_max"
+	FetchAccountMetricsParamsMetricRequestErrorsOverTime      FetchAccountMetricsParamsMetric = "request_errors_over_time"
+	FetchAccountMetricsParamsMetricResponseStatusBreakdown    FetchAccountMetricsParamsMetric = "response_status_breakdown"
+	FetchAccountMetricsParamsMetricResponseStatusOverTime     FetchAccountMetricsParamsMetric = "response_status_over_time"
+	FetchAccountMetricsParamsMetricTotalRequestErrorsOverTime FetchAccountMetricsParamsMetric = "total_request_errors_over_time"
 )
 
 // Chain defines model for chain.
@@ -119,8 +158,12 @@ type Endpoint struct {
 	Label   *string `json:"label"`
 
 	// Network network slug
-	Network string  `json:"network"`
-	WssUrl  *string `json:"wss_url"`
+	Network string `json:"network"`
+	Tags    *[]struct {
+		Label *string `json:"label,omitempty"`
+		TagId *int    `json:"tag_id,omitempty"`
+	} `json:"tags,omitempty"`
+	WssUrl *string `json:"wss_url"`
 }
 
 // EndpointDomainMask defines model for endpoint_domain_mask.
@@ -164,20 +207,32 @@ type EndpointReferrer struct {
 	Referrer *string `json:"referrer,omitempty"`
 }
 
+// EndpointRequestFilter defines model for endpoint_request_filter.
+type EndpointRequestFilter struct {
+	Id     *string                 `json:"id,omitempty"`
+	Method *[]string               `json:"method,omitempty"`
+	Params *map[string]interface{} `json:"params,omitempty"`
+}
+
 // EndpointSecurity defines model for endpoint_security.
 type EndpointSecurity struct {
 	DomainMasks *[]EndpointDomainMask `json:"domain_masks,omitempty"`
 	Ips         *[]EndpointIp         `json:"ips,omitempty"`
 	Jwts        *[]EndpointJwt        `json:"jwts,omitempty"`
 	Options     *struct {
-		DomainMasks *bool `json:"domainMasks"`
-		Ips         *bool `json:"ips"`
-		Jwts        *bool `json:"jwts"`
-		Referrers   *bool `json:"referrers"`
-		Tokens      *bool `json:"tokens"`
+		DomainMasks    *bool `json:"domainMasks"`
+		IpCustomHeader *struct {
+			Value *string `json:"value"`
+		} `json:"ipCustomHeader,omitempty"`
+		Ips            *bool `json:"ips"`
+		Jwts           *bool `json:"jwts"`
+		Referrers      *bool `json:"referrers"`
+		RequestFilters *bool `json:"requestFilters"`
+		Tokens         *bool `json:"tokens"`
 	} `json:"options,omitempty"`
-	Referrers *[]EndpointReferrer `json:"referrers,omitempty"`
-	Tokens    *[]EndpointToken    `json:"tokens,omitempty"`
+	Referrers      *[]EndpointReferrer      `json:"referrers,omitempty"`
+	RequestFilters *[]EndpointRequestFilter `json:"request_filters,omitempty"`
+	Tokens         *[]EndpointToken         `json:"tokens,omitempty"`
 }
 
 // EndpointToken defines model for endpoint_token.
@@ -194,6 +249,8 @@ type EndpointUsage struct {
 	MethodsBreakdown *[]MethodUsage `json:"methods_breakdown,omitempty"`
 	Name             *string        `json:"name,omitempty"`
 	Network          *string        `json:"network,omitempty"`
+	Requests         *int           `json:"requests,omitempty"`
+	Status           *string        `json:"status,omitempty"`
 }
 
 // Invoice defines model for invoice.
@@ -216,14 +273,17 @@ type Invoice struct {
 // MethodUsage defines model for method_usage.
 type MethodUsage struct {
 	Archive     *bool   `json:"archive"`
+	Chain       *string `json:"chain,omitempty"`
 	CreditsUsed *int    `json:"credits_used,omitempty"`
 	MethodName  *string `json:"method_name,omitempty"`
+	Network     *string `json:"network,omitempty"`
 }
 
 // Network defines model for network.
 type Network struct {
-	Name *string `json:"name,omitempty"`
-	Slug *string `json:"slug,omitempty"`
+	ChainId *int    `json:"chain_id"`
+	Name    *string `json:"name,omitempty"`
+	Slug    *string `json:"slug,omitempty"`
 }
 
 // Payment defines model for payment.
@@ -248,13 +308,20 @@ type SingleEndpoint struct {
 	Network    string              `json:"network"`
 	RateLimits *EndpointRateLimits `json:"rate_limits,omitempty"`
 	Security   EndpointSecurity    `json:"security"`
-	WssUrl     *string             `json:"wss_url"`
+	Status     *string             `json:"status,omitempty"`
+	Tags       *[]struct {
+		Label *string `json:"label,omitempty"`
+		TagId *int    `json:"tag_id,omitempty"`
+	} `json:"tags,omitempty"`
+	WssUrl *string `json:"wss_url"`
 }
 
 // ListEndpointsParams defines parameters for ListEndpoints.
 type ListEndpointsParams struct {
-	Limit  *int `form:"limit,omitempty" json:"limit,omitempty"`
-	Offset *int `form:"offset,omitempty" json:"offset,omitempty"`
+	Limit     *int      `form:"limit,omitempty" json:"limit,omitempty"`
+	Offset    *int      `form:"offset,omitempty" json:"offset,omitempty"`
+	TagIds    *[]int    `form:"tag_ids,omitempty" json:"tag_ids,omitempty"`
+	TagLabels *[]string `form:"tag_labels,omitempty" json:"tag_labels,omitempty"`
 }
 
 // CreateEndpointJSONBody defines parameters for CreateEndpoint.
@@ -266,6 +333,26 @@ type CreateEndpointJSONBody struct {
 // UpdateEndpointJSONBody defines parameters for UpdateEndpoint.
 type UpdateEndpointJSONBody struct {
 	Label *string `json:"label,omitempty"`
+}
+
+// CreateOrUpdateIpCustomHeaderJSONBody defines parameters for CreateOrUpdateIpCustomHeader.
+type CreateOrUpdateIpCustomHeaderJSONBody struct {
+	// HeaderName IP custom header name
+	HeaderName string `json:"header_name"`
+}
+
+// GetLogDetailsParams defines parameters for GetLogDetails.
+type GetLogDetailsParams struct {
+	RequestId string `form:"request_id" json:"request_id"`
+}
+
+// GetEndpointLogsParams defines parameters for GetEndpointLogs.
+type GetEndpointLogsParams struct {
+	IncludeDetails *bool   `form:"include_details,omitempty" json:"include_details,omitempty"`
+	Limit          *int    `form:"limit,omitempty" json:"limit,omitempty"`
+	NextAt         *string `form:"next_at,omitempty" json:"next_at,omitempty"`
+	From           string  `form:"from" json:"from"`
+	To             string  `form:"to" json:"to"`
 }
 
 // CreateMethodRateLimitJSONBody defines parameters for CreateMethodRateLimit.
@@ -293,7 +380,7 @@ type FetchEndpointMetricParams struct {
 	// Period hour, day, week, month
 	Period FetchEndpointMetricParamsPeriod `form:"period" json:"period"`
 
-	// Metric method_calls_over_time, response_status_over_time, method_call_breakdown, response_status_breakdown, method_response_time_max
+	// Metric method_calls_over_time, response_status_over_time, method_call_breakdown, response_status_breakdown, method_response_time_max, request_errors_over_time, total_request_errors_over_time
 	Metric FetchEndpointMetricParamsMetric `form:"metric" json:"metric"`
 }
 
@@ -334,16 +421,30 @@ type CreateReferrerJSONBody struct {
 	Referrer *string `json:"referrer,omitempty"`
 }
 
+// CreateRequestFilterJSONBody defines parameters for CreateRequestFilter.
+type CreateRequestFilterJSONBody struct {
+	// Method Array of method names for whitelisting
+	Method *[]string `json:"method,omitempty"`
+}
+
+// UpdateRequestFilterJSONBody defines parameters for UpdateRequestFilter.
+type UpdateRequestFilterJSONBody struct {
+	// Method Array of method names for whitelisting
+	Method *[]string `json:"method,omitempty"`
+}
+
 // UpdateSecurityOptionsJSONBody defines parameters for UpdateSecurityOptions.
 type UpdateSecurityOptionsJSONBody struct {
 	Options struct {
-		Cors        *UpdateSecurityOptionsJSONBodyOptionsCors        `json:"cors,omitempty"`
-		DomainMasks *UpdateSecurityOptionsJSONBodyOptionsDomainMasks `json:"domainMasks,omitempty"`
-		Hsts        *UpdateSecurityOptionsJSONBodyOptionsHsts        `json:"hsts,omitempty"`
-		Ips         *UpdateSecurityOptionsJSONBodyOptionsIps         `json:"ips,omitempty"`
-		Jwts        *UpdateSecurityOptionsJSONBodyOptionsJwts        `json:"jwts,omitempty"`
-		Referrers   *UpdateSecurityOptionsJSONBodyOptionsReferrers   `json:"referrers,omitempty"`
-		Tokens      *UpdateSecurityOptionsJSONBodyOptionsTokens      `json:"tokens,omitempty"`
+		Cors           *UpdateSecurityOptionsJSONBodyOptionsCors           `json:"cors,omitempty"`
+		DomainMasks    *UpdateSecurityOptionsJSONBodyOptionsDomainMasks    `json:"domainMasks,omitempty"`
+		Hsts           *UpdateSecurityOptionsJSONBodyOptionsHsts           `json:"hsts,omitempty"`
+		IpCustomHeader *UpdateSecurityOptionsJSONBodyOptionsIpCustomHeader `json:"ipCustomHeader,omitempty"`
+		Ips            *UpdateSecurityOptionsJSONBodyOptionsIps            `json:"ips,omitempty"`
+		Jwts           *UpdateSecurityOptionsJSONBodyOptionsJwts           `json:"jwts,omitempty"`
+		Referrers      *UpdateSecurityOptionsJSONBodyOptionsReferrers      `json:"referrers,omitempty"`
+		RequestFilters *UpdateSecurityOptionsJSONBodyOptionsRequestFilters `json:"requestFilters,omitempty"`
+		Tokens         *UpdateSecurityOptionsJSONBodyOptionsTokens         `json:"tokens,omitempty"`
 	} `json:"options"`
 }
 
@@ -356,6 +457,9 @@ type UpdateSecurityOptionsJSONBodyOptionsDomainMasks string
 // UpdateSecurityOptionsJSONBodyOptionsHsts defines parameters for UpdateSecurityOptions.
 type UpdateSecurityOptionsJSONBodyOptionsHsts string
 
+// UpdateSecurityOptionsJSONBodyOptionsIpCustomHeader defines parameters for UpdateSecurityOptions.
+type UpdateSecurityOptionsJSONBodyOptionsIpCustomHeader string
+
 // UpdateSecurityOptionsJSONBodyOptionsIps defines parameters for UpdateSecurityOptions.
 type UpdateSecurityOptionsJSONBodyOptionsIps string
 
@@ -365,8 +469,42 @@ type UpdateSecurityOptionsJSONBodyOptionsJwts string
 // UpdateSecurityOptionsJSONBodyOptionsReferrers defines parameters for UpdateSecurityOptions.
 type UpdateSecurityOptionsJSONBodyOptionsReferrers string
 
+// UpdateSecurityOptionsJSONBodyOptionsRequestFilters defines parameters for UpdateSecurityOptions.
+type UpdateSecurityOptionsJSONBodyOptionsRequestFilters string
+
 // UpdateSecurityOptionsJSONBodyOptionsTokens defines parameters for UpdateSecurityOptions.
 type UpdateSecurityOptionsJSONBodyOptionsTokens string
+
+// UpdateEndpointStatusJSONBody defines parameters for UpdateEndpointStatus.
+type UpdateEndpointStatusJSONBody struct {
+	Status UpdateEndpointStatusJSONBodyStatus `json:"status"`
+}
+
+// UpdateEndpointStatusJSONBodyStatus defines parameters for UpdateEndpointStatus.
+type UpdateEndpointStatusJSONBodyStatus string
+
+// CreateTagJSONBody defines parameters for CreateTag.
+type CreateTagJSONBody struct {
+	Label *string `json:"label,omitempty"`
+}
+
+// FetchAccountMetricsParams defines parameters for FetchAccountMetrics.
+type FetchAccountMetricsParams struct {
+	// Period hour, day, week, month
+	Period FetchAccountMetricsParamsPeriod `form:"period" json:"period"`
+
+	// Metric method_calls_over_time, response_status_over_time, method_call_breakdown, response_status_breakdown, method_response_time_max, request_errors_over_time, total_request_errors_over_time
+	Metric FetchAccountMetricsParamsMetric `form:"metric" json:"metric"`
+
+	// Percentile Percentile for response time metrics
+	Percentile *string `form:"percentile,omitempty" json:"percentile,omitempty"`
+}
+
+// FetchAccountMetricsParamsPeriod defines parameters for FetchAccountMetrics.
+type FetchAccountMetricsParamsPeriod string
+
+// FetchAccountMetricsParamsMetric defines parameters for FetchAccountMetrics.
+type FetchAccountMetricsParamsMetric string
 
 // UsageParams defines parameters for Usage.
 type UsageParams struct {
@@ -410,6 +548,9 @@ type CreateEndpointJSONRequestBody CreateEndpointJSONBody
 // UpdateEndpointJSONRequestBody defines body for UpdateEndpoint for application/json ContentType.
 type UpdateEndpointJSONRequestBody UpdateEndpointJSONBody
 
+// CreateOrUpdateIpCustomHeaderJSONRequestBody defines body for CreateOrUpdateIpCustomHeader for application/json ContentType.
+type CreateOrUpdateIpCustomHeaderJSONRequestBody CreateOrUpdateIpCustomHeaderJSONBody
+
 // CreateMethodRateLimitJSONRequestBody defines body for CreateMethodRateLimit for application/json ContentType.
 type CreateMethodRateLimitJSONRequestBody CreateMethodRateLimitJSONBody
 
@@ -431,8 +572,20 @@ type CreateJwtJSONRequestBody CreateJwtJSONBody
 // CreateReferrerJSONRequestBody defines body for CreateReferrer for application/json ContentType.
 type CreateReferrerJSONRequestBody CreateReferrerJSONBody
 
+// CreateRequestFilterJSONRequestBody defines body for CreateRequestFilter for application/json ContentType.
+type CreateRequestFilterJSONRequestBody CreateRequestFilterJSONBody
+
+// UpdateRequestFilterJSONRequestBody defines body for UpdateRequestFilter for application/json ContentType.
+type UpdateRequestFilterJSONRequestBody UpdateRequestFilterJSONBody
+
 // UpdateSecurityOptionsJSONRequestBody defines body for UpdateSecurityOptions for application/json ContentType.
 type UpdateSecurityOptionsJSONRequestBody UpdateSecurityOptionsJSONBody
+
+// UpdateEndpointStatusJSONRequestBody defines body for UpdateEndpointStatus for application/json ContentType.
+type UpdateEndpointStatusJSONRequestBody UpdateEndpointStatusJSONBody
+
+// CreateTagJSONRequestBody defines body for CreateTag for application/json ContentType.
+type CreateTagJSONRequestBody CreateTagJSONBody
 
 // RequestEditorFn  is the function signature for the RequestEditor callback function
 type RequestEditorFn func(ctx context.Context, req *http.Request) error
@@ -535,6 +688,26 @@ type ClientInterface interface {
 
 	UpdateEndpoint(ctx context.Context, id string, body UpdateEndpointJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// DisableMultichain request
+	DisableMultichain(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// EnableMultichain request
+	EnableMultichain(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteIpCustomHeader request
+	DeleteIpCustomHeader(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateOrUpdateIpCustomHeaderWithBody request with any body
+	CreateOrUpdateIpCustomHeaderWithBody(ctx context.Context, id string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	CreateOrUpdateIpCustomHeader(ctx context.Context, id string, body CreateOrUpdateIpCustomHeaderJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetLogDetails request
+	GetLogDetails(ctx context.Context, id string, params *GetLogDetailsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetEndpointLogs request
+	GetEndpointLogs(ctx context.Context, id string, params *GetEndpointLogsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// GetMethodRateLimits request
 	GetMethodRateLimits(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -591,6 +764,19 @@ type ClientInterface interface {
 	// DeleteReferrer request
 	DeleteReferrer(ctx context.Context, id string, referrerId string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// CreateRequestFilterWithBody request with any body
+	CreateRequestFilterWithBody(ctx context.Context, id string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	CreateRequestFilter(ctx context.Context, id string, body CreateRequestFilterJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteRequestFilter request
+	DeleteRequestFilter(ctx context.Context, id string, requestFilterId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateRequestFilterWithBody request with any body
+	UpdateRequestFilterWithBody(ctx context.Context, id string, requestFilterId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	UpdateRequestFilter(ctx context.Context, id string, requestFilterId string, body UpdateRequestFilterJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// CreateAuthenticationToken request
 	CreateAuthenticationToken(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -604,6 +790,19 @@ type ClientInterface interface {
 	UpdateSecurityOptionsWithBody(ctx context.Context, id string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	UpdateSecurityOptions(ctx context.Context, id string, body UpdateSecurityOptionsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateEndpointStatusWithBody request with any body
+	UpdateEndpointStatusWithBody(ctx context.Context, id string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	UpdateEndpointStatus(ctx context.Context, id string, body UpdateEndpointStatusJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateTagWithBody request with any body
+	CreateTagWithBody(ctx context.Context, id string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	CreateTag(ctx context.Context, id string, body CreateTagJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// FetchAccountMetrics request
+	FetchAccountMetrics(ctx context.Context, params *FetchAccountMetricsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// Usage request
 	Usage(ctx context.Context, params *UsageParams, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -728,6 +927,90 @@ func (c *Client) UpdateEndpointWithBody(ctx context.Context, id string, contentT
 
 func (c *Client) UpdateEndpoint(ctx context.Context, id string, body UpdateEndpointJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewUpdateEndpointRequest(c.Server, id, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) DisableMultichain(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDisableMultichainRequest(c.Server, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) EnableMultichain(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewEnableMultichainRequest(c.Server, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) DeleteIpCustomHeader(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteIpCustomHeaderRequest(c.Server, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateOrUpdateIpCustomHeaderWithBody(ctx context.Context, id string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateOrUpdateIpCustomHeaderRequestWithBody(c.Server, id, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateOrUpdateIpCustomHeader(ctx context.Context, id string, body CreateOrUpdateIpCustomHeaderJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateOrUpdateIpCustomHeaderRequest(c.Server, id, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetLogDetails(ctx context.Context, id string, params *GetLogDetailsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetLogDetailsRequest(c.Server, id, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetEndpointLogs(ctx context.Context, id string, params *GetEndpointLogsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetEndpointLogsRequest(c.Server, id, params)
 	if err != nil {
 		return nil, err
 	}
@@ -990,6 +1273,66 @@ func (c *Client) DeleteReferrer(ctx context.Context, id string, referrerId strin
 	return c.Client.Do(req)
 }
 
+func (c *Client) CreateRequestFilterWithBody(ctx context.Context, id string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateRequestFilterRequestWithBody(c.Server, id, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateRequestFilter(ctx context.Context, id string, body CreateRequestFilterJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateRequestFilterRequest(c.Server, id, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) DeleteRequestFilter(ctx context.Context, id string, requestFilterId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteRequestFilterRequest(c.Server, id, requestFilterId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateRequestFilterWithBody(ctx context.Context, id string, requestFilterId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateRequestFilterRequestWithBody(c.Server, id, requestFilterId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateRequestFilter(ctx context.Context, id string, requestFilterId string, body UpdateRequestFilterJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateRequestFilterRequest(c.Server, id, requestFilterId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 func (c *Client) CreateAuthenticationToken(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewCreateAuthenticationTokenRequest(c.Server, id)
 	if err != nil {
@@ -1040,6 +1383,66 @@ func (c *Client) UpdateSecurityOptionsWithBody(ctx context.Context, id string, c
 
 func (c *Client) UpdateSecurityOptions(ctx context.Context, id string, body UpdateSecurityOptionsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewUpdateSecurityOptionsRequest(c.Server, id, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateEndpointStatusWithBody(ctx context.Context, id string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateEndpointStatusRequestWithBody(c.Server, id, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateEndpointStatus(ctx context.Context, id string, body UpdateEndpointStatusJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateEndpointStatusRequest(c.Server, id, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateTagWithBody(ctx context.Context, id string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateTagRequestWithBody(c.Server, id, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateTag(ctx context.Context, id string, body CreateTagJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateTagRequest(c.Server, id, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) FetchAccountMetrics(ctx context.Context, params *FetchAccountMetricsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewFetchAccountMetricsRequest(c.Server, params)
 	if err != nil {
 		return nil, err
 	}
@@ -1233,6 +1636,38 @@ func NewListEndpointsRequest(server string, params *ListEndpointsParams) (*http.
 
 		}
 
+		if params.TagIds != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "tag_ids", runtime.ParamLocationQuery, *params.TagIds); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.TagLabels != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "tag_labels", runtime.ParamLocationQuery, *params.TagLabels); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
 		queryURL.RawQuery = queryValues.Encode()
 	}
 
@@ -1395,6 +1830,319 @@ func NewUpdateEndpointRequestWithBody(server string, id string, contentType stri
 	}
 
 	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewDisableMultichainRequest generates requests for DisableMultichain
+func NewDisableMultichainRequest(server string, id string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v0/endpoints/%s/disable_multichain", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewEnableMultichainRequest generates requests for EnableMultichain
+func NewEnableMultichainRequest(server string, id string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v0/endpoints/%s/enable_multichain", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewDeleteIpCustomHeaderRequest generates requests for DeleteIpCustomHeader
+func NewDeleteIpCustomHeaderRequest(server string, id string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v0/endpoints/%s/ip_custom_header", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewCreateOrUpdateIpCustomHeaderRequest calls the generic CreateOrUpdateIpCustomHeader builder with application/json body
+func NewCreateOrUpdateIpCustomHeaderRequest(server string, id string, body CreateOrUpdateIpCustomHeaderJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewCreateOrUpdateIpCustomHeaderRequestWithBody(server, id, "application/json", bodyReader)
+}
+
+// NewCreateOrUpdateIpCustomHeaderRequestWithBody generates requests for CreateOrUpdateIpCustomHeader with any type of body
+func NewCreateOrUpdateIpCustomHeaderRequestWithBody(server string, id string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v0/endpoints/%s/ip_custom_header", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PATCH", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewGetLogDetailsRequest generates requests for GetLogDetails
+func NewGetLogDetailsRequest(server string, id string, params *GetLogDetailsParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v0/endpoints/%s/log_details", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "request_id", runtime.ParamLocationQuery, params.RequestId); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetEndpointLogsRequest generates requests for GetEndpointLogs
+func NewGetEndpointLogsRequest(server string, id string, params *GetEndpointLogsParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v0/endpoints/%s/logs", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.IncludeDetails != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "include_details", runtime.ParamLocationQuery, *params.IncludeDetails); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Limit != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "limit", runtime.ParamLocationQuery, *params.Limit); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.NextAt != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "next_at", runtime.ParamLocationQuery, *params.NextAt); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "from", runtime.ParamLocationQuery, params.From); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "to", runtime.ParamLocationQuery, params.To); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
 
 	return req, nil
 }
@@ -2038,6 +2786,148 @@ func NewDeleteReferrerRequest(server string, id string, referrerId string) (*htt
 	return req, nil
 }
 
+// NewCreateRequestFilterRequest calls the generic CreateRequestFilter builder with application/json body
+func NewCreateRequestFilterRequest(server string, id string, body CreateRequestFilterJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewCreateRequestFilterRequestWithBody(server, id, "application/json", bodyReader)
+}
+
+// NewCreateRequestFilterRequestWithBody generates requests for CreateRequestFilter with any type of body
+func NewCreateRequestFilterRequestWithBody(server string, id string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v0/endpoints/%s/security/request_filters", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewDeleteRequestFilterRequest generates requests for DeleteRequestFilter
+func NewDeleteRequestFilterRequest(server string, id string, requestFilterId string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "request_filter_id", runtime.ParamLocationPath, requestFilterId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v0/endpoints/%s/security/request_filters/%s", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewUpdateRequestFilterRequest calls the generic UpdateRequestFilter builder with application/json body
+func NewUpdateRequestFilterRequest(server string, id string, requestFilterId string, body UpdateRequestFilterJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewUpdateRequestFilterRequestWithBody(server, id, requestFilterId, "application/json", bodyReader)
+}
+
+// NewUpdateRequestFilterRequestWithBody generates requests for UpdateRequestFilter with any type of body
+func NewUpdateRequestFilterRequestWithBody(server string, id string, requestFilterId string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "request_filter_id", runtime.ParamLocationPath, requestFilterId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v0/endpoints/%s/security/request_filters/%s", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PUT", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
 // NewCreateAuthenticationTokenRequest generates requests for CreateAuthenticationToken
 func NewCreateAuthenticationTokenRequest(server string, id string) (*http.Request, error) {
 	var err error
@@ -2190,6 +3080,173 @@ func NewUpdateSecurityOptionsRequestWithBody(server string, id string, contentTy
 	}
 
 	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewUpdateEndpointStatusRequest calls the generic UpdateEndpointStatus builder with application/json body
+func NewUpdateEndpointStatusRequest(server string, id string, body UpdateEndpointStatusJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewUpdateEndpointStatusRequestWithBody(server, id, "application/json", bodyReader)
+}
+
+// NewUpdateEndpointStatusRequestWithBody generates requests for UpdateEndpointStatus with any type of body
+func NewUpdateEndpointStatusRequestWithBody(server string, id string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v0/endpoints/%s/status", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PATCH", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewCreateTagRequest calls the generic CreateTag builder with application/json body
+func NewCreateTagRequest(server string, id string, body CreateTagJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewCreateTagRequestWithBody(server, id, "application/json", bodyReader)
+}
+
+// NewCreateTagRequestWithBody generates requests for CreateTag with any type of body
+func NewCreateTagRequestWithBody(server string, id string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v0/endpoints/%s/tags", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewFetchAccountMetricsRequest generates requests for FetchAccountMetrics
+func NewFetchAccountMetricsRequest(server string, params *FetchAccountMetricsParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v0/metrics")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "period", runtime.ParamLocationQuery, params.Period); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "metric", runtime.ParamLocationQuery, params.Metric); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+		if params.Percentile != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "percentile", runtime.ParamLocationQuery, *params.Percentile); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
 
 	return req, nil
 }
@@ -2525,6 +3582,26 @@ type ClientWithResponsesInterface interface {
 
 	UpdateEndpointWithResponse(ctx context.Context, id string, body UpdateEndpointJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateEndpointResponse, error)
 
+	// DisableMultichainWithResponse request
+	DisableMultichainWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*DisableMultichainResponse, error)
+
+	// EnableMultichainWithResponse request
+	EnableMultichainWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*EnableMultichainResponse, error)
+
+	// DeleteIpCustomHeaderWithResponse request
+	DeleteIpCustomHeaderWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*DeleteIpCustomHeaderResponse, error)
+
+	// CreateOrUpdateIpCustomHeaderWithBodyWithResponse request with any body
+	CreateOrUpdateIpCustomHeaderWithBodyWithResponse(ctx context.Context, id string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateOrUpdateIpCustomHeaderResponse, error)
+
+	CreateOrUpdateIpCustomHeaderWithResponse(ctx context.Context, id string, body CreateOrUpdateIpCustomHeaderJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateOrUpdateIpCustomHeaderResponse, error)
+
+	// GetLogDetailsWithResponse request
+	GetLogDetailsWithResponse(ctx context.Context, id string, params *GetLogDetailsParams, reqEditors ...RequestEditorFn) (*GetLogDetailsResponse, error)
+
+	// GetEndpointLogsWithResponse request
+	GetEndpointLogsWithResponse(ctx context.Context, id string, params *GetEndpointLogsParams, reqEditors ...RequestEditorFn) (*GetEndpointLogsResponse, error)
+
 	// GetMethodRateLimitsWithResponse request
 	GetMethodRateLimitsWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*GetMethodRateLimitsResponse, error)
 
@@ -2581,6 +3658,19 @@ type ClientWithResponsesInterface interface {
 	// DeleteReferrerWithResponse request
 	DeleteReferrerWithResponse(ctx context.Context, id string, referrerId string, reqEditors ...RequestEditorFn) (*DeleteReferrerResponse, error)
 
+	// CreateRequestFilterWithBodyWithResponse request with any body
+	CreateRequestFilterWithBodyWithResponse(ctx context.Context, id string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateRequestFilterResponse, error)
+
+	CreateRequestFilterWithResponse(ctx context.Context, id string, body CreateRequestFilterJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateRequestFilterResponse, error)
+
+	// DeleteRequestFilterWithResponse request
+	DeleteRequestFilterWithResponse(ctx context.Context, id string, requestFilterId string, reqEditors ...RequestEditorFn) (*DeleteRequestFilterResponse, error)
+
+	// UpdateRequestFilterWithBodyWithResponse request with any body
+	UpdateRequestFilterWithBodyWithResponse(ctx context.Context, id string, requestFilterId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateRequestFilterResponse, error)
+
+	UpdateRequestFilterWithResponse(ctx context.Context, id string, requestFilterId string, body UpdateRequestFilterJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateRequestFilterResponse, error)
+
 	// CreateAuthenticationTokenWithResponse request
 	CreateAuthenticationTokenWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*CreateAuthenticationTokenResponse, error)
 
@@ -2594,6 +3684,19 @@ type ClientWithResponsesInterface interface {
 	UpdateSecurityOptionsWithBodyWithResponse(ctx context.Context, id string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateSecurityOptionsResponse, error)
 
 	UpdateSecurityOptionsWithResponse(ctx context.Context, id string, body UpdateSecurityOptionsJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateSecurityOptionsResponse, error)
+
+	// UpdateEndpointStatusWithBodyWithResponse request with any body
+	UpdateEndpointStatusWithBodyWithResponse(ctx context.Context, id string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateEndpointStatusResponse, error)
+
+	UpdateEndpointStatusWithResponse(ctx context.Context, id string, body UpdateEndpointStatusJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateEndpointStatusResponse, error)
+
+	// CreateTagWithBodyWithResponse request with any body
+	CreateTagWithBodyWithResponse(ctx context.Context, id string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateTagResponse, error)
+
+	CreateTagWithResponse(ctx context.Context, id string, body CreateTagJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateTagResponse, error)
+
+	// FetchAccountMetricsWithResponse request
+	FetchAccountMetricsWithResponse(ctx context.Context, params *FetchAccountMetricsParams, reqEditors ...RequestEditorFn) (*FetchAccountMetricsResponse, error)
 
 	// UsageWithResponse request
 	UsageWithResponse(ctx context.Context, params *UsageParams, reqEditors ...RequestEditorFn) (*UsageResponse, error)
@@ -2798,6 +3901,142 @@ func (r UpdateEndpointResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r UpdateEndpointResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DisableMultichainResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+}
+
+// Status returns HTTPResponse.Status
+func (r DisableMultichainResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DisableMultichainResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type EnableMultichainResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+}
+
+// Status returns HTTPResponse.Status
+func (r EnableMultichainResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r EnableMultichainResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DeleteIpCustomHeaderResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *struct {
+		Data  *bool   `json:"data,omitempty"`
+		Error *string `json:"error"`
+	}
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteIpCustomHeaderResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteIpCustomHeaderResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type CreateOrUpdateIpCustomHeaderResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *struct {
+		Data *struct {
+			HeaderName *string `json:"header_name,omitempty"`
+		} `json:"data,omitempty"`
+		Error *string `json:"error"`
+	}
+}
+
+// Status returns HTTPResponse.Status
+func (r CreateOrUpdateIpCustomHeaderResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CreateOrUpdateIpCustomHeaderResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetLogDetailsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+}
+
+// Status returns HTTPResponse.Status
+func (r GetLogDetailsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetLogDetailsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetEndpointLogsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+}
+
+// Status returns HTTPResponse.Status
+func (r GetEndpointLogsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetEndpointLogsResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -3110,6 +4349,75 @@ func (r DeleteReferrerResponse) StatusCode() int {
 	return 0
 }
 
+type CreateRequestFilterResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *struct {
+		Data *struct {
+			Id *string `json:"id,omitempty"`
+		} `json:"data,omitempty"`
+		Error *string `json:"error"`
+	}
+}
+
+// Status returns HTTPResponse.Status
+func (r CreateRequestFilterResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CreateRequestFilterResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DeleteRequestFilterResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteRequestFilterResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteRequestFilterResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type UpdateRequestFilterResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+}
+
+// Status returns HTTPResponse.Status
+func (r UpdateRequestFilterResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r UpdateRequestFilterResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type CreateAuthenticationTokenResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -3192,6 +4500,81 @@ func (r UpdateSecurityOptionsResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r UpdateSecurityOptionsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type UpdateEndpointStatusResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *struct {
+		Data  *string `json:"data"`
+		Error *string `json:"error"`
+	}
+	JSON400 *struct {
+		Data  *bool  `json:"data"`
+		Error string `json:"error"`
+	}
+}
+
+// Status returns HTTPResponse.Status
+func (r UpdateEndpointStatusResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r UpdateEndpointStatusResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type CreateTagResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+}
+
+// Status returns HTTPResponse.Status
+func (r CreateTagResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CreateTagResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type FetchAccountMetricsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *struct {
+		Data  []EndpointMetric `json:"data"`
+		Error *string          `json:"error"`
+	}
+}
+
+// Status returns HTTPResponse.Status
+func (r FetchAccountMetricsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r FetchAccountMetricsResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -3405,6 +4788,68 @@ func (c *ClientWithResponses) UpdateEndpointWithResponse(ctx context.Context, id
 	return ParseUpdateEndpointResponse(rsp)
 }
 
+// DisableMultichainWithResponse request returning *DisableMultichainResponse
+func (c *ClientWithResponses) DisableMultichainWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*DisableMultichainResponse, error) {
+	rsp, err := c.DisableMultichain(ctx, id, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDisableMultichainResponse(rsp)
+}
+
+// EnableMultichainWithResponse request returning *EnableMultichainResponse
+func (c *ClientWithResponses) EnableMultichainWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*EnableMultichainResponse, error) {
+	rsp, err := c.EnableMultichain(ctx, id, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseEnableMultichainResponse(rsp)
+}
+
+// DeleteIpCustomHeaderWithResponse request returning *DeleteIpCustomHeaderResponse
+func (c *ClientWithResponses) DeleteIpCustomHeaderWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*DeleteIpCustomHeaderResponse, error) {
+	rsp, err := c.DeleteIpCustomHeader(ctx, id, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteIpCustomHeaderResponse(rsp)
+}
+
+// CreateOrUpdateIpCustomHeaderWithBodyWithResponse request with arbitrary body returning *CreateOrUpdateIpCustomHeaderResponse
+func (c *ClientWithResponses) CreateOrUpdateIpCustomHeaderWithBodyWithResponse(ctx context.Context, id string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateOrUpdateIpCustomHeaderResponse, error) {
+	rsp, err := c.CreateOrUpdateIpCustomHeaderWithBody(ctx, id, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateOrUpdateIpCustomHeaderResponse(rsp)
+}
+
+func (c *ClientWithResponses) CreateOrUpdateIpCustomHeaderWithResponse(ctx context.Context, id string, body CreateOrUpdateIpCustomHeaderJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateOrUpdateIpCustomHeaderResponse, error) {
+	rsp, err := c.CreateOrUpdateIpCustomHeader(ctx, id, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateOrUpdateIpCustomHeaderResponse(rsp)
+}
+
+// GetLogDetailsWithResponse request returning *GetLogDetailsResponse
+func (c *ClientWithResponses) GetLogDetailsWithResponse(ctx context.Context, id string, params *GetLogDetailsParams, reqEditors ...RequestEditorFn) (*GetLogDetailsResponse, error) {
+	rsp, err := c.GetLogDetails(ctx, id, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetLogDetailsResponse(rsp)
+}
+
+// GetEndpointLogsWithResponse request returning *GetEndpointLogsResponse
+func (c *ClientWithResponses) GetEndpointLogsWithResponse(ctx context.Context, id string, params *GetEndpointLogsParams, reqEditors ...RequestEditorFn) (*GetEndpointLogsResponse, error) {
+	rsp, err := c.GetEndpointLogs(ctx, id, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetEndpointLogsResponse(rsp)
+}
+
 // GetMethodRateLimitsWithResponse request returning *GetMethodRateLimitsResponse
 func (c *ClientWithResponses) GetMethodRateLimitsWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*GetMethodRateLimitsResponse, error) {
 	rsp, err := c.GetMethodRateLimits(ctx, id, reqEditors...)
@@ -3587,6 +5032,49 @@ func (c *ClientWithResponses) DeleteReferrerWithResponse(ctx context.Context, id
 	return ParseDeleteReferrerResponse(rsp)
 }
 
+// CreateRequestFilterWithBodyWithResponse request with arbitrary body returning *CreateRequestFilterResponse
+func (c *ClientWithResponses) CreateRequestFilterWithBodyWithResponse(ctx context.Context, id string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateRequestFilterResponse, error) {
+	rsp, err := c.CreateRequestFilterWithBody(ctx, id, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateRequestFilterResponse(rsp)
+}
+
+func (c *ClientWithResponses) CreateRequestFilterWithResponse(ctx context.Context, id string, body CreateRequestFilterJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateRequestFilterResponse, error) {
+	rsp, err := c.CreateRequestFilter(ctx, id, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateRequestFilterResponse(rsp)
+}
+
+// DeleteRequestFilterWithResponse request returning *DeleteRequestFilterResponse
+func (c *ClientWithResponses) DeleteRequestFilterWithResponse(ctx context.Context, id string, requestFilterId string, reqEditors ...RequestEditorFn) (*DeleteRequestFilterResponse, error) {
+	rsp, err := c.DeleteRequestFilter(ctx, id, requestFilterId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteRequestFilterResponse(rsp)
+}
+
+// UpdateRequestFilterWithBodyWithResponse request with arbitrary body returning *UpdateRequestFilterResponse
+func (c *ClientWithResponses) UpdateRequestFilterWithBodyWithResponse(ctx context.Context, id string, requestFilterId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateRequestFilterResponse, error) {
+	rsp, err := c.UpdateRequestFilterWithBody(ctx, id, requestFilterId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateRequestFilterResponse(rsp)
+}
+
+func (c *ClientWithResponses) UpdateRequestFilterWithResponse(ctx context.Context, id string, requestFilterId string, body UpdateRequestFilterJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateRequestFilterResponse, error) {
+	rsp, err := c.UpdateRequestFilter(ctx, id, requestFilterId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateRequestFilterResponse(rsp)
+}
+
 // CreateAuthenticationTokenWithResponse request returning *CreateAuthenticationTokenResponse
 func (c *ClientWithResponses) CreateAuthenticationTokenWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*CreateAuthenticationTokenResponse, error) {
 	rsp, err := c.CreateAuthenticationToken(ctx, id, reqEditors...)
@@ -3629,6 +5117,49 @@ func (c *ClientWithResponses) UpdateSecurityOptionsWithResponse(ctx context.Cont
 		return nil, err
 	}
 	return ParseUpdateSecurityOptionsResponse(rsp)
+}
+
+// UpdateEndpointStatusWithBodyWithResponse request with arbitrary body returning *UpdateEndpointStatusResponse
+func (c *ClientWithResponses) UpdateEndpointStatusWithBodyWithResponse(ctx context.Context, id string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateEndpointStatusResponse, error) {
+	rsp, err := c.UpdateEndpointStatusWithBody(ctx, id, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateEndpointStatusResponse(rsp)
+}
+
+func (c *ClientWithResponses) UpdateEndpointStatusWithResponse(ctx context.Context, id string, body UpdateEndpointStatusJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateEndpointStatusResponse, error) {
+	rsp, err := c.UpdateEndpointStatus(ctx, id, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateEndpointStatusResponse(rsp)
+}
+
+// CreateTagWithBodyWithResponse request with arbitrary body returning *CreateTagResponse
+func (c *ClientWithResponses) CreateTagWithBodyWithResponse(ctx context.Context, id string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateTagResponse, error) {
+	rsp, err := c.CreateTagWithBody(ctx, id, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateTagResponse(rsp)
+}
+
+func (c *ClientWithResponses) CreateTagWithResponse(ctx context.Context, id string, body CreateTagJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateTagResponse, error) {
+	rsp, err := c.CreateTag(ctx, id, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateTagResponse(rsp)
+}
+
+// FetchAccountMetricsWithResponse request returning *FetchAccountMetricsResponse
+func (c *ClientWithResponses) FetchAccountMetricsWithResponse(ctx context.Context, params *FetchAccountMetricsParams, reqEditors ...RequestEditorFn) (*FetchAccountMetricsResponse, error) {
+	rsp, err := c.FetchAccountMetrics(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseFetchAccountMetricsResponse(rsp)
 }
 
 // UsageWithResponse request returning *UsageResponse
@@ -3870,6 +5401,130 @@ func ParseUpdateEndpointResponse(rsp *http.Response) (*UpdateEndpointResponse, e
 	}
 
 	response := &UpdateEndpointResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	return response, nil
+}
+
+// ParseDisableMultichainResponse parses an HTTP response from a DisableMultichainWithResponse call
+func ParseDisableMultichainResponse(rsp *http.Response) (*DisableMultichainResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DisableMultichainResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	return response, nil
+}
+
+// ParseEnableMultichainResponse parses an HTTP response from a EnableMultichainWithResponse call
+func ParseEnableMultichainResponse(rsp *http.Response) (*EnableMultichainResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &EnableMultichainResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	return response, nil
+}
+
+// ParseDeleteIpCustomHeaderResponse parses an HTTP response from a DeleteIpCustomHeaderWithResponse call
+func ParseDeleteIpCustomHeaderResponse(rsp *http.Response) (*DeleteIpCustomHeaderResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteIpCustomHeaderResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest struct {
+			Data  *bool   `json:"data,omitempty"`
+			Error *string `json:"error"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCreateOrUpdateIpCustomHeaderResponse parses an HTTP response from a CreateOrUpdateIpCustomHeaderWithResponse call
+func ParseCreateOrUpdateIpCustomHeaderResponse(rsp *http.Response) (*CreateOrUpdateIpCustomHeaderResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CreateOrUpdateIpCustomHeaderResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest struct {
+			Data *struct {
+				HeaderName *string `json:"header_name,omitempty"`
+			} `json:"data,omitempty"`
+			Error *string `json:"error"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetLogDetailsResponse parses an HTTP response from a GetLogDetailsWithResponse call
+func ParseGetLogDetailsResponse(rsp *http.Response) (*GetLogDetailsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetLogDetailsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	return response, nil
+}
+
+// ParseGetEndpointLogsResponse parses an HTTP response from a GetEndpointLogsWithResponse call
+func ParseGetEndpointLogsResponse(rsp *http.Response) (*GetEndpointLogsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetEndpointLogsResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -4140,6 +5795,69 @@ func ParseDeleteReferrerResponse(rsp *http.Response) (*DeleteReferrerResponse, e
 	return response, nil
 }
 
+// ParseCreateRequestFilterResponse parses an HTTP response from a CreateRequestFilterWithResponse call
+func ParseCreateRequestFilterResponse(rsp *http.Response) (*CreateRequestFilterResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CreateRequestFilterResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest struct {
+			Data *struct {
+				Id *string `json:"id,omitempty"`
+			} `json:"data,omitempty"`
+			Error *string `json:"error"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteRequestFilterResponse parses an HTTP response from a DeleteRequestFilterWithResponse call
+func ParseDeleteRequestFilterResponse(rsp *http.Response) (*DeleteRequestFilterResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteRequestFilterResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	return response, nil
+}
+
+// ParseUpdateRequestFilterResponse parses an HTTP response from a UpdateRequestFilterWithResponse call
+func ParseUpdateRequestFilterResponse(rsp *http.Response) (*UpdateRequestFilterResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &UpdateRequestFilterResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	return response, nil
+}
+
 // ParseCreateAuthenticationTokenResponse parses an HTTP response from a CreateAuthenticationTokenWithResponse call
 func ParseCreateAuthenticationTokenResponse(rsp *http.Response) (*CreateAuthenticationTokenResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -4212,6 +5930,90 @@ func ParseUpdateSecurityOptionsResponse(rsp *http.Response) (*UpdateSecurityOpti
 	response := &UpdateSecurityOptionsResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
+	}
+
+	return response, nil
+}
+
+// ParseUpdateEndpointStatusResponse parses an HTTP response from a UpdateEndpointStatusWithResponse call
+func ParseUpdateEndpointStatusResponse(rsp *http.Response) (*UpdateEndpointStatusResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &UpdateEndpointStatusResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest struct {
+			Data  *string `json:"data"`
+			Error *string `json:"error"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest struct {
+			Data  *bool  `json:"data"`
+			Error string `json:"error"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCreateTagResponse parses an HTTP response from a CreateTagWithResponse call
+func ParseCreateTagResponse(rsp *http.Response) (*CreateTagResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CreateTagResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	return response, nil
+}
+
+// ParseFetchAccountMetricsResponse parses an HTTP response from a FetchAccountMetricsWithResponse call
+func ParseFetchAccountMetricsResponse(rsp *http.Response) (*FetchAccountMetricsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &FetchAccountMetricsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest struct {
+			Data  []EndpointMetric `json:"data"`
+			Error *string          `json:"error"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
 	}
 
 	return response, nil
@@ -4355,58 +6157,100 @@ func ParseUsageByMethodResponse(rsp *http.Response) (*UsageByMethodResponse, err
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"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",
-	"6frQ8eP88T8BAAD//1GN6UuWXAAA",
+	"H4sIAAAAAAAC/+xdW3PbOJb+KyzuPsoxAII3V+2Dk7h7MttOZxLPTHXHLhUIHEhMJFJNUna8Lv/3LRCk",
+	"SImkSEm+dY/9YpsEDoFzvnPD9c7k8XwRRxBlqXlyZ6Z8CnOW/8mnLIzUH4skXkCShZA/DtNxCjPg2XhV",
+	"ILtdgHliBnE8AxaZ9yMzguwmTr7rChnM8z/+OwFpnpj/dVx98rj43nFRQdUtqLEkYbfq/3S2nNS+kmZJ",
+	"GE3M+6pkHHwDnqmieYvGy5RNoNlwnoAIs3S8TEHU6IVRBhNI8lazOQz8EkRiEYdR1vKZkisCUp6EiyyM",
+	"I/NEPzbyvoxM+MHmi5miCNnUHG1+cGROs2wxXiazltaMzFC0Pp6xAPIK0XI2Y4EinyVLaKFeMrvRyOJF",
+	"s5lzFkYRZG1NzdhkXczr7Fi1qq3iOGyVRBvDN1Fxk6Ylg3r6ez8yE/hjGSZK7F8V9wqgmBUnahy/2iLt",
+	"sYgVJ8Zzln5vdlW/HC6ybbgah4sW1WsXvC66C/FvN9lg6t87nncoy8hcLINZyMff4XbXZs0hS0LewliW",
+	"sTWIrf5o6vAmThr/s8muzUpYBuNZOA+zFnwzzuOltgMdOKw1rqI0Dm4LEXfUqhnTZCEGkl/MhxZMhxTc",
+	"zhWQkCSQDAZSvcJO7Ic/lpBmYxnOsh0+N4dsGos2tNRM0AY4Fixha0XL5mxtYAp8mYTZbZdFyM3FcFfY",
+	"amxaGhsu9qAZLtpIfbvJ9qClrEgLsTj3JmkXN85LZvQDP1y8W6ZZPP8bMNEm+Ws2W8IwD9CQXrgY2IiS",
+	"NwP0tAD44OI5rn/KYT2wThZ/h2hQ2bY+rzVwN1mvlLdF4OsKuhfxNQ1vs9qrfu9GOa/XJLhVnXWdoWZm",
+	"VXoXk9YVoU674of+2HV49KcNYzoOEmDfRXwTDWarrlm0vkVKnSFBLeBscQu58DvceZqxbJkO5G8YXcch",
+	"b2EsmysfPRZLaP9K8X7Bwg7uBuFsFkaTcQIsjTtFxLIu6XSF7GEE24Jn3a52kmuR+yD2NLwdJGEsxhB1",
+	"NLp4n2YsyXaUzshMl0EWZ2w2NL5fw1aTEQmfhtcwzEgeokZFM/ZAclunaqVbNL3IfvrDtc7W7JAaL9jt",
+	"HNry1QbGauxiiRjPWJqN6SDLUqjAmHWQWyYJRPy2PVxjyXfIFjPGYVw1qZ83OxmINIwmMxi/Ju8r47ue",
+	"2gzz1rU6iqe16HdQ/VWF7QbkrzauUONUc4ihxscvil+Fai7CMo1WqDSnOg4uDYL544gtwiNVourHIvxf",
+	"yDsSAEsgGbNlNlUE9L8/xclcaaf5939fqBbl31LWM39bkVGtNu9Vs6Zxqsrf3Ny8+WMZ8u9RLOANj+em",
+	"crcyzpUmjjLGtb7qhv1DlfwYC2g4quqV8S6O0ngGxumnD8a/kPp2mOV4XT24hiTVta6RziwgYovQPDGt",
+	"N+gNNpVVy6Y5q46v0XHhpI+LMCB/PoGsqSmfIUtCuAZjFqaZEUtjVSP/RsJUuQ/CPDE/VC8SSBdxlGqy",
+	"BKGy54VRZYvFLOR5zeNvRYygod89nrERYNaaPSgcK8OdYeFtksTJXrnSfUOG6ZJzSFMN2+V8zpLbGlfT",
+	"NrZqbf5qvtUyMq9U3brQCv+0g9BWNTaF9ql68ehCqzd7kNBKP/xihVZja6fQcjPXLaqfIONTg61IFsU3",
+	"5fSufPwIUhokC22tW5zADnyvu4D842Xtq71lotnXYF4pjYJtK2GUjnWA6qyK5tQbAvklTLOzFbViOAx0",
+	"Tv+18EF/LCG5rVxQHgeUnoS1O932mrGUKexXVXv4dK3u4CHhbUTzoGI73a7Bw/ur58PxKp5V4WE7Yl8I",
+	"tCtz04BiCe8KgFcqbcnDj01Av8sTDYMZOqBfEWuamLzgWfW6GG14G4vbA6TTnWHukh+u81hJ4f5RMLQN",
+	"OpsZ0bMjREssNZgRwU1dsG342LSAx3ehuNdwmUEGTeCc6nGEAcgpStag02YNVfxZmZA8BViXaIt5W/Gv",
+	"w2IM4VLZjx7+jDr9wTKJ0gFc+DKNb56BBS8W8HuCWrGxhdcdJo9lfNoU2j8XQtm83EUZMk4GSE9XeXT5",
+	"PYRF7Urn23h+v7/eFEzcx6wcizBV4BjPl7MsrBbHtDqo97psatQKb0qnKHNeL/GSbEzRvloXctht4Z3x",
+	"ZTXC0cFDiAaz8Czq5aAu8mIZqJv3oPwLF2OeT4mOp6s50S5f9z5/bmRTMD58MnQ1YzWEtIHFvOyH9fnW",
+	"P429b04BPL5J1xxLu9i7TbSdJr4Ia+PEWGo7xaJ+0elKvybatD2RCB/C5Ov+rKZa1lmx2W0jL9YXg9ZJ",
+	"Xj1bvL21m0OmiR8dvBorqUIaL+PtaFcYt1uoWTwZC8hYOOsfj0gNXRKEEUYyH5oO46gMbhbAQxlyYxZP",
+	"DIiyPFdfh/7PkP0ST94XX3sErHcMFZTrFZ7E+BXzODpKqpg7LkmtLYQpIVi00Dwx7y5NRSlZ8EvzxLg0",
+	"yRt0aY6My2KmUz+EbDrmbDbTb/QqKPXm692lmcW6DPrhEP5OenDmubbDXO4gQt5h9C5wzgA77k+UIOG5",
+	"p8TWVGQSz8uaPCDUoqfYtciZ8B1yhjglFvFti2MLzsBxsS+ltHTNvDdl1aK1qmOrdjDXwQQR1PHDiOXx",
+	"AAJMCccIpMuERynhjsDSB88H5ILrOhg95w+mB1NArz9P/0MOlRunnvCQlIgd2JAD2+H6CDk+BYcEQrpS",
+	"2hgxCuA4jkO4pJ7jMN/BzMKObT03y+3AohAwJLkAYMj3kRTIdaTFOfORgwMJAbcQAar+wMxhEPicu4BR",
+	"4Fo2JZR7AQ/sF4AfjChxmAMYfGy5HmVAbGCOgwUSPKAcsBUEwveR41vcgoCJADEPlDhk4AVYCJtgmwjX",
+	"o5ZLAt8iiLmOZI4UgY2kgxFGLpFYIpu5ngeKpIsD7iPmYmLbBCjmgAObQOC6iqRvgwwgIDbGxPdti4JP",
+	"AuH5WPqOTwWnWDiOHwClDlVFqBQuER4nyHY4lS5Gji184bOAq+9bwMCTNrccsIR0LYmZJzzLk4GP3UDY",
+	"wvIFDuyAWBYSAvmeENQLqCWk7YpABJh5PKCEeMSlyCHgY3AEBcltDIIIWxCHMdU/5LmES+76gWMh4DYT",
+	"gU8tCRalPmaOG3DPCygOmMTgOo7LuceozxDjHAvMfdfyqSSM+wEn1BeWDci3MMbS8pEjCfHBdn3L5UAw",
+	"owFg6kpbguVL4jsUkC0cgQRYxKfcoURQ2+fCZ4xw4YFNJXiYgeU7jDGfU0II9yzh2NT2XJe7xMV8Xwhd",
+	"mvej3BESWzqecC7NK/V/mDtzi+D72pTaZgRQBgBFcYvg0aUOOC/Nk7tLk8dCuV5rpAKENGUTyCvBD+DL",
+	"PDhL4BqSDMSJ8fMXRJycVOGcc3ftccv1GXpe24Zs6tqWhSxiOXvz+P7yMsqHm5pRtQpJizjMSIpgVhhF",
+	"rC2Xs1k+1ULbhgrC6JrNQmFUMaShI19dgzZrlAG2EcWZIeNlJDai+Z8hS41ak9ri9l/iSbotZh8SrKti",
+	"m8F559jjz7CaSsy//XTReRjx2VLAuOJGg0RtlfRDT2tG8CMbs9a6fQ1XEfNDMCCLnz4t2ZqPfFWYWqWE",
+	"e+QmKUTiM7u5SFiUMq7a0chUcuNDpI9sbDnUI9S2LY9agc84Q8hTkU1APIQ8y/d8x0M+dXyOHMeXVmAL",
+	"iSQB4lAqEUa+F1Dq2NJ2bIIR9lDgI8roa9rxmnY8+8++/mwlPXgZ6Qf2CUK2TTgwN+CWxYMAAl9i4SMV",
+	"nWGh9IaBlAI9d/rBKfVtGgQSUxIAtmzKfCQQZ9hDVDKb2b4dCMdBggO4lKsgjwYEu7bPsLQlkp5vuSD5",
+	"gSzzOt/4vidAMimQTz3sgrSILx3BXZ+7yJKYS+ypDOAw5HF5KGIsKij3OGFICMylxSgg6VucSy8Q2LKY",
+	"bdvYsz0IHAtzIqUIqO8xggPkUGHxP1/CisDBwgPPx2Bb2PGFsC2E3UASFzwbELiEYk8yL+AI+x5AYGHf",
+	"R4LbAts28BdnfzCirrRclTzZjmMxF6iNPF8ElHAmfRIEniu57TiuCBhyCbJtHwJqOTLwkfSpw8G2HYuI",
+	"gFvYwZaUlguWq3KYQVlLAulylhXJhkUd5acB29gTFiOCI0ZtCTbmzEI2QaqZros8SSjhyLE4sR2OLewR",
+	"LgmmVR6E7lcD72OVApkn0XI2K1ZvlztJzU+/frkwq52lHaFJbfn3iflDsLBadpSvSzdlAJxJ7h0RKp0j",
+	"jCU6CiyEjqhHA8wodpglzWptPEFoZGbhHNKMzRfmiUkQsY8QPSL+BSYnln9C7Dc2tX43R2a+ct08NlVo",
+	"eFjI1T8cfEb9d2+Rh8ETvuMT9M7y2Kl7+tZHPEDEpyygb7l3dtocwEWEeZwdHkgUifCMZZBma1nwwBy4",
+	"mfgeWQRheyP7/de5USXAeZ0363nv5eUSIXSmfrm++5v+F/3lf5n3pf7ghv4UjBygQQpp/TrjIMsTnNV1",
+	"hghvf53B9huHuGs6czVaZW8n5vkFRx8vvv/f+ftz/PHit5tfL05vzt+f3pz/7cf847fTm9/fT378/gXd",
+	"fvz5N/LLxdmP37+dZr99+/v3j7fI+vXiHze/z8/I+XtOPv77/H/MrkGEvUcParn0YcMGq1IznaTvNnCg",
+	"5XiUsAyOql1ErcMI+dd0eSPJFzLp8i3jBud5qc8sg1/KMi9kIUI96a22QUGSjvNFrK0zcfVieeNXG0UV",
+	"KOkRwkcIK1AidILQG23ZFC5z3DMcEG4JegS2dI4os4Mjn3viyAVH2owGFici34qTQXLNFJBT4HEkVkqW",
+	"S7Nod6mHV3rjl3mCUaUypl6bI8z7q2oOWnnBVvBWy3clZHyqqnXgMCkWG8J8kd0aN1OIKtCJGNIcn/BD",
+	"8a8Fn62IaYBUYcUowNK3ajg1WJNqx6qKDSS+6OUUFQTuTIiWc8WgCgthtMzAHJmC1befNTaF73ZchgZR",
+	"6z67tZ1xZcuqzxR1r4av7ttBM0u0F1vnGir54hWwX/0aADbKTj2F59iuSD3aOdSTHN8Ve7Frh+b0rO4u",
+	"12QNUXBd9gkUfNRKpK1vz+jAxjlLi6MENhTG/FyhTHN+I1jZB64FoU4MNmt0gXG70PtdxbbV1sOgpMv+",
+	"yaH0EC7oQZ1IfXN46c9KCzkyi8XYosWZ3T+KUyn2DdSV5jmci/LfWzzLGFc7/8tHpHI31oO5G71AVQyd",
+	"5uyODvsVfLsq7uttkpD3bGCF2gYZXUFPfkbdk555vbIl5/o0u4Yd2FzmXrT7w/tc0g9gI9Y/MI2XycgQ",
+	"7HZk3AB8HxnzOMrpt00d6iNftn6w1EVFtwgoR6airHCZk25TyXb7nuf+6Ti+hmSssvWRUWrpWMO0/qpW",
+	"pTq7qFmj9qq0jGUJRWc8Zz9Gq9n3HPhrX8kPrRl3ve9g27wUdT/b2jteG61q9Hyl7xtdb6lTf9fV+drI",
+	"SkvverrfItoXsO+1PDjyhe7kXrMhbSbrvDBHXeZqY3xlscw6t4fVEmUjjrYaK13jCYZZHiK02DioZh5G",
+	"n2rv8Wiz+KLjfKfiiMzOIzH7j4zZQEq9YVf7blb7XJNan2d9y4TxucernrVkcCPTbiP3QcUWEZsZXyC5",
+	"hsQ4yyHf7oF3GoVph3J5ys3x5tGY2zd6r40ZVadito/avF+dM/miIb1xlvDDbRfff5v1BnN33/3RKt7j",
+	"u9p/g3P4SA8KhtFks3lGq+x1xceVfXsCtt67J9ue2c+oB5BjcUzqYO0MFx1K+WHxskdPFy9GB3MWHiay",
+	"47twcZCitYix3CL6dHqV9+E/fHtpt3QOQEh5pPFgrf520zVD8veblz0r8tin1z+FQdDcP1Dex3ffbrKD",
+	"bEIbCHSFRwJBu1XQ3XgRXvZgwawdyD1YG1dncber5Ofq9QvO53a5DGBPJSu/Uc2NDdG2GncfQrLHd+Wf",
+	"Bylfp8x1rceUebsa1nr16qK3yusgFDVO1t/BSuR1jeJQ/S5bUbuD4EUbjOo6j80TvRJ2a8SynBxQzdS7",
+	"lG6mYQYzLRhzNPwgvxdybsTwK4MeHemdlnIDYQ+HdGU16w8OtJ1bNaG0oI+sCV1mdKObBxpT2hnYGEdG",
+	"FBslRHcyZTuIebR1dHoH+1SMTv9ppfIfYPP2w9pqOvdgrPWYlOrOmME+ky2zKURZIR9D3+3S7jlP14pe",
+	"FCVf0vFjHVa7o48HM/r4Lv99kKVuZ7iu8mgsbjcBZWdeg9tuMe2PmXHtkrDu5eJlaaMo3bv+4mfIyib8",
+	"WnzgRa4d32RD1/Lxr3fFbWolIFOzdQFPrVg1pNBXMh8F7CsULvrL1O916ys7TQd8lMfJkI6uXZ/W35GN",
+	"g/EaxUcl9813Px29i6MIuIL90YdP+daQvjVSTbD2LIwftkFjk+y+ZwuWbndnndIVn0qtHiJsqtkWJkSo",
+	"/mGz+nIByWYpbC4ZyEG361rD0ealhjvWnhYXn+1YrXkx4s4E9vlsOW+wY7W1Uc6d625ekrgjgSoKPHQR",
+	"6fq6jxJkj7OFoVgEMm7zl68+4q/jIx5qGW2vL+ky//tFcauF2R3O5hNbpvk5toxn4fVGltVzTPkXTfwl",
+	"O5jmwvS8n5A3Or9b8KpvgWFB4uGsR18S0Xuv3JOvlFxB/nF61pYuPXBXct1k1a7w7YfNG2mJ7OFnzpeX",
+	"4G0dwcjYpG+tpy55wSZ/mUsA9poRvGCT3o1y+66vbB17qVLmnPUNU3vB6rurh25LKMoZbDJJYKJ6YzCe",
+	"xGlqsNmsdrNOEdqXV9S37lY41S/LJcg9uxVeNxO8biZ4zM0EDdF+goRDlIUzyNFcNsBQBEo96IZfUdV8",
+	"+jG7P9v+he2iKvcutO1uKKzL0QyuYVYTSWnrCgPT3OSQX/V8nCx4p737II388mndBn13hv6bJWDMwzQN",
+	"o8nI0PcKZ0ZxlaSh7Y4RpoaKxQwWqfhZpR/qZXEFdI6mbAplYUVQn1QA4k0zQs1vpe6xjV9UU40til31",
+	"pfdkyYa72Ua35Mp2qldPMGdd3q+9YvewO5z7r+VedfHkzpTlHbbV+S5tRPUGwUHfVzhnE92FQTdOl2Ic",
+	"2poN7Vzr72gdF6ueXj3VVH9P6pnrW8KiCXTe5ZdrsnZ2uV4Vp8PCWuXKImhtatqB4+D2aHUpUM9ZtPqT",
+	"CoVGcGu0Xw+Uf+ft7bv2q4FelbftUsN0t8tTi/v62xzX7hq7n2IdoiQPnMgeqECbaB6iL/Wr7HdSme7R",
+	"GK013bfGvSrOxtM9oL52Z+9usWKnxj29+jyfirRcorZNS6qFNMN1ZJLEywUI9bWieoemnJdvX/XkwfWk",
+	"7USRbVpS5KmvOtKG3oamKDLlWL9CbAAsgWTMltnUPPl6paDGFqHeC/P1SmEkzTcJa3zrcxOnWbZIT46P",
+	"2SJ888cy5N+jWMAbHs/zCZHik3clGP9ZCGb1oBoCrT0sbjhvKVbNTdReltfTt5Wv70lue19mpfdX9/8f",
+	"AAD//4PMuTcLlwAA",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file

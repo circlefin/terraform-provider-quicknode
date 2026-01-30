@@ -13,3 +13,5 @@ pkg:golang/golang.org/x/sys
 pkg:golang/golang.org/x/text
 pkg:golang/golang.org/x/time
 pkg:golang/golang.org/x/tools
+# License: BSD-3-Clause AND MIT
+pkg:golang/honnef.co/go/tools
