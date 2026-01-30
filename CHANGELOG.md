@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.4](https://github.com/circlefin/terraform-provider-quicknode/compare/v0.6.3...v0.6.4) (2026-01-30)
+
+
+### Miscellaneous Chores
+
+* update openapi ([#56](https://github.com/circlefin/terraform-provider-quicknode/issues/56)) ([0433cc4](https://github.com/circlefin/terraform-provider-quicknode/commit/0433cc4c80e98cc24bd26ed25bf8cdf4ad13029e))
+
 ## [0.6.3](https://github.com/circlefin/terraform-provider-quicknode/compare/v0.6.2...v0.6.3) (2025-12-18)
 
 
