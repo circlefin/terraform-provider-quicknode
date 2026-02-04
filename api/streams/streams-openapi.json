@@ -621,6 +621,8 @@
               "sonic-mainnet",
               "sophon-mainnet",
               "sophon-testnet",
+              "stellar-mainnet",
+              "stellar-testnet",
               "story-aeneid",
               "story-mainnet",
               "tron-mainnet",
@@ -662,7 +664,11 @@
               "programs_with_logs",
               "ledger",
               "events",
-              "orders"
+              "orders",
+              "trades",
+              "book_updates",
+              "twap",
+              "writer_actions"
             ],
             "example": "block"
           },
@@ -987,6 +993,8 @@
               "sonic-mainnet",
               "sophon-mainnet",
               "sophon-testnet",
+              "stellar-mainnet",
+              "stellar-testnet",
               "story-aeneid",
               "story-mainnet",
               "tron-mainnet",
@@ -1032,7 +1040,11 @@
               "programs_with_logs",
               "ledger",
               "events",
-              "orders"
+              "orders",
+              "trades",
+              "book_updates",
+              "twap",
+              "writer_actions"
             ],
             "example": "block"
           },

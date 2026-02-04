@@ -32,6 +32,7 @@ const (
 	CreateStreamDtoDatasetBlockWithReceipts           CreateStreamDtoDataset = "block_with_receipts"
 	CreateStreamDtoDatasetBlockWithReceiptsDebugTrace CreateStreamDtoDataset = "block_with_receipts_debug_trace"
 	CreateStreamDtoDatasetBlockWithReceiptsTraceBlock CreateStreamDtoDataset = "block_with_receipts_trace_block"
+	CreateStreamDtoDatasetBookUpdates                 CreateStreamDtoDataset = "book_updates"
 	CreateStreamDtoDatasetDebugTraces                 CreateStreamDtoDataset = "debug_traces"
 	CreateStreamDtoDatasetEvents                      CreateStreamDtoDataset = "events"
 	CreateStreamDtoDatasetLedger                      CreateStreamDtoDataset = "ledger"
@@ -40,7 +41,10 @@ const (
 	CreateStreamDtoDatasetProgramsWithLogs            CreateStreamDtoDataset = "programs_with_logs"
 	CreateStreamDtoDatasetReceipts                    CreateStreamDtoDataset = "receipts"
 	CreateStreamDtoDatasetTraceBlocks                 CreateStreamDtoDataset = "trace_blocks"
+	CreateStreamDtoDatasetTrades                      CreateStreamDtoDataset = "trades"
 	CreateStreamDtoDatasetTransactions                CreateStreamDtoDataset = "transactions"
+	CreateStreamDtoDatasetTwap                        CreateStreamDtoDataset = "twap"
+	CreateStreamDtoDatasetWriterActions               CreateStreamDtoDataset = "writer_actions"
 )
 
 // Defines values for CreateStreamDtoDestination.
@@ -147,6 +151,8 @@ const (
 	CreateStreamDtoNetworkSonicMainnet      CreateStreamDtoNetwork = "sonic-mainnet"
 	CreateStreamDtoNetworkSophonMainnet     CreateStreamDtoNetwork = "sophon-mainnet"
 	CreateStreamDtoNetworkSophonTestnet     CreateStreamDtoNetwork = "sophon-testnet"
+	CreateStreamDtoNetworkStellarMainnet    CreateStreamDtoNetwork = "stellar-mainnet"
+	CreateStreamDtoNetworkStellarTestnet    CreateStreamDtoNetwork = "stellar-testnet"
 	CreateStreamDtoNetworkStoryAeneid       CreateStreamDtoNetwork = "story-aeneid"
 	CreateStreamDtoNetworkStoryMainnet      CreateStreamDtoNetwork = "story-mainnet"
 	CreateStreamDtoNetworkTronMainnet       CreateStreamDtoNetwork = "tron-mainnet"
@@ -203,6 +209,7 @@ const (
 	TestFilterFunctionDtoDatasetBlockWithReceipts           TestFilterFunctionDtoDataset = "block_with_receipts"
 	TestFilterFunctionDtoDatasetBlockWithReceiptsDebugTrace TestFilterFunctionDtoDataset = "block_with_receipts_debug_trace"
 	TestFilterFunctionDtoDatasetBlockWithReceiptsTraceBlock TestFilterFunctionDtoDataset = "block_with_receipts_trace_block"
+	TestFilterFunctionDtoDatasetBookUpdates                 TestFilterFunctionDtoDataset = "book_updates"
 	TestFilterFunctionDtoDatasetDebugTraces                 TestFilterFunctionDtoDataset = "debug_traces"
 	TestFilterFunctionDtoDatasetEvents                      TestFilterFunctionDtoDataset = "events"
 	TestFilterFunctionDtoDatasetLedger                      TestFilterFunctionDtoDataset = "ledger"
@@ -211,7 +218,10 @@ const (
 	TestFilterFunctionDtoDatasetProgramsWithLogs            TestFilterFunctionDtoDataset = "programs_with_logs"
 	TestFilterFunctionDtoDatasetReceipts                    TestFilterFunctionDtoDataset = "receipts"
 	TestFilterFunctionDtoDatasetTraceBlocks                 TestFilterFunctionDtoDataset = "trace_blocks"
+	TestFilterFunctionDtoDatasetTrades                      TestFilterFunctionDtoDataset = "trades"
 	TestFilterFunctionDtoDatasetTransactions                TestFilterFunctionDtoDataset = "transactions"
+	TestFilterFunctionDtoDatasetTwap                        TestFilterFunctionDtoDataset = "twap"
+	TestFilterFunctionDtoDatasetWriterActions               TestFilterFunctionDtoDataset = "writer_actions"
 )
 
 // Defines values for TestFilterFunctionDtoNetwork.
@@ -302,6 +312,8 @@ const (
 	TestFilterFunctionDtoNetworkSonicMainnet      TestFilterFunctionDtoNetwork = "sonic-mainnet"
 	TestFilterFunctionDtoNetworkSophonMainnet     TestFilterFunctionDtoNetwork = "sophon-mainnet"
 	TestFilterFunctionDtoNetworkSophonTestnet     TestFilterFunctionDtoNetwork = "sophon-testnet"
+	TestFilterFunctionDtoNetworkStellarMainnet    TestFilterFunctionDtoNetwork = "stellar-mainnet"
+	TestFilterFunctionDtoNetworkStellarTestnet    TestFilterFunctionDtoNetwork = "stellar-testnet"
 	TestFilterFunctionDtoNetworkStoryAeneid       TestFilterFunctionDtoNetwork = "story-aeneid"
 	TestFilterFunctionDtoNetworkStoryMainnet      TestFilterFunctionDtoNetwork = "story-mainnet"
 	TestFilterFunctionDtoNetworkTronMainnet       TestFilterFunctionDtoNetwork = "tron-mainnet"

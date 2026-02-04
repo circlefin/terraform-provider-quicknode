@@ -22,6 +22,7 @@ import (
 
 const (
 	Api_keyScopes     = "api_key.Scopes"
+	BearerAuthScopes  = "bearerAuth.Scopes"
 	Bearer_authScopes = "bearer_auth.Scopes"
 )
 
@@ -134,6 +135,13 @@ const (
 	FetchAccountMetricsParamsMetricResponseStatusBreakdown    FetchAccountMetricsParamsMetric = "response_status_breakdown"
 	FetchAccountMetricsParamsMetricResponseStatusOverTime     FetchAccountMetricsParamsMetric = "response_status_over_time"
 	FetchAccountMetricsParamsMetricTotalRequestErrorsOverTime FetchAccountMetricsParamsMetric = "total_request_errors_over_time"
+)
+
+// Defines values for InviteTeamMemberJSONBodyRole.
+const (
+	Admin   InviteTeamMemberJSONBodyRole = "admin"
+	Billing InviteTeamMemberJSONBodyRole = "billing"
+	Viewer  InviteTeamMemberJSONBodyRole = "viewer"
 )
 
 // Chain defines model for chain.
@@ -506,6 +514,31 @@ type FetchAccountMetricsParamsPeriod string
 // FetchAccountMetricsParamsMetric defines parameters for FetchAccountMetrics.
 type FetchAccountMetricsParamsMetric string
 
+// CreateTeamJSONBody defines parameters for CreateTeam.
+type CreateTeamJSONBody struct {
+	Name string `json:"name"`
+}
+
+// UpdateTeamEndpointsJSONBody defines parameters for UpdateTeamEndpoints.
+type UpdateTeamEndpointsJSONBody struct {
+	EndpointIds []string `json:"endpoint_ids"`
+}
+
+// InviteTeamMemberJSONBody defines parameters for InviteTeamMember.
+type InviteTeamMemberJSONBody struct {
+	Email    string                        `json:"email"`
+	FullName *string                       `json:"full_name,omitempty"`
+	Role     *InviteTeamMemberJSONBodyRole `json:"role,omitempty"`
+}
+
+// InviteTeamMemberJSONBodyRole defines parameters for InviteTeamMember.
+type InviteTeamMemberJSONBodyRole string
+
+// RemoveTeamMemberJSONBody defines parameters for RemoveTeamMember.
+type RemoveTeamMemberJSONBody struct {
+	DestroyUser *bool `json:"destroy_user,omitempty"`
+}
+
 // UsageParams defines parameters for Usage.
 type UsageParams struct {
 	// StartTime Start time
@@ -586,6 +619,18 @@ type UpdateEndpointStatusJSONRequestBody UpdateEndpointStatusJSONBody
 
 // CreateTagJSONRequestBody defines body for CreateTag for application/json ContentType.
 type CreateTagJSONRequestBody CreateTagJSONBody
+
+// CreateTeamJSONRequestBody defines body for CreateTeam for application/json ContentType.
+type CreateTeamJSONRequestBody CreateTeamJSONBody
+
+// UpdateTeamEndpointsJSONRequestBody defines body for UpdateTeamEndpoints for application/json ContentType.
+type UpdateTeamEndpointsJSONRequestBody UpdateTeamEndpointsJSONBody
+
+// InviteTeamMemberJSONRequestBody defines body for InviteTeamMember for application/json ContentType.
+type InviteTeamMemberJSONRequestBody InviteTeamMemberJSONBody
+
+// RemoveTeamMemberJSONRequestBody defines body for RemoveTeamMember for application/json ContentType.
+type RemoveTeamMemberJSONRequestBody RemoveTeamMemberJSONBody
 
 // RequestEditorFn  is the function signature for the RequestEditor callback function
 type RequestEditorFn func(ctx context.Context, req *http.Request) error
@@ -801,8 +846,46 @@ type ClientInterface interface {
 
 	CreateTag(ctx context.Context, id string, body CreateTagJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// DeleteTag request
+	DeleteTag(ctx context.Context, id string, tagId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// FetchAccountMetrics request
 	FetchAccountMetrics(ctx context.Context, params *FetchAccountMetricsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListTeams request
+	ListTeams(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateTeamWithBody request with any body
+	CreateTeamWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	CreateTeam(ctx context.Context, body CreateTeamJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteTeam request
+	DeleteTeam(ctx context.Context, id int, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetTeam request
+	GetTeam(ctx context.Context, id int, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListTeamEndpoints request
+	ListTeamEndpoints(ctx context.Context, id int, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateTeamEndpointsWithBody request with any body
+	UpdateTeamEndpointsWithBody(ctx context.Context, id int, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	UpdateTeamEndpoints(ctx context.Context, id int, body UpdateTeamEndpointsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// InviteTeamMemberWithBody request with any body
+	InviteTeamMemberWithBody(ctx context.Context, id int, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	InviteTeamMember(ctx context.Context, id int, body InviteTeamMemberJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// RemoveTeamMemberWithBody request with any body
+	RemoveTeamMemberWithBody(ctx context.Context, id int, userId int, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	RemoveTeamMember(ctx context.Context, id int, userId int, body RemoveTeamMemberJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ResendTeamInvite request
+	ResendTeamInvite(ctx context.Context, id int, userId int, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// Usage request
 	Usage(ctx context.Context, params *UsageParams, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -1441,8 +1524,176 @@ func (c *Client) CreateTag(ctx context.Context, id string, body CreateTagJSONReq
 	return c.Client.Do(req)
 }
 
+func (c *Client) DeleteTag(ctx context.Context, id string, tagId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteTagRequest(c.Server, id, tagId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 func (c *Client) FetchAccountMetrics(ctx context.Context, params *FetchAccountMetricsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewFetchAccountMetricsRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ListTeams(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListTeamsRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateTeamWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateTeamRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateTeam(ctx context.Context, body CreateTeamJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateTeamRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) DeleteTeam(ctx context.Context, id int, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteTeamRequest(c.Server, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetTeam(ctx context.Context, id int, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetTeamRequest(c.Server, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ListTeamEndpoints(ctx context.Context, id int, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListTeamEndpointsRequest(c.Server, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateTeamEndpointsWithBody(ctx context.Context, id int, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateTeamEndpointsRequestWithBody(c.Server, id, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateTeamEndpoints(ctx context.Context, id int, body UpdateTeamEndpointsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateTeamEndpointsRequest(c.Server, id, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) InviteTeamMemberWithBody(ctx context.Context, id int, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewInviteTeamMemberRequestWithBody(c.Server, id, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) InviteTeamMember(ctx context.Context, id int, body InviteTeamMemberJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewInviteTeamMemberRequest(c.Server, id, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) RemoveTeamMemberWithBody(ctx context.Context, id int, userId int, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewRemoveTeamMemberRequestWithBody(c.Server, id, userId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) RemoveTeamMember(ctx context.Context, id int, userId int, body RemoveTeamMemberJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewRemoveTeamMemberRequest(c.Server, id, userId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ResendTeamInvite(ctx context.Context, id int, userId int, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewResendTeamInviteRequest(c.Server, id, userId)
 	if err != nil {
 		return nil, err
 	}
@@ -3178,6 +3429,47 @@ func NewCreateTagRequestWithBody(server string, id string, contentType string, b
 	return req, nil
 }
 
+// NewDeleteTagRequest generates requests for DeleteTag
+func NewDeleteTagRequest(server string, id string, tagId string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "tag_id", runtime.ParamLocationPath, tagId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v0/endpoints/%s/tags/%s", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
 // NewFetchAccountMetricsRequest generates requests for FetchAccountMetrics
 func NewFetchAccountMetricsRequest(server string, params *FetchAccountMetricsParams) (*http.Request, error) {
 	var err error
@@ -3244,6 +3536,364 @@ func NewFetchAccountMetricsRequest(server string, params *FetchAccountMetricsPar
 	}
 
 	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewListTeamsRequest generates requests for ListTeams
+func NewListTeamsRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v0/teams")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewCreateTeamRequest calls the generic CreateTeam builder with application/json body
+func NewCreateTeamRequest(server string, body CreateTeamJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewCreateTeamRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewCreateTeamRequestWithBody generates requests for CreateTeam with any type of body
+func NewCreateTeamRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v0/teams")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewDeleteTeamRequest generates requests for DeleteTeam
+func NewDeleteTeamRequest(server string, id int) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v0/teams/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetTeamRequest generates requests for GetTeam
+func NewGetTeamRequest(server string, id int) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v0/teams/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewListTeamEndpointsRequest generates requests for ListTeamEndpoints
+func NewListTeamEndpointsRequest(server string, id int) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v0/teams/%s/endpoints", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewUpdateTeamEndpointsRequest calls the generic UpdateTeamEndpoints builder with application/json body
+func NewUpdateTeamEndpointsRequest(server string, id int, body UpdateTeamEndpointsJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewUpdateTeamEndpointsRequestWithBody(server, id, "application/json", bodyReader)
+}
+
+// NewUpdateTeamEndpointsRequestWithBody generates requests for UpdateTeamEndpoints with any type of body
+func NewUpdateTeamEndpointsRequestWithBody(server string, id int, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v0/teams/%s/endpoints", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PATCH", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewInviteTeamMemberRequest calls the generic InviteTeamMember builder with application/json body
+func NewInviteTeamMemberRequest(server string, id int, body InviteTeamMemberJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewInviteTeamMemberRequestWithBody(server, id, "application/json", bodyReader)
+}
+
+// NewInviteTeamMemberRequestWithBody generates requests for InviteTeamMember with any type of body
+func NewInviteTeamMemberRequestWithBody(server string, id int, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v0/teams/%s/members", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewRemoveTeamMemberRequest calls the generic RemoveTeamMember builder with application/json body
+func NewRemoveTeamMemberRequest(server string, id int, userId int, body RemoveTeamMemberJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewRemoveTeamMemberRequestWithBody(server, id, userId, "application/json", bodyReader)
+}
+
+// NewRemoveTeamMemberRequestWithBody generates requests for RemoveTeamMember with any type of body
+func NewRemoveTeamMemberRequestWithBody(server string, id int, userId int, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "user_id", runtime.ParamLocationPath, userId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v0/teams/%s/members/%s", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewResendTeamInviteRequest generates requests for ResendTeamInvite
+func NewResendTeamInviteRequest(server string, id int, userId int) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "user_id", runtime.ParamLocationPath, userId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v0/teams/%s/members/%s/resend_invite", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -3695,8 +4345,46 @@ type ClientWithResponsesInterface interface {
 
 	CreateTagWithResponse(ctx context.Context, id string, body CreateTagJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateTagResponse, error)
 
+	// DeleteTagWithResponse request
+	DeleteTagWithResponse(ctx context.Context, id string, tagId string, reqEditors ...RequestEditorFn) (*DeleteTagResponse, error)
+
 	// FetchAccountMetricsWithResponse request
 	FetchAccountMetricsWithResponse(ctx context.Context, params *FetchAccountMetricsParams, reqEditors ...RequestEditorFn) (*FetchAccountMetricsResponse, error)
+
+	// ListTeamsWithResponse request
+	ListTeamsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*ListTeamsResponse, error)
+
+	// CreateTeamWithBodyWithResponse request with any body
+	CreateTeamWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateTeamResponse, error)
+
+	CreateTeamWithResponse(ctx context.Context, body CreateTeamJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateTeamResponse, error)
+
+	// DeleteTeamWithResponse request
+	DeleteTeamWithResponse(ctx context.Context, id int, reqEditors ...RequestEditorFn) (*DeleteTeamResponse, error)
+
+	// GetTeamWithResponse request
+	GetTeamWithResponse(ctx context.Context, id int, reqEditors ...RequestEditorFn) (*GetTeamResponse, error)
+
+	// ListTeamEndpointsWithResponse request
+	ListTeamEndpointsWithResponse(ctx context.Context, id int, reqEditors ...RequestEditorFn) (*ListTeamEndpointsResponse, error)
+
+	// UpdateTeamEndpointsWithBodyWithResponse request with any body
+	UpdateTeamEndpointsWithBodyWithResponse(ctx context.Context, id int, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateTeamEndpointsResponse, error)
+
+	UpdateTeamEndpointsWithResponse(ctx context.Context, id int, body UpdateTeamEndpointsJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateTeamEndpointsResponse, error)
+
+	// InviteTeamMemberWithBodyWithResponse request with any body
+	InviteTeamMemberWithBodyWithResponse(ctx context.Context, id int, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*InviteTeamMemberResponse, error)
+
+	InviteTeamMemberWithResponse(ctx context.Context, id int, body InviteTeamMemberJSONRequestBody, reqEditors ...RequestEditorFn) (*InviteTeamMemberResponse, error)
+
+	// RemoveTeamMemberWithBodyWithResponse request with any body
+	RemoveTeamMemberWithBodyWithResponse(ctx context.Context, id int, userId int, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*RemoveTeamMemberResponse, error)
+
+	RemoveTeamMemberWithResponse(ctx context.Context, id int, userId int, body RemoveTeamMemberJSONRequestBody, reqEditors ...RequestEditorFn) (*RemoveTeamMemberResponse, error)
+
+	// ResendTeamInviteWithResponse request
+	ResendTeamInviteWithResponse(ctx context.Context, id int, userId int, reqEditors ...RequestEditorFn) (*ResendTeamInviteResponse, error)
 
 	// UsageWithResponse request
 	UsageWithResponse(ctx context.Context, params *UsageParams, reqEditors ...RequestEditorFn) (*UsageResponse, error)
@@ -4556,6 +5244,27 @@ func (r CreateTagResponse) StatusCode() int {
 	return 0
 }
 
+type DeleteTagResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteTagResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteTagResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type FetchAccountMetricsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -4575,6 +5284,341 @@ func (r FetchAccountMetricsResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r FetchAccountMetricsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type ListTeamsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *struct {
+		Data []struct {
+			Id           *int    `json:"id,omitempty"`
+			MembersCount *int    `json:"members_count,omitempty"`
+			Name         *string `json:"name,omitempty"`
+			Users        *[]struct {
+				CreatedAt *string `json:"created_at,omitempty"`
+				Email     *string `json:"email,omitempty"`
+				FullName  *string `json:"full_name,omitempty"`
+				Id        *int    `json:"id,omitempty"`
+				PhotoUrl  *string `json:"photo_url,omitempty"`
+				Role      *string `json:"role"`
+				Status    *string `json:"status,omitempty"`
+			} `json:"users,omitempty"`
+		} `json:"data"`
+		Error *string `json:"error"`
+	}
+}
+
+// Status returns HTTPResponse.Status
+func (r ListTeamsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListTeamsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type CreateTeamResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *struct {
+		Data struct {
+			DefaultRole  *string `json:"default_role,omitempty"`
+			Id           *int    `json:"id,omitempty"`
+			MembersCount *int    `json:"members_count,omitempty"`
+			Name         *string `json:"name,omitempty"`
+		} `json:"data"`
+		Error *string `json:"error"`
+	}
+	JSON400 *struct {
+		Data  *string `json:"data"`
+		Error string  `json:"error"`
+	}
+}
+
+// Status returns HTTPResponse.Status
+func (r CreateTeamResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CreateTeamResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DeleteTeamResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *struct {
+		Data struct {
+			Message *string `json:"message,omitempty"`
+		} `json:"data"`
+		Error *string `json:"error"`
+	}
+	JSON400 *struct {
+		Data  *string `json:"data"`
+		Error string  `json:"error"`
+	}
+	JSON404 *struct {
+		Data  *string `json:"data"`
+		Error string  `json:"error"`
+	}
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteTeamResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteTeamResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetTeamResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *struct {
+		Data struct {
+			DefaultRole    *string `json:"default_role,omitempty"`
+			Id             *int    `json:"id,omitempty"`
+			MembersCount   *int    `json:"members_count,omitempty"`
+			Name           *string `json:"name,omitempty"`
+			PendingInvites *[]struct {
+				AccountPrimaryUser *bool   `json:"account_primary_user,omitempty"`
+				CreatedAt          *string `json:"created_at,omitempty"`
+				Email              *string `json:"email,omitempty"`
+				FullName           *string `json:"full_name,omitempty"`
+				Id                 *int    `json:"id,omitempty"`
+				PhotoUrl           *string `json:"photo_url,omitempty"`
+				Role               *string `json:"role"`
+				Status             *string `json:"status,omitempty"`
+			} `json:"pending_invites,omitempty"`
+			Users *[]struct {
+				AccountPrimaryUser *bool   `json:"account_primary_user,omitempty"`
+				CreatedAt          *string `json:"created_at,omitempty"`
+				Email              *string `json:"email,omitempty"`
+				FullName           *string `json:"full_name,omitempty"`
+				Id                 *int    `json:"id,omitempty"`
+				PhotoUrl           *string `json:"photo_url,omitempty"`
+				Role               *string `json:"role"`
+				Status             *string `json:"status,omitempty"`
+			} `json:"users,omitempty"`
+		} `json:"data"`
+		Error *string `json:"error"`
+	}
+	JSON404 *struct {
+		Data  *string `json:"data"`
+		Error string  `json:"error"`
+	}
+}
+
+// Status returns HTTPResponse.Status
+func (r GetTeamResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetTeamResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type ListTeamEndpointsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *struct {
+		Data []struct {
+			Chain     *string `json:"chain"`
+			Id        *int    `json:"id,omitempty"`
+			Network   *string `json:"network"`
+			Subdomain *string `json:"subdomain,omitempty"`
+		} `json:"data"`
+		Error *string `json:"error"`
+	}
+	JSON404 *struct {
+		Data  *string `json:"data"`
+		Error string  `json:"error"`
+	}
+}
+
+// Status returns HTTPResponse.Status
+func (r ListTeamEndpointsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListTeamEndpointsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type UpdateTeamEndpointsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *struct {
+		Data struct {
+			Success *bool `json:"success,omitempty"`
+		} `json:"data"`
+		Error *string `json:"error"`
+	}
+	JSON404 *struct {
+		Data  *string `json:"data"`
+		Error string  `json:"error"`
+	}
+}
+
+// Status returns HTTPResponse.Status
+func (r UpdateTeamEndpointsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r UpdateTeamEndpointsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type InviteTeamMemberResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *struct {
+		Data struct {
+			Email    *string `json:"email,omitempty"`
+			FullName *string `json:"full_name,omitempty"`
+			Id       *int    `json:"id,omitempty"`
+			Role     *string `json:"role"`
+			Status   *string `json:"status,omitempty"`
+		} `json:"data"`
+		Error *string `json:"error"`
+	}
+	JSON400 *struct {
+		Data  *string `json:"data"`
+		Error string  `json:"error"`
+	}
+	JSON404 *struct {
+		Data  *string `json:"data"`
+		Error string  `json:"error"`
+	}
+}
+
+// Status returns HTTPResponse.Status
+func (r InviteTeamMemberResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r InviteTeamMemberResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type RemoveTeamMemberResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *struct {
+		Data struct {
+			Message *string `json:"message,omitempty"`
+		} `json:"data"`
+		Error *string `json:"error"`
+	}
+	JSON400 *struct {
+		Data  *string `json:"data"`
+		Error string  `json:"error"`
+	}
+	JSON404 *struct {
+		Data  *string `json:"data"`
+		Error string  `json:"error"`
+	}
+}
+
+// Status returns HTTPResponse.Status
+func (r RemoveTeamMemberResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r RemoveTeamMemberResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type ResendTeamInviteResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *struct {
+		Data struct {
+			Message *string `json:"message,omitempty"`
+		} `json:"data"`
+		Error *string `json:"error"`
+	}
+	JSON400 *struct {
+		Data  *string `json:"data"`
+		Error string  `json:"error"`
+	}
+	JSON404 *struct {
+		Data  *string `json:"data"`
+		Error string  `json:"error"`
+	}
+}
+
+// Status returns HTTPResponse.Status
+func (r ResendTeamInviteResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ResendTeamInviteResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -5153,6 +6197,15 @@ func (c *ClientWithResponses) CreateTagWithResponse(ctx context.Context, id stri
 	return ParseCreateTagResponse(rsp)
 }
 
+// DeleteTagWithResponse request returning *DeleteTagResponse
+func (c *ClientWithResponses) DeleteTagWithResponse(ctx context.Context, id string, tagId string, reqEditors ...RequestEditorFn) (*DeleteTagResponse, error) {
+	rsp, err := c.DeleteTag(ctx, id, tagId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteTagResponse(rsp)
+}
+
 // FetchAccountMetricsWithResponse request returning *FetchAccountMetricsResponse
 func (c *ClientWithResponses) FetchAccountMetricsWithResponse(ctx context.Context, params *FetchAccountMetricsParams, reqEditors ...RequestEditorFn) (*FetchAccountMetricsResponse, error) {
 	rsp, err := c.FetchAccountMetrics(ctx, params, reqEditors...)
@@ -5160,6 +6213,119 @@ func (c *ClientWithResponses) FetchAccountMetricsWithResponse(ctx context.Contex
 		return nil, err
 	}
 	return ParseFetchAccountMetricsResponse(rsp)
+}
+
+// ListTeamsWithResponse request returning *ListTeamsResponse
+func (c *ClientWithResponses) ListTeamsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*ListTeamsResponse, error) {
+	rsp, err := c.ListTeams(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListTeamsResponse(rsp)
+}
+
+// CreateTeamWithBodyWithResponse request with arbitrary body returning *CreateTeamResponse
+func (c *ClientWithResponses) CreateTeamWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateTeamResponse, error) {
+	rsp, err := c.CreateTeamWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateTeamResponse(rsp)
+}
+
+func (c *ClientWithResponses) CreateTeamWithResponse(ctx context.Context, body CreateTeamJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateTeamResponse, error) {
+	rsp, err := c.CreateTeam(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateTeamResponse(rsp)
+}
+
+// DeleteTeamWithResponse request returning *DeleteTeamResponse
+func (c *ClientWithResponses) DeleteTeamWithResponse(ctx context.Context, id int, reqEditors ...RequestEditorFn) (*DeleteTeamResponse, error) {
+	rsp, err := c.DeleteTeam(ctx, id, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteTeamResponse(rsp)
+}
+
+// GetTeamWithResponse request returning *GetTeamResponse
+func (c *ClientWithResponses) GetTeamWithResponse(ctx context.Context, id int, reqEditors ...RequestEditorFn) (*GetTeamResponse, error) {
+	rsp, err := c.GetTeam(ctx, id, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetTeamResponse(rsp)
+}
+
+// ListTeamEndpointsWithResponse request returning *ListTeamEndpointsResponse
+func (c *ClientWithResponses) ListTeamEndpointsWithResponse(ctx context.Context, id int, reqEditors ...RequestEditorFn) (*ListTeamEndpointsResponse, error) {
+	rsp, err := c.ListTeamEndpoints(ctx, id, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListTeamEndpointsResponse(rsp)
+}
+
+// UpdateTeamEndpointsWithBodyWithResponse request with arbitrary body returning *UpdateTeamEndpointsResponse
+func (c *ClientWithResponses) UpdateTeamEndpointsWithBodyWithResponse(ctx context.Context, id int, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateTeamEndpointsResponse, error) {
+	rsp, err := c.UpdateTeamEndpointsWithBody(ctx, id, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateTeamEndpointsResponse(rsp)
+}
+
+func (c *ClientWithResponses) UpdateTeamEndpointsWithResponse(ctx context.Context, id int, body UpdateTeamEndpointsJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateTeamEndpointsResponse, error) {
+	rsp, err := c.UpdateTeamEndpoints(ctx, id, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateTeamEndpointsResponse(rsp)
+}
+
+// InviteTeamMemberWithBodyWithResponse request with arbitrary body returning *InviteTeamMemberResponse
+func (c *ClientWithResponses) InviteTeamMemberWithBodyWithResponse(ctx context.Context, id int, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*InviteTeamMemberResponse, error) {
+	rsp, err := c.InviteTeamMemberWithBody(ctx, id, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseInviteTeamMemberResponse(rsp)
+}
+
+func (c *ClientWithResponses) InviteTeamMemberWithResponse(ctx context.Context, id int, body InviteTeamMemberJSONRequestBody, reqEditors ...RequestEditorFn) (*InviteTeamMemberResponse, error) {
+	rsp, err := c.InviteTeamMember(ctx, id, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseInviteTeamMemberResponse(rsp)
+}
+
+// RemoveTeamMemberWithBodyWithResponse request with arbitrary body returning *RemoveTeamMemberResponse
+func (c *ClientWithResponses) RemoveTeamMemberWithBodyWithResponse(ctx context.Context, id int, userId int, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*RemoveTeamMemberResponse, error) {
+	rsp, err := c.RemoveTeamMemberWithBody(ctx, id, userId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseRemoveTeamMemberResponse(rsp)
+}
+
+func (c *ClientWithResponses) RemoveTeamMemberWithResponse(ctx context.Context, id int, userId int, body RemoveTeamMemberJSONRequestBody, reqEditors ...RequestEditorFn) (*RemoveTeamMemberResponse, error) {
+	rsp, err := c.RemoveTeamMember(ctx, id, userId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseRemoveTeamMemberResponse(rsp)
+}
+
+// ResendTeamInviteWithResponse request returning *ResendTeamInviteResponse
+func (c *ClientWithResponses) ResendTeamInviteWithResponse(ctx context.Context, id int, userId int, reqEditors ...RequestEditorFn) (*ResendTeamInviteResponse, error) {
+	rsp, err := c.ResendTeamInvite(ctx, id, userId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseResendTeamInviteResponse(rsp)
 }
 
 // UsageWithResponse request returning *UsageResponse
@@ -5990,6 +7156,22 @@ func ParseCreateTagResponse(rsp *http.Response) (*CreateTagResponse, error) {
 	return response, nil
 }
 
+// ParseDeleteTagResponse parses an HTTP response from a DeleteTagWithResponse call
+func ParseDeleteTagResponse(rsp *http.Response) (*DeleteTagResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteTagResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	return response, nil
+}
+
 // ParseFetchAccountMetricsResponse parses an HTTP response from a FetchAccountMetricsWithResponse call
 func ParseFetchAccountMetricsResponse(rsp *http.Response) (*FetchAccountMetricsResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -6013,6 +7195,449 @@ func ParseFetchAccountMetricsResponse(rsp *http.Response) (*FetchAccountMetricsR
 			return nil, err
 		}
 		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseListTeamsResponse parses an HTTP response from a ListTeamsWithResponse call
+func ParseListTeamsResponse(rsp *http.Response) (*ListTeamsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListTeamsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest struct {
+			Data []struct {
+				Id           *int    `json:"id,omitempty"`
+				MembersCount *int    `json:"members_count,omitempty"`
+				Name         *string `json:"name,omitempty"`
+				Users        *[]struct {
+					CreatedAt *string `json:"created_at,omitempty"`
+					Email     *string `json:"email,omitempty"`
+					FullName  *string `json:"full_name,omitempty"`
+					Id        *int    `json:"id,omitempty"`
+					PhotoUrl  *string `json:"photo_url,omitempty"`
+					Role      *string `json:"role"`
+					Status    *string `json:"status,omitempty"`
+				} `json:"users,omitempty"`
+			} `json:"data"`
+			Error *string `json:"error"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCreateTeamResponse parses an HTTP response from a CreateTeamWithResponse call
+func ParseCreateTeamResponse(rsp *http.Response) (*CreateTeamResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CreateTeamResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest struct {
+			Data struct {
+				DefaultRole  *string `json:"default_role,omitempty"`
+				Id           *int    `json:"id,omitempty"`
+				MembersCount *int    `json:"members_count,omitempty"`
+				Name         *string `json:"name,omitempty"`
+			} `json:"data"`
+			Error *string `json:"error"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest struct {
+			Data  *string `json:"data"`
+			Error string  `json:"error"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteTeamResponse parses an HTTP response from a DeleteTeamWithResponse call
+func ParseDeleteTeamResponse(rsp *http.Response) (*DeleteTeamResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteTeamResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest struct {
+			Data struct {
+				Message *string `json:"message,omitempty"`
+			} `json:"data"`
+			Error *string `json:"error"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest struct {
+			Data  *string `json:"data"`
+			Error string  `json:"error"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest struct {
+			Data  *string `json:"data"`
+			Error string  `json:"error"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetTeamResponse parses an HTTP response from a GetTeamWithResponse call
+func ParseGetTeamResponse(rsp *http.Response) (*GetTeamResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetTeamResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest struct {
+			Data struct {
+				DefaultRole    *string `json:"default_role,omitempty"`
+				Id             *int    `json:"id,omitempty"`
+				MembersCount   *int    `json:"members_count,omitempty"`
+				Name           *string `json:"name,omitempty"`
+				PendingInvites *[]struct {
+					AccountPrimaryUser *bool   `json:"account_primary_user,omitempty"`
+					CreatedAt          *string `json:"created_at,omitempty"`
+					Email              *string `json:"email,omitempty"`
+					FullName           *string `json:"full_name,omitempty"`
+					Id                 *int    `json:"id,omitempty"`
+					PhotoUrl           *string `json:"photo_url,omitempty"`
+					Role               *string `json:"role"`
+					Status             *string `json:"status,omitempty"`
+				} `json:"pending_invites,omitempty"`
+				Users *[]struct {
+					AccountPrimaryUser *bool   `json:"account_primary_user,omitempty"`
+					CreatedAt          *string `json:"created_at,omitempty"`
+					Email              *string `json:"email,omitempty"`
+					FullName           *string `json:"full_name,omitempty"`
+					Id                 *int    `json:"id,omitempty"`
+					PhotoUrl           *string `json:"photo_url,omitempty"`
+					Role               *string `json:"role"`
+					Status             *string `json:"status,omitempty"`
+				} `json:"users,omitempty"`
+			} `json:"data"`
+			Error *string `json:"error"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest struct {
+			Data  *string `json:"data"`
+			Error string  `json:"error"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseListTeamEndpointsResponse parses an HTTP response from a ListTeamEndpointsWithResponse call
+func ParseListTeamEndpointsResponse(rsp *http.Response) (*ListTeamEndpointsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListTeamEndpointsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest struct {
+			Data []struct {
+				Chain     *string `json:"chain"`
+				Id        *int    `json:"id,omitempty"`
+				Network   *string `json:"network"`
+				Subdomain *string `json:"subdomain,omitempty"`
+			} `json:"data"`
+			Error *string `json:"error"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest struct {
+			Data  *string `json:"data"`
+			Error string  `json:"error"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseUpdateTeamEndpointsResponse parses an HTTP response from a UpdateTeamEndpointsWithResponse call
+func ParseUpdateTeamEndpointsResponse(rsp *http.Response) (*UpdateTeamEndpointsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &UpdateTeamEndpointsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest struct {
+			Data struct {
+				Success *bool `json:"success,omitempty"`
+			} `json:"data"`
+			Error *string `json:"error"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest struct {
+			Data  *string `json:"data"`
+			Error string  `json:"error"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseInviteTeamMemberResponse parses an HTTP response from a InviteTeamMemberWithResponse call
+func ParseInviteTeamMemberResponse(rsp *http.Response) (*InviteTeamMemberResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &InviteTeamMemberResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest struct {
+			Data struct {
+				Email    *string `json:"email,omitempty"`
+				FullName *string `json:"full_name,omitempty"`
+				Id       *int    `json:"id,omitempty"`
+				Role     *string `json:"role"`
+				Status   *string `json:"status,omitempty"`
+			} `json:"data"`
+			Error *string `json:"error"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest struct {
+			Data  *string `json:"data"`
+			Error string  `json:"error"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest struct {
+			Data  *string `json:"data"`
+			Error string  `json:"error"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseRemoveTeamMemberResponse parses an HTTP response from a RemoveTeamMemberWithResponse call
+func ParseRemoveTeamMemberResponse(rsp *http.Response) (*RemoveTeamMemberResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &RemoveTeamMemberResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest struct {
+			Data struct {
+				Message *string `json:"message,omitempty"`
+			} `json:"data"`
+			Error *string `json:"error"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest struct {
+			Data  *string `json:"data"`
+			Error string  `json:"error"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest struct {
+			Data  *string `json:"data"`
+			Error string  `json:"error"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseResendTeamInviteResponse parses an HTTP response from a ResendTeamInviteWithResponse call
+func ParseResendTeamInviteResponse(rsp *http.Response) (*ResendTeamInviteResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ResendTeamInviteResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest struct {
+			Data struct {
+				Message *string `json:"message,omitempty"`
+			} `json:"data"`
+			Error *string `json:"error"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest struct {
+			Data  *string `json:"data"`
+			Error string  `json:"error"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest struct {
+			Data  *string `json:"data"`
+			Error string  `json:"error"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
 
 	}
 
@@ -6157,100 +7782,116 @@ func ParseUsageByMethodResponse(rsp *http.Response) (*UsageByMethodResponse, err
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"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",
-	"AAD//4PMuTcLlwAA",
+	"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",
+	"///joXzjYL8AAA==",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file
