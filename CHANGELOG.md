@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.7.0](https://github.com/circlefin/terraform-provider-quicknode/compare/v0.6.3...v0.7.0) (2026-02-04)
+
+
+### Features
+
+* add support for tags in endpoints ([#61](https://github.com/circlefin/terraform-provider-quicknode/issues/61)) ([739b3c4](https://github.com/circlefin/terraform-provider-quicknode/commit/739b3c409d0f49d2850719176b0648c835a40e39))
+
+
+### Miscellaneous Chores
+
+* regenerate quicknode openapi client ([#60](https://github.com/circlefin/terraform-provider-quicknode/issues/60)) ([c18f27d](https://github.com/circlefin/terraform-provider-quicknode/commit/c18f27dde1c0d1c321ad76474ec48bcc81ec3c2d))
+* update openapi ([#56](https://github.com/circlefin/terraform-provider-quicknode/issues/56)) ([0433cc4](https://github.com/circlefin/terraform-provider-quicknode/commit/0433cc4c80e98cc24bd26ed25bf8cdf4ad13029e))
+
 ## [0.6.3](https://github.com/circlefin/terraform-provider-quicknode/compare/v0.6.2...v0.6.3) (2025-12-18)
 
 
