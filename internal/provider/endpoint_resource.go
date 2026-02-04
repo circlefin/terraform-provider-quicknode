@@ -20,6 +20,7 @@ import (
 	"context"
 	"fmt"
 	"net/url"
+	"strconv"
 	"strings"
 
 	"github.com/circlefin/terraform-provider-quicknode/api/quicknode"
@@ -74,6 +75,7 @@ type EndpointResourceModel struct {
 	Url      types.String `tfsdk:"url"`
 	Id       types.String `tfsdk:"id"`
 	Security types.Object `tfsdk:"security"`
+	Tags     types.List   `tfsdk:"tags"`
 }
 
 type EndpointResourceSecurityToken struct {
@@ -150,6 +152,11 @@ func (r *EndpointResource) Schema(ctx context.Context, req resource.SchemaReques
 				PlanModifiers: []planmodifier.Object{
 					objectplanmodifier.UseStateForUnknown(),
 				},
+			},
+			"tags": schema.ListAttribute{
+				ElementType:         types.StringType,
+				Optional:            true,
+				MarkdownDescription: "Tags to associate with the endpoint",
 			},
 		},
 	}
@@ -236,7 +243,6 @@ func (r *EndpointResource) Create(ctx context.Context, req resource.CreateReques
 			Network: data.Network.ValueStringPointer(),
 		},
 	)
-
 	if err != nil {
 		resp.Diagnostics.AddError(
 			fmt.Sprintf("%s - Creating Endpoint", utils.ClientErrorSummary),
@@ -315,6 +321,36 @@ func (r *EndpointResource) Create(ctx context.Context, req resource.CreateReques
 		}
 	}
 
+	var tags []string
+	data.Tags.ElementsAs(ctx, &tags, false)
+	for _, tag := range tags {
+		tagResp, err := r.client.CreateTagWithResponse(
+			ctx,
+			data.Id.ValueString(),
+			quicknode.CreateTagJSONRequestBody{
+				Label: &tag,
+			},
+		)
+		if err != nil {
+			resp.Diagnostics.AddError(
+				fmt.Sprintf("%s - Creating Tag: %s", utils.ClientErrorSummary, tag),
+				utils.BuildClientErrorMessage(err),
+			)
+			return
+		} else if tagResp.StatusCode() != 200 {
+			m, err := utils.BuildRequestErrorMessage(tagResp.Status(), tagResp.Body)
+			if err != nil {
+				resp.Diagnostics.AddWarning(fmt.Sprintf("%s - Creating Tag", utils.InternalErrorSummary), utils.BuildInternalErrorMessage(err))
+			}
+
+			resp.Diagnostics.AddError(
+				fmt.Sprintf("%s - Creating Tag: %s", utils.RequestErrorSummary, tag),
+				m,
+			)
+			return
+		}
+	}
+
 	tflog.Trace(ctx, "created a resource")
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
@@ -334,7 +370,6 @@ func (r *EndpointResource) Read(ctx context.Context, req resource.ReadRequest, r
 		ctx,
 		data.Id.ValueString(),
 	)
-
 	if err != nil {
 		resp.Diagnostics.AddError(
 			fmt.Sprintf("%s - Reading Endpoint", utils.ClientErrorSummary),
@@ -389,6 +424,19 @@ func (r *EndpointResource) Read(ctx context.Context, req resource.ReadRequest, r
 		data.Security = securityValueObject
 	}
 
+	data.Tags = types.ListNull(types.StringType)
+	if endpoint.Tags != nil && len(*endpoint.Tags) > 0 {
+		var tags []string
+		for _, tag := range *endpoint.Tags {
+			if tag.Label != nil {
+				tags = append(tags, *tag.Label)
+			}
+		}
+		t, diags := types.ListValueFrom(ctx, types.StringType, tags)
+		resp.Diagnostics.Append(diags...)
+		data.Tags = t
+	}
+
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 }
@@ -412,7 +460,6 @@ func (r *EndpointResource) Update(ctx context.Context, req resource.UpdateReques
 			Label: &l,
 		},
 	)
-
 	if err != nil {
 		resp.Diagnostics.AddError(
 			fmt.Sprintf("%s - Patching Endpoint", utils.ClientErrorSummary),
@@ -434,6 +481,108 @@ func (r *EndpointResource) Update(ctx context.Context, req resource.UpdateReques
 		return
 	}
 
+	// Fetch current endpoint state to get tag IDs
+	currentEndpointResp, err := r.client.ShowEndpointWithResponse(ctx, data.Id.ValueString())
+	if err != nil {
+		resp.Diagnostics.AddError(
+			fmt.Sprintf("%s - Reading Endpoint for Tags", utils.ClientErrorSummary),
+			utils.BuildClientErrorMessage(err),
+		)
+		return
+	}
+	if currentEndpointResp.StatusCode() != 200 {
+		m, err := utils.BuildRequestErrorMessage(currentEndpointResp.Status(), currentEndpointResp.Body)
+		if err != nil {
+			resp.Diagnostics.AddWarning(fmt.Sprintf("%s - Reading Endpoint for Tags", utils.InternalErrorSummary), utils.BuildInternalErrorMessage(err))
+		}
+		resp.Diagnostics.AddError(
+			fmt.Sprintf("%s - Reading Endpoint for Tags", utils.RequestErrorSummary),
+			m,
+		)
+		return
+	}
+
+	currentTags := make(map[string]int)
+	if currentEndpointResp.JSON200.Data.Tags != nil {
+		for _, tag := range *currentEndpointResp.JSON200.Data.Tags {
+			if tag.Label != nil && tag.TagId != nil {
+				currentTags[*tag.Label] = *tag.TagId
+			}
+		}
+	}
+
+	var planTags []string
+	resp.Diagnostics.Append(data.Tags.ElementsAs(ctx, &planTags, false)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	// Create map of plan tags for easy lookup
+	planTagsMap := make(map[string]bool)
+	for _, tag := range planTags {
+		planTagsMap[tag] = true
+	}
+
+	// Add new tags
+	for _, tag := range planTags {
+		if _, exists := currentTags[tag]; !exists {
+			tagResp, err := r.client.CreateTagWithResponse(
+				ctx,
+				data.Id.ValueString(),
+				quicknode.CreateTagJSONRequestBody{
+					Label: &tag,
+				},
+			)
+			if err != nil {
+				resp.Diagnostics.AddError(
+					fmt.Sprintf("%s - Creating Tag", utils.ClientErrorSummary),
+					utils.BuildClientErrorMessage(err),
+				)
+				return
+			}
+			if tagResp.StatusCode() != 200 {
+				m, err := utils.BuildRequestErrorMessage(tagResp.Status(), tagResp.Body)
+				if err != nil {
+					resp.Diagnostics.AddWarning(fmt.Sprintf("%s - Creating Tag", utils.InternalErrorSummary), utils.BuildInternalErrorMessage(err))
+				}
+				resp.Diagnostics.AddError(
+					fmt.Sprintf("%s - Creating Tag", utils.RequestErrorSummary),
+					m,
+				)
+				return
+			}
+		}
+	}
+
+	// Remove deleted tags
+	for label, id := range currentTags {
+		if _, exists := planTagsMap[label]; !exists {
+			delResp, err := r.client.DeleteTagWithResponse(
+				ctx,
+				data.Id.ValueString(),
+				strconv.Itoa(id),
+			)
+			if err != nil {
+				resp.Diagnostics.AddError(
+					fmt.Sprintf("%s - Deleting Tag", utils.ClientErrorSummary),
+					utils.BuildClientErrorMessage(err),
+				)
+				return
+			}
+			if delResp.StatusCode() != 200 {
+				m, err := utils.BuildRequestErrorMessage(delResp.Status(), delResp.Body)
+				if err != nil {
+					resp.Diagnostics.AddWarning(fmt.Sprintf("%s - Deleting Tag", utils.InternalErrorSummary), utils.BuildInternalErrorMessage(err))
+				}
+				resp.Diagnostics.AddError(
+					fmt.Sprintf("%s - Deleting Tag", utils.RequestErrorSummary),
+					m,
+				)
+				return
+			}
+		}
+	}
+
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 }
 
@@ -451,7 +600,6 @@ func (r *EndpointResource) Delete(ctx context.Context, req resource.DeleteReques
 		ctx,
 		data.Id.ValueString(),
 	)
-
 	if err != nil {
 		resp.Diagnostics.AddError(
 			fmt.Sprintf("%s - Deleting Endpoint", utils.ClientErrorSummary),
