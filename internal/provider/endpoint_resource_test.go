@@ -36,7 +36,7 @@ func TestAccMinimalQuicknodeEndpointResource(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create and Read testing
 			{
-				Config: testAccQuickNodeResource(rName, "created-by-terraform"),
+				Config: testAccQuickNodeResource(rName, "created-by-terraform", "tag1", "tag2"),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttrSet("quicknode_endpoint.main", "id"),
 				),
@@ -49,7 +49,7 @@ func TestAccMinimalQuicknodeEndpointResource(t *testing.T) {
 			},
 			// Update and Read testing
 			{
-				Config: testAccQuickNodeResource(rName, "updated-by-terraform"),
+				Config: testAccQuickNodeResource(rName, "updated-by-terraform", "tag1", "tag3"),
 				Check:  resource.ComposeAggregateTestCheckFunc(),
 			},
 			// Delete testing automatically occurs in TestCase
@@ -75,11 +75,12 @@ func TestAccMinimalQuicknodeEndpointResource(t *testing.T) {
 	})
 }
 
-func testAccQuickNodeResource(name string, label string) string {
+func testAccQuickNodeResource(name, label, tag1, tag2 string) string {
 	return providerConfig + fmt.Sprintf(`
 resource "quicknode_endpoint" "main" {
 	network = "mainnet"
 	chain   = "eth"
 	label   = "%s-%s"
-}`, name, label)
+	tags	= [%q, %q]
+}`, name, label, tag1, tag2)
 }

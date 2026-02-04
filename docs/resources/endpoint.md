@@ -23,6 +23,7 @@ Endpoint resource
 ### Optional
 
 - `label` (String) Label to decorate an endpoint with
+- `tags` (List of String) Tags to associate with the endpoint
 
 ### Read-Only
 
