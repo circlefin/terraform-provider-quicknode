@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.7.1](https://github.com/circlefin/terraform-provider-quicknode/compare/v0.7.0...v0.7.1) (2026-02-05)
+
+
+### Bug Fixes
+
+* update other definition of list to set ([#64](https://github.com/circlefin/terraform-provider-quicknode/issues/64)) ([c6b1936](https://github.com/circlefin/terraform-provider-quicknode/commit/c6b19366ae1bb0aa2139f995960dc6d806814cfd))
+* use set for tags ([#62](https://github.com/circlefin/terraform-provider-quicknode/issues/62)) ([7b5425c](https://github.com/circlefin/terraform-provider-quicknode/commit/7b5425c72f34af2ec17f9c2fdba3e0b6dc45ac49))
+
 ## [0.7.0](https://github.com/circlefin/terraform-provider-quicknode/compare/v0.6.3...v0.7.0) (2026-02-04)
 
 
