@@ -153,7 +153,7 @@ func (r *EndpointResource) Schema(ctx context.Context, req resource.SchemaReques
 					objectplanmodifier.UseStateForUnknown(),
 				},
 			},
-			"tags": schema.ListAttribute{
+			"tags": schema.SetAttribute{
 				ElementType:         types.StringType,
 				Optional:            true,
 				MarkdownDescription: "Tags to associate with the endpoint",
