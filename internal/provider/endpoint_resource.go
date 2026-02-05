@@ -75,7 +75,7 @@ type EndpointResourceModel struct {
 	Url      types.String `tfsdk:"url"`
 	Id       types.String `tfsdk:"id"`
 	Security types.Object `tfsdk:"security"`
-	Tags     types.List   `tfsdk:"tags"`
+	Tags     types.Set    `tfsdk:"tags"`
 }
 
 type EndpointResourceSecurityToken struct {
@@ -424,7 +424,7 @@ func (r *EndpointResource) Read(ctx context.Context, req resource.ReadRequest, r
 		data.Security = securityValueObject
 	}
 
-	data.Tags = types.ListNull(types.StringType)
+	data.Tags = types.SetNull(types.StringType)
 	if endpoint.Tags != nil && len(*endpoint.Tags) > 0 {
 		var tags []string
 		for _, tag := range *endpoint.Tags {
@@ -432,7 +432,7 @@ func (r *EndpointResource) Read(ctx context.Context, req resource.ReadRequest, r
 				tags = append(tags, *tag.Label)
 			}
 		}
-		t, diags := types.ListValueFrom(ctx, types.StringType, tags)
+		t, diags := types.SetValueFrom(ctx, types.StringType, tags)
 		resp.Diagnostics.Append(diags...)
 		data.Tags = t
 	}
