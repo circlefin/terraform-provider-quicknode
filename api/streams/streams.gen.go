@@ -35,6 +35,7 @@ const (
 	CreateStreamDtoDatasetBookUpdates                 CreateStreamDtoDataset = "book_updates"
 	CreateStreamDtoDatasetDebugTraces                 CreateStreamDtoDataset = "debug_traces"
 	CreateStreamDtoDatasetEvents                      CreateStreamDtoDataset = "events"
+	CreateStreamDtoDatasetEventsWithOrders            CreateStreamDtoDataset = "events_with_orders"
 	CreateStreamDtoDatasetLedger                      CreateStreamDtoDataset = "ledger"
 	CreateStreamDtoDatasetLogs                        CreateStreamDtoDataset = "logs"
 	CreateStreamDtoDatasetOrders                      CreateStreamDtoDataset = "orders"
@@ -51,16 +52,10 @@ const (
 const (
 	CreateStreamDtoDestinationAzure    CreateStreamDtoDestination = "azure"
 	CreateStreamDtoDestinationFunction CreateStreamDtoDestination = "function"
+	CreateStreamDtoDestinationKafka    CreateStreamDtoDestination = "kafka"
 	CreateStreamDtoDestinationPostgres CreateStreamDtoDestination = "postgres"
 	CreateStreamDtoDestinationS3       CreateStreamDtoDestination = "s3"
 	CreateStreamDtoDestinationWebhook  CreateStreamDtoDestination = "webhook"
-)
-
-// Defines values for CreateStreamDtoIncludeStreamMetadata.
-const (
-	CreateStreamDtoIncludeStreamMetadataBody   CreateStreamDtoIncludeStreamMetadata = "body"
-	CreateStreamDtoIncludeStreamMetadataHeader CreateStreamDtoIncludeStreamMetadata = "header"
-	CreateStreamDtoIncludeStreamMetadataNone   CreateStreamDtoIncludeStreamMetadata = "none"
 )
 
 // Defines values for CreateStreamDtoNetwork.
@@ -101,10 +96,13 @@ const (
 	CreateStreamDtoNetworkFraxtalMainnet    CreateStreamDtoNetwork = "fraxtal-mainnet"
 	CreateStreamDtoNetworkGnosisMainnet     CreateStreamDtoNetwork = "gnosis-mainnet"
 	CreateStreamDtoNetworkGravityAlpham     CreateStreamDtoNetwork = "gravity-alpham"
+	CreateStreamDtoNetworkHederaMainnet     CreateStreamDtoNetwork = "hedera-mainnet"
+	CreateStreamDtoNetworkHederaTestnet     CreateStreamDtoNetwork = "hedera-testnet"
 	CreateStreamDtoNetworkHemiMainnet       CreateStreamDtoNetwork = "hemi-mainnet"
 	CreateStreamDtoNetworkHemiTestnet       CreateStreamDtoNetwork = "hemi-testnet"
 	CreateStreamDtoNetworkHypercoreMainnet  CreateStreamDtoNetwork = "hypercore-mainnet"
 	CreateStreamDtoNetworkHyperevmMainnet   CreateStreamDtoNetwork = "hyperevm-mainnet"
+	CreateStreamDtoNetworkHyperevmTestnet   CreateStreamDtoNetwork = "hyperevm-testnet"
 	CreateStreamDtoNetworkImxMainnet        CreateStreamDtoNetwork = "imx-mainnet"
 	CreateStreamDtoNetworkImxTestnet        CreateStreamDtoNetwork = "imx-testnet"
 	CreateStreamDtoNetworkInjectiveMainnet  CreateStreamDtoNetwork = "injective-mainnet"
@@ -119,8 +117,8 @@ const (
 	CreateStreamDtoNetworkLensTestnet       CreateStreamDtoNetwork = "lens-testnet"
 	CreateStreamDtoNetworkLineaMainnet      CreateStreamDtoNetwork = "linea-mainnet"
 	CreateStreamDtoNetworkLiskMainnet       CreateStreamDtoNetwork = "lisk-mainnet"
-	CreateStreamDtoNetworkLitecoinMainnet   CreateStreamDtoNetwork = "litecoin-mainnet"
-	CreateStreamDtoNetworkLitecoinTestnet   CreateStreamDtoNetwork = "litecoin-testnet"
+	CreateStreamDtoNetworkLtcMainnet        CreateStreamDtoNetwork = "ltc-mainnet"
+	CreateStreamDtoNetworkLtcTestnet        CreateStreamDtoNetwork = "ltc-testnet"
 	CreateStreamDtoNetworkMantleMainnet     CreateStreamDtoNetwork = "mantle-mainnet"
 	CreateStreamDtoNetworkMantleSepolia     CreateStreamDtoNetwork = "mantle-sepolia"
 	CreateStreamDtoNetworkModeMainnet       CreateStreamDtoNetwork = "mode-mainnet"
@@ -155,6 +153,8 @@ const (
 	CreateStreamDtoNetworkStellarTestnet    CreateStreamDtoNetwork = "stellar-testnet"
 	CreateStreamDtoNetworkStoryAeneid       CreateStreamDtoNetwork = "story-aeneid"
 	CreateStreamDtoNetworkStoryMainnet      CreateStreamDtoNetwork = "story-mainnet"
+	CreateStreamDtoNetworkTempoMainnet      CreateStreamDtoNetwork = "tempo-mainnet"
+	CreateStreamDtoNetworkTempoTestnet      CreateStreamDtoNetwork = "tempo-testnet"
 	CreateStreamDtoNetworkTronMainnet       CreateStreamDtoNetwork = "tron-mainnet"
 	CreateStreamDtoNetworkUnichainMainnet   CreateStreamDtoNetwork = "unichain-mainnet"
 	CreateStreamDtoNetworkUnichainSepolia   CreateStreamDtoNetwork = "unichain-sepolia"
@@ -191,6 +191,42 @@ const (
 	CreateStreamDtoStatusPaused CreateStreamDtoStatus = "paused"
 )
 
+// Defines values for ExtraDestinationDtoDestination.
+const (
+	ExtraDestinationDtoDestinationAzure    ExtraDestinationDtoDestination = "azure"
+	ExtraDestinationDtoDestinationFunction ExtraDestinationDtoDestination = "function"
+	ExtraDestinationDtoDestinationKafka    ExtraDestinationDtoDestination = "kafka"
+	ExtraDestinationDtoDestinationPostgres ExtraDestinationDtoDestination = "postgres"
+	ExtraDestinationDtoDestinationS3       ExtraDestinationDtoDestination = "s3"
+	ExtraDestinationDtoDestinationWebhook  ExtraDestinationDtoDestination = "webhook"
+)
+
+// Defines values for KafkaAttributesCompressionType.
+const (
+	Gzip   KafkaAttributesCompressionType = "gzip"
+	Lz4    KafkaAttributesCompressionType = "lz4"
+	None   KafkaAttributesCompressionType = "none"
+	Snappy KafkaAttributesCompressionType = "snappy"
+	Zstd   KafkaAttributesCompressionType = "zstd"
+)
+
+// Defines values for KafkaAttributesMechanisms.
+const (
+	GSSAPI      KafkaAttributesMechanisms = "GSSAPI"
+	OAUTHBEARER KafkaAttributesMechanisms = "OAUTHBEARER"
+	PLAIN       KafkaAttributesMechanisms = "PLAIN"
+	SCRAMSHA256 KafkaAttributesMechanisms = "SCRAM-SHA-256"
+	SCRAMSHA512 KafkaAttributesMechanisms = "SCRAM-SHA-512"
+)
+
+// Defines values for KafkaAttributesProtocol.
+const (
+	Plaintext     KafkaAttributesProtocol = "plaintext"
+	SaslPlaintext KafkaAttributesProtocol = "sasl_plaintext"
+	SaslSsl       KafkaAttributesProtocol = "sasl_ssl"
+	Ssl           KafkaAttributesProtocol = "ssl"
+)
+
 // Defines values for PostgresAttributesSslmode.
 const (
 	Disable PostgresAttributesSslmode = "disable"
@@ -212,6 +248,7 @@ const (
 	TestFilterFunctionDtoDatasetBookUpdates                 TestFilterFunctionDtoDataset = "book_updates"
 	TestFilterFunctionDtoDatasetDebugTraces                 TestFilterFunctionDtoDataset = "debug_traces"
 	TestFilterFunctionDtoDatasetEvents                      TestFilterFunctionDtoDataset = "events"
+	TestFilterFunctionDtoDatasetEventsWithOrders            TestFilterFunctionDtoDataset = "events_with_orders"
 	TestFilterFunctionDtoDatasetLedger                      TestFilterFunctionDtoDataset = "ledger"
 	TestFilterFunctionDtoDatasetLogs                        TestFilterFunctionDtoDataset = "logs"
 	TestFilterFunctionDtoDatasetOrders                      TestFilterFunctionDtoDataset = "orders"
@@ -262,10 +299,13 @@ const (
 	TestFilterFunctionDtoNetworkFraxtalMainnet    TestFilterFunctionDtoNetwork = "fraxtal-mainnet"
 	TestFilterFunctionDtoNetworkGnosisMainnet     TestFilterFunctionDtoNetwork = "gnosis-mainnet"
 	TestFilterFunctionDtoNetworkGravityAlpham     TestFilterFunctionDtoNetwork = "gravity-alpham"
+	TestFilterFunctionDtoNetworkHederaMainnet     TestFilterFunctionDtoNetwork = "hedera-mainnet"
+	TestFilterFunctionDtoNetworkHederaTestnet     TestFilterFunctionDtoNetwork = "hedera-testnet"
 	TestFilterFunctionDtoNetworkHemiMainnet       TestFilterFunctionDtoNetwork = "hemi-mainnet"
 	TestFilterFunctionDtoNetworkHemiTestnet       TestFilterFunctionDtoNetwork = "hemi-testnet"
 	TestFilterFunctionDtoNetworkHypercoreMainnet  TestFilterFunctionDtoNetwork = "hypercore-mainnet"
 	TestFilterFunctionDtoNetworkHyperevmMainnet   TestFilterFunctionDtoNetwork = "hyperevm-mainnet"
+	TestFilterFunctionDtoNetworkHyperevmTestnet   TestFilterFunctionDtoNetwork = "hyperevm-testnet"
 	TestFilterFunctionDtoNetworkImxMainnet        TestFilterFunctionDtoNetwork = "imx-mainnet"
 	TestFilterFunctionDtoNetworkImxTestnet        TestFilterFunctionDtoNetwork = "imx-testnet"
 	TestFilterFunctionDtoNetworkInjectiveMainnet  TestFilterFunctionDtoNetwork = "injective-mainnet"
@@ -280,8 +320,8 @@ const (
 	TestFilterFunctionDtoNetworkLensTestnet       TestFilterFunctionDtoNetwork = "lens-testnet"
 	TestFilterFunctionDtoNetworkLineaMainnet      TestFilterFunctionDtoNetwork = "linea-mainnet"
 	TestFilterFunctionDtoNetworkLiskMainnet       TestFilterFunctionDtoNetwork = "lisk-mainnet"
-	TestFilterFunctionDtoNetworkLitecoinMainnet   TestFilterFunctionDtoNetwork = "litecoin-mainnet"
-	TestFilterFunctionDtoNetworkLitecoinTestnet   TestFilterFunctionDtoNetwork = "litecoin-testnet"
+	TestFilterFunctionDtoNetworkLtcMainnet        TestFilterFunctionDtoNetwork = "ltc-mainnet"
+	TestFilterFunctionDtoNetworkLtcTestnet        TestFilterFunctionDtoNetwork = "ltc-testnet"
 	TestFilterFunctionDtoNetworkMantleMainnet     TestFilterFunctionDtoNetwork = "mantle-mainnet"
 	TestFilterFunctionDtoNetworkMantleSepolia     TestFilterFunctionDtoNetwork = "mantle-sepolia"
 	TestFilterFunctionDtoNetworkModeMainnet       TestFilterFunctionDtoNetwork = "mode-mainnet"
@@ -316,6 +356,8 @@ const (
 	TestFilterFunctionDtoNetworkStellarTestnet    TestFilterFunctionDtoNetwork = "stellar-testnet"
 	TestFilterFunctionDtoNetworkStoryAeneid       TestFilterFunctionDtoNetwork = "story-aeneid"
 	TestFilterFunctionDtoNetworkStoryMainnet      TestFilterFunctionDtoNetwork = "story-mainnet"
+	TestFilterFunctionDtoNetworkTempoMainnet      TestFilterFunctionDtoNetwork = "tempo-mainnet"
+	TestFilterFunctionDtoNetworkTempoTestnet      TestFilterFunctionDtoNetwork = "tempo-testnet"
 	TestFilterFunctionDtoNetworkTronMainnet       TestFilterFunctionDtoNetwork = "tron-mainnet"
 	TestFilterFunctionDtoNetworkUnichainMainnet   TestFilterFunctionDtoNetwork = "unichain-mainnet"
 	TestFilterFunctionDtoNetworkUnichainSepolia   TestFilterFunctionDtoNetwork = "unichain-sepolia"
@@ -341,18 +383,12 @@ const (
 
 // Defines values for UpdateStreamDtoDestination.
 const (
-	UpdateStreamDtoDestinationAzure    UpdateStreamDtoDestination = "azure"
-	UpdateStreamDtoDestinationFunction UpdateStreamDtoDestination = "function"
-	UpdateStreamDtoDestinationPostgres UpdateStreamDtoDestination = "postgres"
-	UpdateStreamDtoDestinationS3       UpdateStreamDtoDestination = "s3"
-	UpdateStreamDtoDestinationWebhook  UpdateStreamDtoDestination = "webhook"
-)
-
-// Defines values for UpdateStreamDtoIncludeStreamMetadata.
-const (
-	UpdateStreamDtoIncludeStreamMetadataBody   UpdateStreamDtoIncludeStreamMetadata = "body"
-	UpdateStreamDtoIncludeStreamMetadataHeader UpdateStreamDtoIncludeStreamMetadata = "header"
-	UpdateStreamDtoIncludeStreamMetadataNone   UpdateStreamDtoIncludeStreamMetadata = "none"
+	Azure    UpdateStreamDtoDestination = "azure"
+	Function UpdateStreamDtoDestination = "function"
+	Kafka    UpdateStreamDtoDestination = "kafka"
+	Postgres UpdateStreamDtoDestination = "postgres"
+	S3       UpdateStreamDtoDestination = "s3"
+	Webhook  UpdateStreamDtoDestination = "webhook"
 )
 
 // Defines values for UpdateStreamDtoStatus.
@@ -387,12 +423,14 @@ type CreateStreamDto struct {
 	// EndRange Stream until block number
 	EndRange *int `json:"end_range,omitempty"`
 
+	// ExtraDestinations Additional destinations for the stream
+	ExtraDestinations *[]ExtraDestinationDto `json:"extra_destinations,omitempty"`
+
 	// FilterFunction JS/ECMAScript compliant filter encoded in base64
 	FilterFunction string `json:"filter_function"`
 
 	// FixBlockReorgs Fix block reorgs by streaming correct blocks: 1. Ignore reorgs: 0
-	FixBlockReorgs        *float32                             `json:"fix_block_reorgs,omitempty"`
-	IncludeStreamMetadata CreateStreamDtoIncludeStreamMetadata `json:"include_stream_metadata"`
+	FixBlockReorgs *float32 `json:"fix_block_reorgs,omitempty"`
 
 	// KeepDistanceFromTip Stay away from tip by N blocks
 	KeepDistanceFromTip *float32               `json:"keep_distance_from_tip,omitempty"`
@@ -419,9 +457,6 @@ type CreateStreamDto_DestinationAttributes struct {
 	union json.RawMessage
 }
 
-// CreateStreamDtoIncludeStreamMetadata defines model for CreateStreamDto.IncludeStreamMetadata.
-type CreateStreamDtoIncludeStreamMetadata string
-
 // CreateStreamDtoNetwork defines model for CreateStreamDto.Network.
 type CreateStreamDtoNetwork string
 
@@ -430,6 +465,49 @@ type CreateStreamDtoRegion string
 
 // CreateStreamDtoStatus defines model for CreateStreamDto.Status.
 type CreateStreamDtoStatus string
+
+// ExtraDestinationDto defines model for ExtraDestinationDto.
+type ExtraDestinationDto struct {
+	Destination           ExtraDestinationDtoDestination            `json:"destination"`
+	DestinationAttributes ExtraDestinationDto_DestinationAttributes `json:"destination_attributes"`
+}
+
+// ExtraDestinationDtoDestination defines model for ExtraDestinationDto.Destination.
+type ExtraDestinationDtoDestination string
+
+// ExtraDestinationDto_DestinationAttributes defines model for ExtraDestinationDto.DestinationAttributes.
+type ExtraDestinationDto_DestinationAttributes struct {
+	union json.RawMessage
+}
+
+// KafkaAttributes defines model for KafkaAttributes.
+type KafkaAttributes struct {
+	BatchSize         float32                        `json:"batch_size"`
+	BootstrapServers  string                         `json:"bootstrap_servers"`
+	CompressionType   KafkaAttributesCompressionType `json:"compression_type"`
+	LingerMs          float32                        `json:"linger_ms"`
+	MaxMessageBytes   float32                        `json:"max_message_bytes"`
+	MaxRetry          float32                        `json:"max_retry"`
+	Mechanisms        *KafkaAttributesMechanisms     `json:"mechanisms,omitempty"`
+	Password          *string                        `json:"password,omitempty"`
+	Protocol          *KafkaAttributesProtocol       `json:"protocol,omitempty"`
+	RetryIntervalSec  float32                        `json:"retry_interval_sec"`
+	SslCaPem          *string                        `json:"ssl_ca_pem,omitempty"`
+	SslCertificatePem *string                        `json:"ssl_certificate_pem,omitempty"`
+	SslKeyPem         *string                        `json:"ssl_key_pem,omitempty"`
+	TimeoutSec        float32                        `json:"timeout_sec"`
+	TopicName         string                         `json:"topic_name"`
+	Username          *string                        `json:"username,omitempty"`
+}
+
+// KafkaAttributesCompressionType defines model for KafkaAttributes.CompressionType.
+type KafkaAttributesCompressionType string
+
+// KafkaAttributesMechanisms defines model for KafkaAttributes.Mechanisms.
+type KafkaAttributesMechanisms string
+
+// KafkaAttributesProtocol defines model for KafkaAttributes.Protocol.
+type KafkaAttributesProtocol string
 
 // PostgresAttributes defines model for PostgresAttributes.
 type PostgresAttributes struct {
@@ -502,12 +580,14 @@ type UpdateStreamDto struct {
 	// EndRange Stream until block number
 	EndRange *int `json:"end_range,omitempty"`
 
+	// ExtraDestinations Additional destinations for the stream
+	ExtraDestinations *[]ExtraDestinationDto `json:"extra_destinations,omitempty"`
+
 	// FilterFunction JS/ECMAScript compliant filter encoded in base64
 	FilterFunction *string `json:"filter_function,omitempty"`
 
 	// FixBlockReorgs Fix block reorgs by streaming correct blocks: 1. Ignore reorgs: 0
-	FixBlockReorgs        *float32                              `json:"fix_block_reorgs,omitempty"`
-	IncludeStreamMetadata *UpdateStreamDtoIncludeStreamMetadata `json:"include_stream_metadata,omitempty"`
+	FixBlockReorgs *float32 `json:"fix_block_reorgs,omitempty"`
 
 	// KeepDistanceFromTip Stay away from tip by N blocks
 	KeepDistanceFromTip *float32 `json:"keep_distance_from_tip,omitempty"`
@@ -528,9 +608,6 @@ type UpdateStreamDtoDestination string
 type UpdateStreamDto_DestinationAttributes struct {
 	union json.RawMessage
 }
-
-// UpdateStreamDtoIncludeStreamMetadata defines model for UpdateStreamDto.IncludeStreamMetadata.
-type UpdateStreamDtoIncludeStreamMetadata string
 
 // UpdateStreamDtoStatus defines model for UpdateStreamDto.Status.
 type UpdateStreamDtoStatus string
@@ -691,12 +768,204 @@ func (t *CreateStreamDto_DestinationAttributes) MergeAzureAttributes(v AzureAttr
 	return err
 }
 
+// AsKafkaAttributes returns the union data inside the CreateStreamDto_DestinationAttributes as a KafkaAttributes
+func (t CreateStreamDto_DestinationAttributes) AsKafkaAttributes() (KafkaAttributes, error) {
+	var body KafkaAttributes
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromKafkaAttributes overwrites any union data inside the CreateStreamDto_DestinationAttributes as the provided KafkaAttributes
+func (t *CreateStreamDto_DestinationAttributes) FromKafkaAttributes(v KafkaAttributes) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeKafkaAttributes performs a merge with any union data inside the CreateStreamDto_DestinationAttributes, using the provided KafkaAttributes
+func (t *CreateStreamDto_DestinationAttributes) MergeKafkaAttributes(v KafkaAttributes) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
 func (t CreateStreamDto_DestinationAttributes) MarshalJSON() ([]byte, error) {
 	b, err := t.union.MarshalJSON()
 	return b, err
 }
 
 func (t *CreateStreamDto_DestinationAttributes) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsS3Attributes returns the union data inside the ExtraDestinationDto_DestinationAttributes as a S3Attributes
+func (t ExtraDestinationDto_DestinationAttributes) AsS3Attributes() (S3Attributes, error) {
+	var body S3Attributes
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromS3Attributes overwrites any union data inside the ExtraDestinationDto_DestinationAttributes as the provided S3Attributes
+func (t *ExtraDestinationDto_DestinationAttributes) FromS3Attributes(v S3Attributes) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeS3Attributes performs a merge with any union data inside the ExtraDestinationDto_DestinationAttributes, using the provided S3Attributes
+func (t *ExtraDestinationDto_DestinationAttributes) MergeS3Attributes(v S3Attributes) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsWebhookAttributes returns the union data inside the ExtraDestinationDto_DestinationAttributes as a WebhookAttributes
+func (t ExtraDestinationDto_DestinationAttributes) AsWebhookAttributes() (WebhookAttributes, error) {
+	var body WebhookAttributes
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromWebhookAttributes overwrites any union data inside the ExtraDestinationDto_DestinationAttributes as the provided WebhookAttributes
+func (t *ExtraDestinationDto_DestinationAttributes) FromWebhookAttributes(v WebhookAttributes) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeWebhookAttributes performs a merge with any union data inside the ExtraDestinationDto_DestinationAttributes, using the provided WebhookAttributes
+func (t *ExtraDestinationDto_DestinationAttributes) MergeWebhookAttributes(v WebhookAttributes) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsQuickfunctionsAttributes returns the union data inside the ExtraDestinationDto_DestinationAttributes as a QuickfunctionsAttributes
+func (t ExtraDestinationDto_DestinationAttributes) AsQuickfunctionsAttributes() (QuickfunctionsAttributes, error) {
+	var body QuickfunctionsAttributes
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromQuickfunctionsAttributes overwrites any union data inside the ExtraDestinationDto_DestinationAttributes as the provided QuickfunctionsAttributes
+func (t *ExtraDestinationDto_DestinationAttributes) FromQuickfunctionsAttributes(v QuickfunctionsAttributes) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeQuickfunctionsAttributes performs a merge with any union data inside the ExtraDestinationDto_DestinationAttributes, using the provided QuickfunctionsAttributes
+func (t *ExtraDestinationDto_DestinationAttributes) MergeQuickfunctionsAttributes(v QuickfunctionsAttributes) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsPostgresAttributes returns the union data inside the ExtraDestinationDto_DestinationAttributes as a PostgresAttributes
+func (t ExtraDestinationDto_DestinationAttributes) AsPostgresAttributes() (PostgresAttributes, error) {
+	var body PostgresAttributes
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromPostgresAttributes overwrites any union data inside the ExtraDestinationDto_DestinationAttributes as the provided PostgresAttributes
+func (t *ExtraDestinationDto_DestinationAttributes) FromPostgresAttributes(v PostgresAttributes) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergePostgresAttributes performs a merge with any union data inside the ExtraDestinationDto_DestinationAttributes, using the provided PostgresAttributes
+func (t *ExtraDestinationDto_DestinationAttributes) MergePostgresAttributes(v PostgresAttributes) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsAzureAttributes returns the union data inside the ExtraDestinationDto_DestinationAttributes as a AzureAttributes
+func (t ExtraDestinationDto_DestinationAttributes) AsAzureAttributes() (AzureAttributes, error) {
+	var body AzureAttributes
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromAzureAttributes overwrites any union data inside the ExtraDestinationDto_DestinationAttributes as the provided AzureAttributes
+func (t *ExtraDestinationDto_DestinationAttributes) FromAzureAttributes(v AzureAttributes) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeAzureAttributes performs a merge with any union data inside the ExtraDestinationDto_DestinationAttributes, using the provided AzureAttributes
+func (t *ExtraDestinationDto_DestinationAttributes) MergeAzureAttributes(v AzureAttributes) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsKafkaAttributes returns the union data inside the ExtraDestinationDto_DestinationAttributes as a KafkaAttributes
+func (t ExtraDestinationDto_DestinationAttributes) AsKafkaAttributes() (KafkaAttributes, error) {
+	var body KafkaAttributes
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromKafkaAttributes overwrites any union data inside the ExtraDestinationDto_DestinationAttributes as the provided KafkaAttributes
+func (t *ExtraDestinationDto_DestinationAttributes) FromKafkaAttributes(v KafkaAttributes) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeKafkaAttributes performs a merge with any union data inside the ExtraDestinationDto_DestinationAttributes, using the provided KafkaAttributes
+func (t *ExtraDestinationDto_DestinationAttributes) MergeKafkaAttributes(v KafkaAttributes) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t ExtraDestinationDto_DestinationAttributes) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *ExtraDestinationDto_DestinationAttributes) UnmarshalJSON(b []byte) error {
 	err := t.union.UnmarshalJSON(b)
 	return err
 }
@@ -821,6 +1090,32 @@ func (t *UpdateStreamDto_DestinationAttributes) FromAzureAttributes(v AzureAttri
 
 // MergeAzureAttributes performs a merge with any union data inside the UpdateStreamDto_DestinationAttributes, using the provided AzureAttributes
 func (t *UpdateStreamDto_DestinationAttributes) MergeAzureAttributes(v AzureAttributes) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsKafkaAttributes returns the union data inside the UpdateStreamDto_DestinationAttributes as a KafkaAttributes
+func (t UpdateStreamDto_DestinationAttributes) AsKafkaAttributes() (KafkaAttributes, error) {
+	var body KafkaAttributes
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromKafkaAttributes overwrites any union data inside the UpdateStreamDto_DestinationAttributes as the provided KafkaAttributes
+func (t *UpdateStreamDto_DestinationAttributes) FromKafkaAttributes(v KafkaAttributes) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeKafkaAttributes performs a merge with any union data inside the UpdateStreamDto_DestinationAttributes, using the provided KafkaAttributes
+func (t *UpdateStreamDto_DestinationAttributes) MergeKafkaAttributes(v KafkaAttributes) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err

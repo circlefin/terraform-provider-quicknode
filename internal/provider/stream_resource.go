@@ -210,7 +210,8 @@ func (r *StreamResource) Schema(ctx context.Context, req resource.SchemaRequest,
 			},
 
 			"include_stream_metadata": schema.StringAttribute{
-				Required: true,
+				Optional:           true,
+				DeprecationMessage: "include_stream_metadata has been removed from the QuickNode Streams API and is no longer sent to the API. This field will be removed in a future provider release. You may safely remove it from your configuration.",
 				Validators: []validator.String{
 					metadataValidator,
 				},
@@ -759,9 +760,9 @@ func (r *StreamResource) Create(ctx context.Context, req resource.CreateRequest,
 		Network:               streams.CreateStreamDtoNetwork(data.Network.ValueString()),
 		Dataset:               streams.CreateStreamDtoDataset(data.Dataset.ValueString()),
 		StartRange:            startRangePtr,
-		DatasetBatchSize:      datasetBatchSize,
-		IncludeStreamMetadata: streams.CreateStreamDtoIncludeStreamMetadata(data.IncludeStreamMetadata.ValueString()),
-		Destination:           streams.CreateStreamDtoDestination(data.Destination.ValueString()),
+		DatasetBatchSize: datasetBatchSize,
+		// include_stream_metadata removed from QuickNode API (no longer accepted in create requests)
+		Destination: streams.CreateStreamDtoDestination(data.Destination.ValueString()),
 		ElasticBatchEnabled:   data.ElasticBatchEnabled.ValueBool(),
 		Status:                streams.CreateStreamDtoStatus(data.Status.ValueString()),
 		FilterFunction:        filterFunction,
@@ -1005,7 +1006,7 @@ func (r *StreamResource) Update(ctx context.Context, req resource.UpdateRequest,
 	startRange := int(plan.StartRange.ValueInt64())
 	datasetBatchSize := float32(plan.DatasetBatchSize.ValueInt64())
 	elasticBatchEnabled := plan.ElasticBatchEnabled.ValueBool()
-	includeStreamMetadata := streams.UpdateStreamDtoIncludeStreamMetadata(plan.IncludeStreamMetadata.ValueString())
+	// include_stream_metadata removed from QuickNode API (no longer accepted in update requests)
 	destination := streams.UpdateStreamDtoDestination(plan.Destination.ValueString())
 	status := streams.UpdateStreamDtoStatus(plan.Status.ValueString())
 
@@ -1083,9 +1084,9 @@ func (r *StreamResource) Update(ctx context.Context, req resource.UpdateRequest,
 		Name:                  &name,
 		StartRange:            &startRange,
 		EndRange:              optionalFields.EndRange,
-		DatasetBatchSize:      &datasetBatchSize,
-		IncludeStreamMetadata: &includeStreamMetadata,
-		Destination:           &destination,
+		DatasetBatchSize: &datasetBatchSize,
+		// include_stream_metadata removed from QuickNode API (no longer accepted in update requests)
+		Destination: &destination,
 		ElasticBatchEnabled:   &elasticBatchEnabled,
 		Status:                &status,
 		FilterFunction:        filterFunction,
