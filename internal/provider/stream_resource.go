@@ -820,8 +820,10 @@ func (r *StreamResource) Create(ctx context.Context, req resource.CreateRequest,
 		return
 	}
 
-	// Read full stream data from API to get computed fields
-	fullStreamData, err := r.readStreamFromAPI(ctx, data.Id.ValueString())
+	// Read full stream data from API to get computed fields.
+	// Pass the current plan as fallback so that fields the QuickNode API no longer returns
+	// in GET responses (e.g. include_stream_metadata) are preserved from the plan value.
+	fullStreamData, err := r.readStreamFromAPI(ctx, data.Id.ValueString(), &data)
 	if err != nil {
 		resp.Diagnostics.AddError("Error reading stream", err.Error())
 		return
