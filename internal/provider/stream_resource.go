@@ -884,8 +884,11 @@ func (r *StreamResource) Read(ctx context.Context, req resource.ReadRequest, res
 		return
 	}
 
-	// Read stream data from API
-	streamData, err := r.readStreamFromAPI(ctx, data.Id.ValueString())
+	// Read stream data from API.
+	// Pass the current state as fallback so that fields the QuickNode API no longer returns
+	// in GET responses (e.g. include_stream_metadata) are preserved from state rather than
+	// becoming null, which would otherwise cause phantom diffs on every plan/apply cycle.
+	streamData, err := r.readStreamFromAPI(ctx, data.Id.ValueString(), &data)
 	if err != nil {
 		if strings.Contains(err.Error(), "stream not found") {
 			resp.State.RemoveResource(ctx)
