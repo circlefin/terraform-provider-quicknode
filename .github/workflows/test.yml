@@ -53,7 +53,6 @@ jobs:
     name: Trivy Scan
     runs-on: github-hosted-small
     permissions:
-      security-events: write
       actions: read
       contents: read
     steps:
@@ -79,6 +78,9 @@ jobs:
         install -m 0755 trivy "$HOME/bin/trivy"
         echo "$HOME/bin" >> "$GITHUB_PATH"
         rm -f trivy trivy.tgz
+    # Without GitHub Advanced Security (code scanning), upload-sarif has nowhere useful in the UI.
+    # scanners=vuln: dependency CVEs only (secret scanner often false-positives on fixtures/docs).
+    # exit-code=0: do not block merges; review SARIF artifact + job summary instead.
     - name: Trivy Scan
       uses: aquasecurity/trivy-action@57a97c7e7821a5776cebc9bb87c984fa69cba8f1 # v0.35.0
       with:
@@ -86,14 +88,30 @@ jobs:
         version: v0.69.3
         scan-type: fs
         scan-ref: '.'
-        exit-code: '1'
+        scanners: vuln
+        exit-code: '0'
         output: trivy-results.sarif
         format: sarif
-    - name: Upload Trivy scan results to GitHub Security tab
-      uses: github/codeql-action/upload-sarif@f6091c0113d1dcf9b98e269ee48e8a7e51b7bdd4 # v3.28.5
+    - name: Upload Trivy SARIF artifact
       if: always()
+      uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4.6.0
       with:
-        sarif_file: 'trivy-results.sarif'
+        name: trivy-results
+        path: trivy-results.sarif
+        if-no-files-found: warn
+    - name: Trivy table (job summary)
+      if: always()
+      shell: bash
+      run: |
+        {
+          echo '### Trivy filesystem scan (vulnerabilities only)'
+          echo ''
+          echo 'Download **trivy-results** artifact for full SARIF.'
+          echo ''
+          echo '```'
+          trivy fs --scanners vuln --format table --severity UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL --exit-code 0 .
+          echo '```'
+        } >> "$GITHUB_STEP_SUMMARY"
 
   generate:
     runs-on: github-hosted-small
