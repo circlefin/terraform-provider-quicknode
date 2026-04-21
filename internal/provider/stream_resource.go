@@ -210,7 +210,8 @@ func (r *StreamResource) Schema(ctx context.Context, req resource.SchemaRequest,
 			},
 
 			"include_stream_metadata": schema.StringAttribute{
-				Required: true,
+				Optional:           true,
+				DeprecationMessage: "include_stream_metadata has been removed from the QuickNode Streams API and is no longer sent to the API. This field will be removed in a future provider release. You may safely remove it from your configuration.",
 				Validators: []validator.String{
 					metadataValidator,
 				},
@@ -563,7 +564,10 @@ func getPostgresAttributes(destAttrs map[string]interface{}) (*streams.PostgresA
 }
 
 // readStreamFromAPI reads stream data from the API and updates the provided StreamResourceModel.
-func (r *StreamResource) readStreamFromAPI(ctx context.Context, streamID string) (*StreamResourceModel, error) {
+// An optional fallback model can be provided; fields absent from the API response will retain
+// their values from the fallback instead of becoming null. This guards against providers returning
+// inconsistent results when the QuickNode API omits a field that was set before the update.
+func (r *StreamResource) readStreamFromAPI(ctx context.Context, streamID string, fallback ...*StreamResourceModel) (*StreamResourceModel, error) {
 	readResp, err := r.client.FindOneWithResponse(ctx, streamID)
 	if err != nil {
 		return nil, fmt.Errorf("error reading stream: %w", err)
@@ -616,6 +620,10 @@ func (r *StreamResource) readStreamFromAPI(ctx context.Context, streamID string)
 	}
 	if includeStreamMetadata, ok := result["include_stream_metadata"].(string); ok {
 		data.IncludeStreamMetadata = types.StringValue(includeStreamMetadata)
+	} else if len(fallback) > 0 && fallback[0] != nil && !fallback[0].IncludeStreamMetadata.IsNull() {
+		// QuickNode API did not return include_stream_metadata in this response.
+		// Preserve the fallback (plan/state) value to avoid a provider inconsistency error.
+		data.IncludeStreamMetadata = fallback[0].IncludeStreamMetadata
 	}
 	if destination, ok := result["destination"].(string); ok {
 		data.Destination = types.StringValue(destination)
@@ -752,9 +760,9 @@ func (r *StreamResource) Create(ctx context.Context, req resource.CreateRequest,
 		Network:               streams.CreateStreamDtoNetwork(data.Network.ValueString()),
 		Dataset:               streams.CreateStreamDtoDataset(data.Dataset.ValueString()),
 		StartRange:            startRangePtr,
-		DatasetBatchSize:      datasetBatchSize,
-		IncludeStreamMetadata: streams.CreateStreamDtoIncludeStreamMetadata(data.IncludeStreamMetadata.ValueString()),
-		Destination:           streams.CreateStreamDtoDestination(data.Destination.ValueString()),
+		DatasetBatchSize: datasetBatchSize,
+		// include_stream_metadata removed from QuickNode API (no longer accepted in create requests)
+		Destination: streams.CreateStreamDtoDestination(data.Destination.ValueString()),
 		ElasticBatchEnabled:   data.ElasticBatchEnabled.ValueBool(),
 		Status:                streams.CreateStreamDtoStatus(data.Status.ValueString()),
 		FilterFunction:        filterFunction,
@@ -812,8 +820,10 @@ func (r *StreamResource) Create(ctx context.Context, req resource.CreateRequest,
 		return
 	}
 
-	// Read full stream data from API to get computed fields
-	fullStreamData, err := r.readStreamFromAPI(ctx, data.Id.ValueString())
+	// Read full stream data from API to get computed fields.
+	// Pass the current plan as fallback so that fields the QuickNode API no longer returns
+	// in GET responses (e.g. include_stream_metadata) are preserved from the plan value.
+	fullStreamData, err := r.readStreamFromAPI(ctx, data.Id.ValueString(), &data)
 	if err != nil {
 		resp.Diagnostics.AddError("Error reading stream", err.Error())
 		return
@@ -877,8 +887,11 @@ func (r *StreamResource) Read(ctx context.Context, req resource.ReadRequest, res
 		return
 	}
 
-	// Read stream data from API
-	streamData, err := r.readStreamFromAPI(ctx, data.Id.ValueString())
+	// Read stream data from API.
+	// Pass the current state as fallback so that fields the QuickNode API no longer returns
+	// in GET responses (e.g. include_stream_metadata) are preserved from state rather than
+	// becoming null, which would otherwise cause phantom diffs on every plan/apply cycle.
+	streamData, err := r.readStreamFromAPI(ctx, data.Id.ValueString(), &data)
 	if err != nil {
 		if strings.Contains(err.Error(), "stream not found") {
 			resp.State.RemoveResource(ctx)
@@ -995,7 +1008,7 @@ func (r *StreamResource) Update(ctx context.Context, req resource.UpdateRequest,
 	startRange := int(plan.StartRange.ValueInt64())
 	datasetBatchSize := float32(plan.DatasetBatchSize.ValueInt64())
 	elasticBatchEnabled := plan.ElasticBatchEnabled.ValueBool()
-	includeStreamMetadata := streams.UpdateStreamDtoIncludeStreamMetadata(plan.IncludeStreamMetadata.ValueString())
+	// include_stream_metadata removed from QuickNode API (no longer accepted in update requests)
 	destination := streams.UpdateStreamDtoDestination(plan.Destination.ValueString())
 	status := streams.UpdateStreamDtoStatus(plan.Status.ValueString())
 
@@ -1073,9 +1086,9 @@ func (r *StreamResource) Update(ctx context.Context, req resource.UpdateRequest,
 		Name:                  &name,
 		StartRange:            &startRange,
 		EndRange:              optionalFields.EndRange,
-		DatasetBatchSize:      &datasetBatchSize,
-		IncludeStreamMetadata: &includeStreamMetadata,
-		Destination:           &destination,
+		DatasetBatchSize: &datasetBatchSize,
+		// include_stream_metadata removed from QuickNode API (no longer accepted in update requests)
+		Destination: &destination,
 		ElasticBatchEnabled:   &elasticBatchEnabled,
 		Status:                &status,
 		FilterFunction:        filterFunction,
@@ -1154,8 +1167,11 @@ func (r *StreamResource) Update(ctx context.Context, req resource.UpdateRequest,
 		})
 	}
 
-	// Read full stream data from API to get computed fields
-	fullStreamData, err := r.readStreamFromAPI(ctx, streamId)
+	// Read full stream data from API to get computed fields.
+	// Pass the current plan as fallback so that fields the QuickNode API may omit from the
+	// GET response (e.g. include_stream_metadata) are preserved rather than set to null,
+	// which would otherwise trigger a "provider produced inconsistent result" Terraform error.
+	fullStreamData, err := r.readStreamFromAPI(ctx, streamId, &plan)
 	if err != nil {
 		resp.Diagnostics.AddError("Error reading stream after update", err.Error())
 		return

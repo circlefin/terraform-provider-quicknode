@@ -47,7 +47,8 @@ func TestAccMinimalQuicknodeStreamResource(t *testing.T) {
 					resource.TestCheckResourceAttr("quicknode_stream.main", "region", "usa_east"),
 					resource.TestCheckResourceAttr("quicknode_stream.main", "elastic_batch_enabled", "true"),
 					resource.TestCheckResourceAttr("quicknode_stream.main", "dataset_batch_size", "1"),
-					resource.TestCheckResourceAttr("quicknode_stream.main", "include_stream_metadata", "body"),
+					// include_stream_metadata is deprecated and no longer returned by the QuickNode API;
+					// the state value is preserved from config via fallback but not verified via API.
 					resource.TestCheckResourceAttr("quicknode_stream.main", "start_range", "59274680"),
 					resource.TestCheckResourceAttr("quicknode_stream.main", "destination_attributes.max_retry", "3"),
 					resource.TestCheckResourceAttr("quicknode_stream.main", "destination_attributes.retry_interval_sec", "1"),
@@ -56,9 +57,10 @@ func TestAccMinimalQuicknodeStreamResource(t *testing.T) {
 			},
 			// ImportState testing
 			{
-				ResourceName:      "quicknode_stream.main",
-				ImportState:       true,
-				ImportStateVerify: true,
+				ResourceName:            "quicknode_stream.main",
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"include_stream_metadata"},
 			},
 			// Update and Read testing
 			{

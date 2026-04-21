@@ -53,24 +53,70 @@ jobs:
     name: Trivy Scan
     runs-on: github-hosted-small
     permissions:
-      security-events: write
       actions: read
       contents: read
     steps:
     - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+    # setup-trivy's install.sh downloads from get.trivy.dev; some runners cannot resolve it (curl exit 6).
+    - name: Install Trivy from GitHub releases
+      shell: bash
+      env:
+        TRIVY_VERSION: '0.69.3'
+        RUNNER_ARCH: ${{ runner.arch }}
+      run: |
+        set -euo pipefail
+        case "$RUNNER_ARCH" in
+          X64)   suffix='Linux-64bit' ;;
+          ARM64) suffix='Linux-ARM64' ;;
+          *) echo "unsupported runner.arch=$RUNNER_ARCH"; exit 1 ;;
+        esac
+        ver="v${TRIVY_VERSION}"
+        name="trivy_${TRIVY_VERSION}_${suffix}.tar.gz"
+        curl -fsSL "https://github.com/aquasecurity/trivy/releases/download/${ver}/${name}" -o trivy.tgz
+        tar -xzf trivy.tgz trivy
+        mkdir -p "$HOME/bin"
+        install -m 0755 trivy "$HOME/bin/trivy"
+        echo "$HOME/bin" >> "$GITHUB_PATH"
+        rm -f trivy trivy.tgz
+    # No upload-sarif: org repo may not expose GitHub Code Scanning UI (GHAS). Artifact + summary below.
+    # scanners=vuln: dependency CVEs only (secret scanner often false-positives on fixtures/docs).
     - name: Trivy Scan
-      uses: aquasecurity/trivy-action@18f2510ee396bbf400402947b394f2dd8c87dbb0 # 0.29.0
+      uses: aquasecurity/trivy-action@57a97c7e7821a5776cebc9bb87c984fa69cba8f1 # v0.35.0
       with:
+        skip-setup-trivy: true
+        version: v0.69.3
         scan-type: fs
         scan-ref: '.'
+        scanners: vuln
         exit-code: '1'
         output: trivy-results.sarif
         format: sarif
-    - name: Upload Trivy scan results to GitHub Security tab
-      uses: github/codeql-action/upload-sarif@f6091c0113d1dcf9b98e269ee48e8a7e51b7bdd4 # v3.28.5
-      if: always()
+    # On public repos, workflow artifacts are world-readable; SARIF is low-risk (same as go.mod+CVE DB)
+    # but we only attach it for private repos. Public: table in job summary only.
+    - name: Upload Trivy SARIF artifact
+      if: always() && github.event.repository.private
+      uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4.6.0
       with:
-        sarif_file: 'trivy-results.sarif'
+        name: trivy-results
+        path: trivy-results.sarif
+        if-no-files-found: warn
+    - name: Trivy table (job summary)
+      if: always()
+      shell: bash
+      run: |
+        {
+          echo '### Trivy filesystem scan (vulnerabilities only)'
+          echo ''
+          if [[ "${{ github.event.repository.private }}" == "true" ]]; then
+            echo 'Full SARIF: workflow artifact **trivy-results** (private repo only).'
+          else
+            echo 'Public repo: no SARIF artifact (artifacts are public). Table below matches dependency scan.'
+          fi
+          echo ''
+          echo '```'
+          trivy fs --scanners vuln --format table --severity UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL --exit-code 0 .
+          echo '```'
+        } >> "$GITHUB_STEP_SUMMARY"
 
   generate:
     runs-on: github-hosted-small

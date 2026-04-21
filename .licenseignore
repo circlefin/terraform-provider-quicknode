@@ -5,6 +5,7 @@ pkg:golang/github.com/hashicorp/terraform-registry-address@v0.2.5
 
 # License scanner doesn't understand compound licenses:
 # License: BSD-3-Clause AND LicenseRef-scancode-google-patent-license-golang
+pkg:golang/google.golang.org/protobuf
 pkg:golang/golang.org/x/crypto
 pkg:golang/golang.org/x/mod
 pkg:golang/golang.org/x/net

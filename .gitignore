@@ -18,6 +18,9 @@ website/node_modules
 .terraform/
 *.log
 *.bak
+
+# Local security scan output
+trivy-results.sarif
 *~
 .*.swp
 .idea
