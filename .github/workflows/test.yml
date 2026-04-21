@@ -91,8 +91,10 @@ jobs:
         exit-code: '1'
         output: trivy-results.sarif
         format: sarif
+    # On public repos, workflow artifacts are world-readable; SARIF is low-risk (same as go.mod+CVE DB)
+    # but we only attach it for private repos. Public: table in job summary only.
     - name: Upload Trivy SARIF artifact
-      if: always()
+      if: always() && github.event.repository.private
       uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4.6.0
       with:
         name: trivy-results
@@ -105,7 +107,11 @@ jobs:
         {
           echo '### Trivy filesystem scan (vulnerabilities only)'
           echo ''
-          echo 'Download **trivy-results** artifact for full SARIF.'
+          if [[ "${{ github.event.repository.private }}" == "true" ]]; then
+            echo 'Full SARIF: workflow artifact **trivy-results** (private repo only).'
+          else
+            echo 'Public repo: no SARIF artifact (artifacts are public). Table below matches dependency scan.'
+          fi
           echo ''
           echo '```'
           trivy fs --scanners vuln --format table --severity UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL --exit-code 0 .
