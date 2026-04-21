@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.2](https://github.com/circlefin/terraform-provider-quicknode/compare/v0.7.1...v0.7.2) (2026-04-21)
+
+
+### Bug Fixes
+
+* **untracked:** stream include metadata null after update ([#69](https://github.com/circlefin/terraform-provider-quicknode/issues/69)) ([8412cc4](https://github.com/circlefin/terraform-provider-quicknode/commit/8412cc445f2d653da693cf6a71a2ed325898d2f2))
+
 ## [0.7.1](https://github.com/circlefin/terraform-provider-quicknode/compare/v0.7.0...v0.7.1) (2026-02-05)
 
 
