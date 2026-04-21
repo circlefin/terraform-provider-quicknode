@@ -22,7 +22,6 @@ Stream resource for QuickNode Streams API
 - `destination` (String)
 - `destination_attributes` (Attributes) (see [below for nested schema](#nestedatt--destination_attributes))
 - `elastic_batch_enabled` (Boolean)
-- `include_stream_metadata` (String)
 - `name` (String)
 - `network` (String)
 - `region` (String)
@@ -34,6 +33,7 @@ Stream resource for QuickNode Streams API
 - `end_range` (Number)
 - `filter_function` (String) JavaScript function to filter and modify stream data. Must be base64 encoded.
 - `fix_block_reorgs` (Number)
+- `include_stream_metadata` (String, Deprecated)
 - `keep_distance_from_tip` (Number)
 - `notification_email` (String)
 
