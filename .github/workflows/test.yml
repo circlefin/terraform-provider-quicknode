@@ -78,9 +78,8 @@ jobs:
         install -m 0755 trivy "$HOME/bin/trivy"
         echo "$HOME/bin" >> "$GITHUB_PATH"
         rm -f trivy trivy.tgz
-    # Without GitHub Advanced Security (code scanning), upload-sarif has nowhere useful in the UI.
+    # No upload-sarif: org repo may not expose GitHub Code Scanning UI (GHAS). Artifact + summary below.
     # scanners=vuln: dependency CVEs only (secret scanner often false-positives on fixtures/docs).
-    # exit-code=0: do not block merges; review SARIF artifact + job summary instead.
     - name: Trivy Scan
       uses: aquasecurity/trivy-action@57a97c7e7821a5776cebc9bb87c984fa69cba8f1 # v0.35.0
       with:
@@ -89,7 +88,7 @@ jobs:
         scan-type: fs
         scan-ref: '.'
         scanners: vuln
-        exit-code: '0'
+        exit-code: '1'
         output: trivy-results.sarif
         format: sarif
     - name: Upload Trivy SARIF artifact
