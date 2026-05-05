@@ -3,9 +3,9 @@
   "info": {
     "title": "API V0",
     "version": "v0",
-    "description": "QuickNode Console API V0",
+    "description": "Quicknode Admin API V0",
     "contact": {
-      "name": "QuickNode"
+      "name": "Quicknode"
     }
   },
   "paths": {
@@ -600,16 +600,19 @@
               "type": "string",
               "enum": [
                 "method_calls_over_time",
+                "metered_endpoint_data_over_time",
+                "metered_endpoint_credits_over_time",
+                "credits_over_time",
                 "response_status_over_time",
-                "method_call_breakdown",
                 "response_status_breakdown",
+                "response_time_over_time",
                 "method_response_time_max",
                 "request_errors_over_time",
                 "total_request_errors_over_time"
               ]
             },
             "required": true,
-            "description": "method_calls_over_time, response_status_over_time, method_call_breakdown, response_status_breakdown, method_response_time_max, request_errors_over_time, total_request_errors_over_time"
+            "description": "method_calls_over_time, metered_endpoint_data_over_time, metered_endpoint_credits_over_time, credits_over_time, response_status_over_time, response_status_breakdown, response_time_over_time, method_response_time_max, request_errors_over_time, total_request_errors_over_time"
           }
         ],
         "responses": {
@@ -1809,6 +1812,103 @@
             }
           },
           {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "description": "Search by subdomain or label",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sort_by",
+            "in": "query",
+            "required": false,
+            "description": "Sort field",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "name",
+                "status",
+                "network",
+                "label",
+                "tags",
+                "usage",
+                "created_at"
+              ]
+            }
+          },
+          {
+            "name": "sort_direction",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ]
+            }
+          },
+          {
+            "name": "networks",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "description": "Filter by network name(s)"
+          },
+          {
+            "name": "statuses",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "active",
+                  "paused"
+                ]
+              }
+            },
+            "description": "Filter by status"
+          },
+          {
+            "name": "labels",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "description": "Filter by label(s)"
+          },
+          {
+            "name": "dedicated",
+            "in": "query",
+            "required": false,
+            "description": "Filter dedicated endpoints",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "is_flat_rate",
+            "in": "query",
+            "required": false,
+            "description": "Filter flat rate endpoints",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
             "name": "tag_ids",
             "in": "query",
             "required": false,
@@ -1831,7 +1931,7 @@
             }
           }
         ],
-        "description": "Retrieve endpoints list",
+        "description": "Retrieve endpoints list. tag_ids and tag_labels are mutually exclusive.",
         "operationId": "listEndpoints",
         "responses": {
           "200": {
@@ -1848,6 +1948,25 @@
                       },
                       "nullable": true
                     },
+                    "pagination": {
+                      "type": "object",
+                      "properties": {
+                        "total": {
+                          "type": "integer"
+                        },
+                        "limit": {
+                          "type": "integer"
+                        },
+                        "offset": {
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "total",
+                        "limit",
+                        "offset"
+                      ]
+                    },
                     "error": {
                       "type": "string",
                       "nullable": true
@@ -1857,6 +1976,354 @@
                     "data",
                     "error"
                   ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v0/endpoints/bulk/status": {
+      "post": {
+        "summary": "Bulk update endpoint status",
+        "tags": [
+          "Endpoints"
+        ],
+        "description": "Pause or unpause multiple endpoints in a single call. Admin-only.",
+        "operationId": "bulkUpdateEndpointStatus",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "total": {
+                          "type": "integer"
+                        },
+                        "updated_count": {
+                          "type": "integer"
+                        },
+                        "failed_count": {
+                          "type": "integer"
+                        },
+                        "results": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string"
+                              },
+                              "success": {
+                                "type": "boolean"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "success"
+                            ]
+                          }
+                        }
+                      },
+                      "required": [
+                        "total",
+                        "updated_count",
+                        "failed_count",
+                        "results"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Endpoint IDs"
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "active",
+                      "paused"
+                    ]
+                  }
+                },
+                "required": [
+                  "ids",
+                  "status"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v0/endpoints/bulk/tags": {
+      "post": {
+        "summary": "Bulk add tag to endpoints",
+        "tags": [
+          "Endpoints"
+        ],
+        "description": "Add a tag to multiple endpoints in a single call. Admin-only.",
+        "operationId": "bulkAddTag",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "total": {
+                          "type": "integer"
+                        },
+                        "updated_count": {
+                          "type": "integer"
+                        },
+                        "failed_count": {
+                          "type": "integer"
+                        },
+                        "results": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string"
+                              },
+                              "success": {
+                                "type": "boolean"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "success"
+                            ]
+                          }
+                        },
+                        "tag": {
+                          "type": "object",
+                          "properties": {
+                            "tag_id": {
+                              "type": "integer"
+                            },
+                            "label": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      },
+                      "required": [
+                        "total",
+                        "updated_count",
+                        "failed_count",
+                        "results",
+                        "tag"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Endpoint IDs"
+                  },
+                  "label": {
+                    "type": "string",
+                    "description": "Tag label to add"
+                  }
+                },
+                "required": [
+                  "ids",
+                  "label"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Bulk remove tag from endpoints",
+        "tags": [
+          "Endpoints"
+        ],
+        "description": "Remove a tag from multiple endpoints in a single call. Admin-only.",
+        "operationId": "bulkRemoveTag",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "total": {
+                          "type": "integer"
+                        },
+                        "updated_count": {
+                          "type": "integer"
+                        },
+                        "failed_count": {
+                          "type": "integer"
+                        },
+                        "results": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string"
+                              },
+                              "success": {
+                                "type": "boolean"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "success"
+                            ]
+                          }
+                        }
+                      },
+                      "required": [
+                        "total",
+                        "updated_count",
+                        "failed_count",
+                        "results"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Endpoint IDs"
+                  },
+                  "tag_id": {
+                    "type": "integer",
+                    "description": "Tag ID to remove"
+                  }
+                },
+                "required": [
+                  "ids",
+                  "tag_id"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v0/endpoints/{id}/security": {
+      "get": {
+        "summary": "Get endpoint security state",
+        "tags": [
+          "Endpoints"
+        ],
+        "description": "Returns full security state (tokens, JWTs, IPs, referrers, domain masks, request filters, options) without fetching the full endpoint.",
+        "operationId": "getEndpointSecurity",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/endpoint_security"
+                    },
+                    "error": {
+                      "type": "string",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "endpoint not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "nullable": true
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
                 }
               }
             }
@@ -2086,16 +2553,13 @@
               "type": "string",
               "enum": [
                 "method_calls_over_time",
-                "response_status_over_time",
-                "method_call_breakdown",
-                "response_status_breakdown",
-                "method_response_time_max",
-                "request_errors_over_time",
-                "total_request_errors_over_time"
+                "metered_endpoint_data_over_time",
+                "metered_endpoint_credits_over_time",
+                "credits_over_time"
               ]
             },
             "required": true,
-            "description": "method_calls_over_time, response_status_over_time, method_call_breakdown, response_status_breakdown, method_response_time_max, request_errors_over_time, total_request_errors_over_time"
+            "description": "method_calls_over_time, metered_endpoint_data_over_time, metered_endpoint_credits_over_time, credits_over_time"
           },
           {
             "name": "percentile",
@@ -2109,7 +2573,7 @@
         ],
         "responses": {
           "200": {
-            "description": "total_request_errors_over_time metric",
+            "description": "credits_over_time metric",
             "content": {
               "application/json": {
                 "schema": {
@@ -2130,6 +2594,229 @@
                     "data",
                     "error"
                   ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v0/endpoints/tags": {
+      "get": {
+        "summary": "List account tags",
+        "tags": [
+          "Tags"
+        ],
+        "description": "Returns all account-level tags including those with zero endpoints. Gated at Build/Growth+.",
+        "operationId": "listTags",
+        "responses": {
+          "200": {
+            "description": "success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "tags": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "integer"
+                              },
+                              "label": {
+                                "type": "string"
+                              },
+                              "usage_count": {
+                                "type": "integer",
+                                "description": "Number of endpoints using this tag"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "label",
+                              "usage_count"
+                            ]
+                          }
+                        }
+                      }
+                    },
+                    "error": {
+                      "type": "string",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v0/endpoints/tags/{id}": {
+      "patch": {
+        "summary": "Rename a tag",
+        "tags": [
+          "Tags"
+        ],
+        "description": "Renames an account tag. Because the Tag is shared across endpoints, all associated endpoints reflect the new label immediately. Admin-only.",
+        "operationId": "renameTag",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer"
+                        },
+                        "label": {
+                          "type": "string"
+                        },
+                        "usage_count": {
+                          "type": "integer"
+                        }
+                      }
+                    },
+                    "error": {
+                      "type": "string",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "tag not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "nullable": true
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "label": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "label"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a tag",
+        "tags": [
+          "Tags"
+        ],
+        "description": "Deletes an account tag. Hard-fails if the tag is still assigned to any endpoints \u2014 remove it from all endpoints first. Admin-only.",
+        "operationId": "deleteAccountTag",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "success": {
+                          "type": "boolean"
+                        }
+                      }
+                    },
+                    "error": {
+                      "type": "string",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "tag still in use",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "nullable": true
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "tag not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "nullable": true
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
                 }
               }
             }
@@ -3204,6 +3891,103 @@
         }
       }
     },
+    "/v0/usage/rpc/by-tag": {
+      "get": {
+        "summary": "Retrieves usage data grouped by tag",
+        "tags": [
+          "Usage"
+        ],
+        "description": "Rolls up credits and requests per account tag. Includes an \"untagged\" bucket for endpoints with no tags.",
+        "operationId": "usageByTag",
+        "parameters": [
+          {
+            "name": "start_time",
+            "in": "query",
+            "description": "Start time (unix timestamp)",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "end_time",
+            "in": "query",
+            "description": "End time (unix timestamp)",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "tags": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "tag_id": {
+                                "type": "integer",
+                                "nullable": true,
+                                "description": "null for the untagged bucket"
+                              },
+                              "label": {
+                                "type": "string"
+                              },
+                              "credits_used": {
+                                "type": "integer"
+                              },
+                              "requests": {
+                                "type": "integer"
+                              }
+                            },
+                            "required": [
+                              "tag_id",
+                              "label",
+                              "credits_used",
+                              "requests"
+                            ]
+                          }
+                        },
+                        "start_time": {
+                          "type": "integer",
+                          "format": "timestamp"
+                        },
+                        "end_time": {
+                          "type": "integer",
+                          "format": "timestamp"
+                        }
+                      },
+                      "required": [
+                        "tags",
+                        "start_time",
+                        "end_time"
+                      ]
+                    },
+                    "error": {
+                      "type": "string",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "invalid time range"
+          }
+        }
+      }
+    },
     "/v0/usage/rpc/by-endpoint": {
       "get": {
         "summary": "Retrieves usage data by endpoint",
@@ -3564,9 +4348,20 @@
           "id": {
             "type": "string"
           },
+          "name": {
+            "type": "string",
+            "description": "endpoint subdomain"
+          },
           "label": {
             "type": "string",
             "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "paused"
+            ]
           },
           "chain": {
             "type": "string",
@@ -3577,6 +4372,12 @@
             "type": "string",
             "example": "mainnet",
             "description": "network slug"
+          },
+          "is_dedicated": {
+            "type": "boolean"
+          },
+          "is_flat_rate": {
+            "type": "boolean"
           },
           "http_url": {
             "type": "string"
@@ -3600,13 +4401,21 @@
                 }
               }
             }
+          },
+          "is_multichain": {
+            "type": "boolean"
           }
         },
         "required": [
           "id",
+          "name",
+          "status",
           "chain",
           "network",
-          "http_url"
+          "is_dedicated",
+          "is_flat_rate",
+          "http_url",
+          "is_multichain"
         ]
       },
       "single_endpoint": {
@@ -3660,6 +4469,9 @@
                 }
               }
             }
+          },
+          "is_multichain": {
+            "type": "boolean"
           }
         },
         "required": [
@@ -3667,7 +4479,8 @@
           "chain",
           "network",
           "http_url",
-          "security"
+          "security",
+          "is_multichain"
         ]
       },
       "endpoint_rate_limits": {

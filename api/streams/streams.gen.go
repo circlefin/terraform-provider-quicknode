@@ -51,7 +51,6 @@ const (
 // Defines values for CreateStreamDtoDestination.
 const (
 	CreateStreamDtoDestinationAzure    CreateStreamDtoDestination = "azure"
-	CreateStreamDtoDestinationFunction CreateStreamDtoDestination = "function"
 	CreateStreamDtoDestinationKafka    CreateStreamDtoDestination = "kafka"
 	CreateStreamDtoDestinationPostgres CreateStreamDtoDestination = "postgres"
 	CreateStreamDtoDestinationS3       CreateStreamDtoDestination = "s3"
@@ -65,6 +64,8 @@ const (
 	CreateStreamDtoNetworkArbitrumMainnet   CreateStreamDtoNetwork = "arbitrum-mainnet"
 	CreateStreamDtoNetworkArbitrumSepolia   CreateStreamDtoNetwork = "arbitrum-sepolia"
 	CreateStreamDtoNetworkArcTestnet        CreateStreamDtoNetwork = "arc-testnet"
+	CreateStreamDtoNetworkAultMainnet       CreateStreamDtoNetwork = "ault-mainnet"
+	CreateStreamDtoNetworkAultTestnet       CreateStreamDtoNetwork = "ault-testnet"
 	CreateStreamDtoNetworkAvalancheFuji     CreateStreamDtoNetwork = "avalanche-fuji"
 	CreateStreamDtoNetworkAvalancheMainnet  CreateStreamDtoNetwork = "avalanche-mainnet"
 	CreateStreamDtoNetworkB3Mainnet         CreateStreamDtoNetwork = "b3-mainnet"
@@ -93,6 +94,7 @@ const (
 	CreateStreamDtoNetworkFlareTestnet      CreateStreamDtoNetwork = "flare-testnet"
 	CreateStreamDtoNetworkFlowMainnet       CreateStreamDtoNetwork = "flow-mainnet"
 	CreateStreamDtoNetworkFlowTestnet       CreateStreamDtoNetwork = "flow-testnet"
+	CreateStreamDtoNetworkFluentTestnet     CreateStreamDtoNetwork = "fluent-testnet"
 	CreateStreamDtoNetworkFraxtalMainnet    CreateStreamDtoNetwork = "fraxtal-mainnet"
 	CreateStreamDtoNetworkGnosisMainnet     CreateStreamDtoNetwork = "gnosis-mainnet"
 	CreateStreamDtoNetworkGravityAlpham     CreateStreamDtoNetwork = "gravity-alpham"
@@ -121,14 +123,14 @@ const (
 	CreateStreamDtoNetworkLtcTestnet        CreateStreamDtoNetwork = "ltc-testnet"
 	CreateStreamDtoNetworkMantleMainnet     CreateStreamDtoNetwork = "mantle-mainnet"
 	CreateStreamDtoNetworkMantleSepolia     CreateStreamDtoNetwork = "mantle-sepolia"
+	CreateStreamDtoNetworkMegaethMainnet    CreateStreamDtoNetwork = "megaeth-mainnet"
+	CreateStreamDtoNetworkMocaTestnet       CreateStreamDtoNetwork = "moca-testnet"
 	CreateStreamDtoNetworkModeMainnet       CreateStreamDtoNetwork = "mode-mainnet"
 	CreateStreamDtoNetworkMonadMainnet      CreateStreamDtoNetwork = "monad-mainnet"
 	CreateStreamDtoNetworkMonadTestnet      CreateStreamDtoNetwork = "monad-testnet"
 	CreateStreamDtoNetworkMorphHoodi        CreateStreamDtoNetwork = "morph-hoodi"
 	CreateStreamDtoNetworkMorphMainnet      CreateStreamDtoNetwork = "morph-mainnet"
 	CreateStreamDtoNetworkNovaMainnet       CreateStreamDtoNetwork = "nova-mainnet"
-	CreateStreamDtoNetworkOmniMainnet       CreateStreamDtoNetwork = "omni-mainnet"
-	CreateStreamDtoNetworkOmniOmega         CreateStreamDtoNetwork = "omni-omega"
 	CreateStreamDtoNetworkOptimismMainnet   CreateStreamDtoNetwork = "optimism-mainnet"
 	CreateStreamDtoNetworkOptimismSepolia   CreateStreamDtoNetwork = "optimism-sepolia"
 	CreateStreamDtoNetworkPeaqMainnet       CreateStreamDtoNetwork = "peaq-mainnet"
@@ -136,7 +138,7 @@ const (
 	CreateStreamDtoNetworkPlasmaTestnet     CreateStreamDtoNetwork = "plasma-testnet"
 	CreateStreamDtoNetworkPolygonAmoy       CreateStreamDtoNetwork = "polygon-amoy"
 	CreateStreamDtoNetworkPolygonMainnet    CreateStreamDtoNetwork = "polygon-mainnet"
-	CreateStreamDtoNetworkRedstoneMainnet   CreateStreamDtoNetwork = "redstone-mainnet"
+	CreateStreamDtoNetworkRobinhoodTestnet  CreateStreamDtoNetwork = "robinhood-testnet"
 	CreateStreamDtoNetworkSaharaTestnet     CreateStreamDtoNetwork = "sahara-testnet"
 	CreateStreamDtoNetworkScrollMainnet     CreateStreamDtoNetwork = "scroll-mainnet"
 	CreateStreamDtoNetworkScrollTestnet     CreateStreamDtoNetwork = "scroll-testnet"
@@ -148,7 +150,6 @@ const (
 	CreateStreamDtoNetworkSoneiumMainnet    CreateStreamDtoNetwork = "soneium-mainnet"
 	CreateStreamDtoNetworkSonicMainnet      CreateStreamDtoNetwork = "sonic-mainnet"
 	CreateStreamDtoNetworkSophonMainnet     CreateStreamDtoNetwork = "sophon-mainnet"
-	CreateStreamDtoNetworkSophonTestnet     CreateStreamDtoNetwork = "sophon-testnet"
 	CreateStreamDtoNetworkStellarMainnet    CreateStreamDtoNetwork = "stellar-mainnet"
 	CreateStreamDtoNetworkStellarTestnet    CreateStreamDtoNetwork = "stellar-testnet"
 	CreateStreamDtoNetworkStoryAeneid       CreateStreamDtoNetwork = "story-aeneid"
@@ -165,10 +166,13 @@ const (
 	CreateStreamDtoNetworkXaiMainnet        CreateStreamDtoNetwork = "xai-mainnet"
 	CreateStreamDtoNetworkXaiSepolia        CreateStreamDtoNetwork = "xai-sepolia"
 	CreateStreamDtoNetworkXlayerMainnet     CreateStreamDtoNetwork = "xlayer-mainnet"
+	CreateStreamDtoNetworkXlayerTestnet     CreateStreamDtoNetwork = "xlayer-testnet"
 	CreateStreamDtoNetworkXrpMainnet        CreateStreamDtoNetwork = "xrp-mainnet"
 	CreateStreamDtoNetworkXrpTestnet        CreateStreamDtoNetwork = "xrp-testnet"
 	CreateStreamDtoNetworkXrplevmMainnet    CreateStreamDtoNetwork = "xrplevm-mainnet"
 	CreateStreamDtoNetworkXrplevmTestnet    CreateStreamDtoNetwork = "xrplevm-testnet"
+	CreateStreamDtoNetworkZecMainnet        CreateStreamDtoNetwork = "zec-mainnet"
+	CreateStreamDtoNetworkZecTestnet        CreateStreamDtoNetwork = "zec-testnet"
 	CreateStreamDtoNetworkZerogGalileo      CreateStreamDtoNetwork = "zerog-galileo"
 	CreateStreamDtoNetworkZerogMainnet      CreateStreamDtoNetwork = "zerog-mainnet"
 	CreateStreamDtoNetworkZkevmCardona      CreateStreamDtoNetwork = "zkevm-cardona"
@@ -194,7 +198,6 @@ const (
 // Defines values for ExtraDestinationDtoDestination.
 const (
 	ExtraDestinationDtoDestinationAzure    ExtraDestinationDtoDestination = "azure"
-	ExtraDestinationDtoDestinationFunction ExtraDestinationDtoDestination = "function"
 	ExtraDestinationDtoDestinationKafka    ExtraDestinationDtoDestination = "kafka"
 	ExtraDestinationDtoDestinationPostgres ExtraDestinationDtoDestination = "postgres"
 	ExtraDestinationDtoDestinationS3       ExtraDestinationDtoDestination = "s3"
@@ -268,6 +271,8 @@ const (
 	TestFilterFunctionDtoNetworkArbitrumMainnet   TestFilterFunctionDtoNetwork = "arbitrum-mainnet"
 	TestFilterFunctionDtoNetworkArbitrumSepolia   TestFilterFunctionDtoNetwork = "arbitrum-sepolia"
 	TestFilterFunctionDtoNetworkArcTestnet        TestFilterFunctionDtoNetwork = "arc-testnet"
+	TestFilterFunctionDtoNetworkAultMainnet       TestFilterFunctionDtoNetwork = "ault-mainnet"
+	TestFilterFunctionDtoNetworkAultTestnet       TestFilterFunctionDtoNetwork = "ault-testnet"
 	TestFilterFunctionDtoNetworkAvalancheFuji     TestFilterFunctionDtoNetwork = "avalanche-fuji"
 	TestFilterFunctionDtoNetworkAvalancheMainnet  TestFilterFunctionDtoNetwork = "avalanche-mainnet"
 	TestFilterFunctionDtoNetworkB3Mainnet         TestFilterFunctionDtoNetwork = "b3-mainnet"
@@ -296,6 +301,7 @@ const (
 	TestFilterFunctionDtoNetworkFlareTestnet      TestFilterFunctionDtoNetwork = "flare-testnet"
 	TestFilterFunctionDtoNetworkFlowMainnet       TestFilterFunctionDtoNetwork = "flow-mainnet"
 	TestFilterFunctionDtoNetworkFlowTestnet       TestFilterFunctionDtoNetwork = "flow-testnet"
+	TestFilterFunctionDtoNetworkFluentTestnet     TestFilterFunctionDtoNetwork = "fluent-testnet"
 	TestFilterFunctionDtoNetworkFraxtalMainnet    TestFilterFunctionDtoNetwork = "fraxtal-mainnet"
 	TestFilterFunctionDtoNetworkGnosisMainnet     TestFilterFunctionDtoNetwork = "gnosis-mainnet"
 	TestFilterFunctionDtoNetworkGravityAlpham     TestFilterFunctionDtoNetwork = "gravity-alpham"
@@ -324,14 +330,14 @@ const (
 	TestFilterFunctionDtoNetworkLtcTestnet        TestFilterFunctionDtoNetwork = "ltc-testnet"
 	TestFilterFunctionDtoNetworkMantleMainnet     TestFilterFunctionDtoNetwork = "mantle-mainnet"
 	TestFilterFunctionDtoNetworkMantleSepolia     TestFilterFunctionDtoNetwork = "mantle-sepolia"
+	TestFilterFunctionDtoNetworkMegaethMainnet    TestFilterFunctionDtoNetwork = "megaeth-mainnet"
+	TestFilterFunctionDtoNetworkMocaTestnet       TestFilterFunctionDtoNetwork = "moca-testnet"
 	TestFilterFunctionDtoNetworkModeMainnet       TestFilterFunctionDtoNetwork = "mode-mainnet"
 	TestFilterFunctionDtoNetworkMonadMainnet      TestFilterFunctionDtoNetwork = "monad-mainnet"
 	TestFilterFunctionDtoNetworkMonadTestnet      TestFilterFunctionDtoNetwork = "monad-testnet"
 	TestFilterFunctionDtoNetworkMorphHoodi        TestFilterFunctionDtoNetwork = "morph-hoodi"
 	TestFilterFunctionDtoNetworkMorphMainnet      TestFilterFunctionDtoNetwork = "morph-mainnet"
 	TestFilterFunctionDtoNetworkNovaMainnet       TestFilterFunctionDtoNetwork = "nova-mainnet"
-	TestFilterFunctionDtoNetworkOmniMainnet       TestFilterFunctionDtoNetwork = "omni-mainnet"
-	TestFilterFunctionDtoNetworkOmniOmega         TestFilterFunctionDtoNetwork = "omni-omega"
 	TestFilterFunctionDtoNetworkOptimismMainnet   TestFilterFunctionDtoNetwork = "optimism-mainnet"
 	TestFilterFunctionDtoNetworkOptimismSepolia   TestFilterFunctionDtoNetwork = "optimism-sepolia"
 	TestFilterFunctionDtoNetworkPeaqMainnet       TestFilterFunctionDtoNetwork = "peaq-mainnet"
@@ -339,7 +345,7 @@ const (
 	TestFilterFunctionDtoNetworkPlasmaTestnet     TestFilterFunctionDtoNetwork = "plasma-testnet"
 	TestFilterFunctionDtoNetworkPolygonAmoy       TestFilterFunctionDtoNetwork = "polygon-amoy"
 	TestFilterFunctionDtoNetworkPolygonMainnet    TestFilterFunctionDtoNetwork = "polygon-mainnet"
-	TestFilterFunctionDtoNetworkRedstoneMainnet   TestFilterFunctionDtoNetwork = "redstone-mainnet"
+	TestFilterFunctionDtoNetworkRobinhoodTestnet  TestFilterFunctionDtoNetwork = "robinhood-testnet"
 	TestFilterFunctionDtoNetworkSaharaTestnet     TestFilterFunctionDtoNetwork = "sahara-testnet"
 	TestFilterFunctionDtoNetworkScrollMainnet     TestFilterFunctionDtoNetwork = "scroll-mainnet"
 	TestFilterFunctionDtoNetworkScrollTestnet     TestFilterFunctionDtoNetwork = "scroll-testnet"
@@ -351,7 +357,6 @@ const (
 	TestFilterFunctionDtoNetworkSoneiumMainnet    TestFilterFunctionDtoNetwork = "soneium-mainnet"
 	TestFilterFunctionDtoNetworkSonicMainnet      TestFilterFunctionDtoNetwork = "sonic-mainnet"
 	TestFilterFunctionDtoNetworkSophonMainnet     TestFilterFunctionDtoNetwork = "sophon-mainnet"
-	TestFilterFunctionDtoNetworkSophonTestnet     TestFilterFunctionDtoNetwork = "sophon-testnet"
 	TestFilterFunctionDtoNetworkStellarMainnet    TestFilterFunctionDtoNetwork = "stellar-mainnet"
 	TestFilterFunctionDtoNetworkStellarTestnet    TestFilterFunctionDtoNetwork = "stellar-testnet"
 	TestFilterFunctionDtoNetworkStoryAeneid       TestFilterFunctionDtoNetwork = "story-aeneid"
@@ -368,10 +373,13 @@ const (
 	TestFilterFunctionDtoNetworkXaiMainnet        TestFilterFunctionDtoNetwork = "xai-mainnet"
 	TestFilterFunctionDtoNetworkXaiSepolia        TestFilterFunctionDtoNetwork = "xai-sepolia"
 	TestFilterFunctionDtoNetworkXlayerMainnet     TestFilterFunctionDtoNetwork = "xlayer-mainnet"
+	TestFilterFunctionDtoNetworkXlayerTestnet     TestFilterFunctionDtoNetwork = "xlayer-testnet"
 	TestFilterFunctionDtoNetworkXrpMainnet        TestFilterFunctionDtoNetwork = "xrp-mainnet"
 	TestFilterFunctionDtoNetworkXrpTestnet        TestFilterFunctionDtoNetwork = "xrp-testnet"
 	TestFilterFunctionDtoNetworkXrplevmMainnet    TestFilterFunctionDtoNetwork = "xrplevm-mainnet"
 	TestFilterFunctionDtoNetworkXrplevmTestnet    TestFilterFunctionDtoNetwork = "xrplevm-testnet"
+	TestFilterFunctionDtoNetworkZecMainnet        TestFilterFunctionDtoNetwork = "zec-mainnet"
+	TestFilterFunctionDtoNetworkZecTestnet        TestFilterFunctionDtoNetwork = "zec-testnet"
 	TestFilterFunctionDtoNetworkZerogGalileo      TestFilterFunctionDtoNetwork = "zerog-galileo"
 	TestFilterFunctionDtoNetworkZerogMainnet      TestFilterFunctionDtoNetwork = "zerog-mainnet"
 	TestFilterFunctionDtoNetworkZkevmCardona      TestFilterFunctionDtoNetwork = "zkevm-cardona"
@@ -384,7 +392,6 @@ const (
 // Defines values for UpdateStreamDtoDestination.
 const (
 	Azure    UpdateStreamDtoDestination = "azure"
-	Function UpdateStreamDtoDestination = "function"
 	Kafka    UpdateStreamDtoDestination = "kafka"
 	Postgres UpdateStreamDtoDestination = "postgres"
 	S3       UpdateStreamDtoDestination = "s3"
@@ -525,17 +532,6 @@ type PostgresAttributes struct {
 
 // PostgresAttributesSslmode defines model for PostgresAttributes.Sslmode.
 type PostgresAttributesSslmode string
-
-// QuickfunctionsAttributes defines model for QuickfunctionsAttributes.
-type QuickfunctionsAttributes struct {
-	Headers          map[string]interface{} `json:"headers"`
-	MaxRetry         float32                `json:"max_retry"`
-	Name             string                 `json:"name"`
-	Namespace        string                 `json:"namespace"`
-	PostTimeoutSec   float32                `json:"post_timeout_sec"`
-	RetryIntervalSec float32                `json:"retry_interval_sec"`
-	SecurityToken    string                 `json:"security_token"`
-}
 
 // S3Attributes defines model for S3Attributes.
 type S3Attributes struct {
@@ -690,32 +686,6 @@ func (t *CreateStreamDto_DestinationAttributes) MergeWebhookAttributes(v Webhook
 	return err
 }
 
-// AsQuickfunctionsAttributes returns the union data inside the CreateStreamDto_DestinationAttributes as a QuickfunctionsAttributes
-func (t CreateStreamDto_DestinationAttributes) AsQuickfunctionsAttributes() (QuickfunctionsAttributes, error) {
-	var body QuickfunctionsAttributes
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromQuickfunctionsAttributes overwrites any union data inside the CreateStreamDto_DestinationAttributes as the provided QuickfunctionsAttributes
-func (t *CreateStreamDto_DestinationAttributes) FromQuickfunctionsAttributes(v QuickfunctionsAttributes) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeQuickfunctionsAttributes performs a merge with any union data inside the CreateStreamDto_DestinationAttributes, using the provided QuickfunctionsAttributes
-func (t *CreateStreamDto_DestinationAttributes) MergeQuickfunctionsAttributes(v QuickfunctionsAttributes) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
 // AsPostgresAttributes returns the union data inside the CreateStreamDto_DestinationAttributes as a PostgresAttributes
 func (t CreateStreamDto_DestinationAttributes) AsPostgresAttributes() (PostgresAttributes, error) {
 	var body PostgresAttributes
@@ -856,32 +826,6 @@ func (t *ExtraDestinationDto_DestinationAttributes) MergeWebhookAttributes(v Web
 	return err
 }
 
-// AsQuickfunctionsAttributes returns the union data inside the ExtraDestinationDto_DestinationAttributes as a QuickfunctionsAttributes
-func (t ExtraDestinationDto_DestinationAttributes) AsQuickfunctionsAttributes() (QuickfunctionsAttributes, error) {
-	var body QuickfunctionsAttributes
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromQuickfunctionsAttributes overwrites any union data inside the ExtraDestinationDto_DestinationAttributes as the provided QuickfunctionsAttributes
-func (t *ExtraDestinationDto_DestinationAttributes) FromQuickfunctionsAttributes(v QuickfunctionsAttributes) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeQuickfunctionsAttributes performs a merge with any union data inside the ExtraDestinationDto_DestinationAttributes, using the provided QuickfunctionsAttributes
-func (t *ExtraDestinationDto_DestinationAttributes) MergeQuickfunctionsAttributes(v QuickfunctionsAttributes) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
 // AsPostgresAttributes returns the union data inside the ExtraDestinationDto_DestinationAttributes as a PostgresAttributes
 func (t ExtraDestinationDto_DestinationAttributes) AsPostgresAttributes() (PostgresAttributes, error) {
 	var body PostgresAttributes
@@ -1012,32 +956,6 @@ func (t *UpdateStreamDto_DestinationAttributes) FromWebhookAttributes(v WebhookA
 
 // MergeWebhookAttributes performs a merge with any union data inside the UpdateStreamDto_DestinationAttributes, using the provided WebhookAttributes
 func (t *UpdateStreamDto_DestinationAttributes) MergeWebhookAttributes(v WebhookAttributes) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsQuickfunctionsAttributes returns the union data inside the UpdateStreamDto_DestinationAttributes as a QuickfunctionsAttributes
-func (t UpdateStreamDto_DestinationAttributes) AsQuickfunctionsAttributes() (QuickfunctionsAttributes, error) {
-	var body QuickfunctionsAttributes
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromQuickfunctionsAttributes overwrites any union data inside the UpdateStreamDto_DestinationAttributes as the provided QuickfunctionsAttributes
-func (t *UpdateStreamDto_DestinationAttributes) FromQuickfunctionsAttributes(v QuickfunctionsAttributes) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeQuickfunctionsAttributes performs a merge with any union data inside the UpdateStreamDto_DestinationAttributes, using the provided QuickfunctionsAttributes
-func (t *UpdateStreamDto_DestinationAttributes) MergeQuickfunctionsAttributes(v QuickfunctionsAttributes) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
