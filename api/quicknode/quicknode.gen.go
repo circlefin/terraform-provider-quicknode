@@ -26,6 +26,41 @@ const (
 	Bearer_authScopes = "bearer_auth.Scopes"
 )
 
+// Defines values for EndpointStatus.
+const (
+	EndpointStatusActive EndpointStatus = "active"
+	EndpointStatusPaused EndpointStatus = "paused"
+)
+
+// Defines values for ListEndpointsParamsSortBy.
+const (
+	ListEndpointsParamsSortByCreatedAt ListEndpointsParamsSortBy = "created_at"
+	ListEndpointsParamsSortByLabel     ListEndpointsParamsSortBy = "label"
+	ListEndpointsParamsSortByName      ListEndpointsParamsSortBy = "name"
+	ListEndpointsParamsSortByNetwork   ListEndpointsParamsSortBy = "network"
+	ListEndpointsParamsSortByStatus    ListEndpointsParamsSortBy = "status"
+	ListEndpointsParamsSortByTags      ListEndpointsParamsSortBy = "tags"
+	ListEndpointsParamsSortByUsage     ListEndpointsParamsSortBy = "usage"
+)
+
+// Defines values for ListEndpointsParamsSortDirection.
+const (
+	Asc  ListEndpointsParamsSortDirection = "asc"
+	Desc ListEndpointsParamsSortDirection = "desc"
+)
+
+// Defines values for ListEndpointsParamsStatuses.
+const (
+	ListEndpointsParamsStatusesActive ListEndpointsParamsStatuses = "active"
+	ListEndpointsParamsStatusesPaused ListEndpointsParamsStatuses = "paused"
+)
+
+// Defines values for BulkUpdateEndpointStatusJSONBodyStatus.
+const (
+	BulkUpdateEndpointStatusJSONBodyStatusActive BulkUpdateEndpointStatusJSONBodyStatus = "active"
+	BulkUpdateEndpointStatusJSONBodyStatusPaused BulkUpdateEndpointStatusJSONBodyStatus = "paused"
+)
+
 // Defines values for CreateMethodRateLimitJSONBodyInterval.
 const (
 	CreateMethodRateLimitJSONBodyIntervalDay    CreateMethodRateLimitJSONBodyInterval = "day"
@@ -49,13 +84,16 @@ const (
 
 // Defines values for FetchEndpointMetricParamsMetric.
 const (
-	FetchEndpointMetricParamsMetricMethodCallBreakdown        FetchEndpointMetricParamsMetric = "method_call_breakdown"
-	FetchEndpointMetricParamsMetricMethodCallsOverTime        FetchEndpointMetricParamsMetric = "method_calls_over_time"
-	FetchEndpointMetricParamsMetricMethodResponseTimeMax      FetchEndpointMetricParamsMetric = "method_response_time_max"
-	FetchEndpointMetricParamsMetricRequestErrorsOverTime      FetchEndpointMetricParamsMetric = "request_errors_over_time"
-	FetchEndpointMetricParamsMetricResponseStatusBreakdown    FetchEndpointMetricParamsMetric = "response_status_breakdown"
-	FetchEndpointMetricParamsMetricResponseStatusOverTime     FetchEndpointMetricParamsMetric = "response_status_over_time"
-	FetchEndpointMetricParamsMetricTotalRequestErrorsOverTime FetchEndpointMetricParamsMetric = "total_request_errors_over_time"
+	FetchEndpointMetricParamsMetricCreditsOverTime                FetchEndpointMetricParamsMetric = "credits_over_time"
+	FetchEndpointMetricParamsMetricMeteredEndpointCreditsOverTime FetchEndpointMetricParamsMetric = "metered_endpoint_credits_over_time"
+	FetchEndpointMetricParamsMetricMeteredEndpointDataOverTime    FetchEndpointMetricParamsMetric = "metered_endpoint_data_over_time"
+	FetchEndpointMetricParamsMetricMethodCallsOverTime            FetchEndpointMetricParamsMetric = "method_calls_over_time"
+	FetchEndpointMetricParamsMetricMethodResponseTimeMax          FetchEndpointMetricParamsMetric = "method_response_time_max"
+	FetchEndpointMetricParamsMetricRequestErrorsOverTime          FetchEndpointMetricParamsMetric = "request_errors_over_time"
+	FetchEndpointMetricParamsMetricResponseStatusBreakdown        FetchEndpointMetricParamsMetric = "response_status_breakdown"
+	FetchEndpointMetricParamsMetricResponseStatusOverTime         FetchEndpointMetricParamsMetric = "response_status_over_time"
+	FetchEndpointMetricParamsMetricResponseTimeOverTime           FetchEndpointMetricParamsMetric = "response_time_over_time"
+	FetchEndpointMetricParamsMetricTotalRequestErrorsOverTime     FetchEndpointMetricParamsMetric = "total_request_errors_over_time"
 )
 
 // Defines values for UpdateSecurityOptionsJSONBodyOptionsCors.
@@ -114,8 +152,8 @@ const (
 
 // Defines values for UpdateEndpointStatusJSONBodyStatus.
 const (
-	Active UpdateEndpointStatusJSONBodyStatus = "active"
-	Paused UpdateEndpointStatusJSONBodyStatus = "paused"
+	UpdateEndpointStatusJSONBodyStatusActive UpdateEndpointStatusJSONBodyStatus = "active"
+	UpdateEndpointStatusJSONBodyStatusPaused UpdateEndpointStatusJSONBodyStatus = "paused"
 )
 
 // Defines values for FetchAccountMetricsParamsPeriod.
@@ -128,13 +166,10 @@ const (
 
 // Defines values for FetchAccountMetricsParamsMetric.
 const (
-	FetchAccountMetricsParamsMetricMethodCallBreakdown        FetchAccountMetricsParamsMetric = "method_call_breakdown"
-	FetchAccountMetricsParamsMetricMethodCallsOverTime        FetchAccountMetricsParamsMetric = "method_calls_over_time"
-	FetchAccountMetricsParamsMetricMethodResponseTimeMax      FetchAccountMetricsParamsMetric = "method_response_time_max"
-	FetchAccountMetricsParamsMetricRequestErrorsOverTime      FetchAccountMetricsParamsMetric = "request_errors_over_time"
-	FetchAccountMetricsParamsMetricResponseStatusBreakdown    FetchAccountMetricsParamsMetric = "response_status_breakdown"
-	FetchAccountMetricsParamsMetricResponseStatusOverTime     FetchAccountMetricsParamsMetric = "response_status_over_time"
-	FetchAccountMetricsParamsMetricTotalRequestErrorsOverTime FetchAccountMetricsParamsMetric = "total_request_errors_over_time"
+	FetchAccountMetricsParamsMetricCreditsOverTime                FetchAccountMetricsParamsMetric = "credits_over_time"
+	FetchAccountMetricsParamsMetricMeteredEndpointCreditsOverTime FetchAccountMetricsParamsMetric = "metered_endpoint_credits_over_time"
+	FetchAccountMetricsParamsMetricMeteredEndpointDataOverTime    FetchAccountMetricsParamsMetric = "metered_endpoint_data_over_time"
+	FetchAccountMetricsParamsMetricMethodCallsOverTime            FetchAccountMetricsParamsMetric = "method_calls_over_time"
 )
 
 // Defines values for InviteTeamMemberJSONBodyRole.
@@ -160,19 +195,29 @@ type ChainUsage struct {
 // Endpoint defines model for endpoint.
 type Endpoint struct {
 	// Chain chain slug
-	Chain   string  `json:"chain"`
-	HttpUrl string  `json:"http_url"`
-	Id      string  `json:"id"`
-	Label   *string `json:"label"`
+	Chain        string  `json:"chain"`
+	HttpUrl      string  `json:"http_url"`
+	Id           string  `json:"id"`
+	IsDedicated  bool    `json:"is_dedicated"`
+	IsFlatRate   bool    `json:"is_flat_rate"`
+	IsMultichain bool    `json:"is_multichain"`
+	Label        *string `json:"label"`
+
+	// Name endpoint subdomain
+	Name string `json:"name"`
 
 	// Network network slug
-	Network string `json:"network"`
+	Network string         `json:"network"`
+	Status  EndpointStatus `json:"status"`
 	Tags    *[]struct {
 		Label *string `json:"label,omitempty"`
 		TagId *int    `json:"tag_id,omitempty"`
 	} `json:"tags,omitempty"`
 	WssUrl *string `json:"wss_url"`
 }
+
+// EndpointStatus defines model for Endpoint.Status.
+type EndpointStatus string
 
 // EndpointDomainMask defines model for endpoint_domain_mask.
 type EndpointDomainMask struct {
@@ -307,10 +352,11 @@ type Payment struct {
 // SingleEndpoint defines model for single_endpoint.
 type SingleEndpoint struct {
 	// Chain chain slug
-	Chain   string  `json:"chain"`
-	HttpUrl string  `json:"http_url"`
-	Id      string  `json:"id"`
-	Label   *string `json:"label"`
+	Chain        string  `json:"chain"`
+	HttpUrl      string  `json:"http_url"`
+	Id           string  `json:"id"`
+	IsMultichain bool    `json:"is_multichain"`
+	Label        *string `json:"label"`
 
 	// Network network slug
 	Network    string              `json:"network"`
@@ -326,16 +372,80 @@ type SingleEndpoint struct {
 
 // ListEndpointsParams defines parameters for ListEndpoints.
 type ListEndpointsParams struct {
-	Limit     *int      `form:"limit,omitempty" json:"limit,omitempty"`
-	Offset    *int      `form:"offset,omitempty" json:"offset,omitempty"`
-	TagIds    *[]int    `form:"tag_ids,omitempty" json:"tag_ids,omitempty"`
-	TagLabels *[]string `form:"tag_labels,omitempty" json:"tag_labels,omitempty"`
+	Limit  *int `form:"limit,omitempty" json:"limit,omitempty"`
+	Offset *int `form:"offset,omitempty" json:"offset,omitempty"`
+
+	// Search Search by subdomain or label
+	Search *string `form:"search,omitempty" json:"search,omitempty"`
+
+	// SortBy Sort field
+	SortBy        *ListEndpointsParamsSortBy        `form:"sort_by,omitempty" json:"sort_by,omitempty"`
+	SortDirection *ListEndpointsParamsSortDirection `form:"sort_direction,omitempty" json:"sort_direction,omitempty"`
+
+	// Networks Filter by network name(s)
+	Networks *[]string `form:"networks,omitempty" json:"networks,omitempty"`
+
+	// Statuses Filter by status
+	Statuses *[]ListEndpointsParamsStatuses `form:"statuses,omitempty" json:"statuses,omitempty"`
+
+	// Labels Filter by label(s)
+	Labels *[]string `form:"labels,omitempty" json:"labels,omitempty"`
+
+	// Dedicated Filter dedicated endpoints
+	Dedicated *bool `form:"dedicated,omitempty" json:"dedicated,omitempty"`
+
+	// IsFlatRate Filter flat rate endpoints
+	IsFlatRate *bool     `form:"is_flat_rate,omitempty" json:"is_flat_rate,omitempty"`
+	TagIds     *[]int    `form:"tag_ids,omitempty" json:"tag_ids,omitempty"`
+	TagLabels  *[]string `form:"tag_labels,omitempty" json:"tag_labels,omitempty"`
 }
+
+// ListEndpointsParamsSortBy defines parameters for ListEndpoints.
+type ListEndpointsParamsSortBy string
+
+// ListEndpointsParamsSortDirection defines parameters for ListEndpoints.
+type ListEndpointsParamsSortDirection string
+
+// ListEndpointsParamsStatuses defines parameters for ListEndpoints.
+type ListEndpointsParamsStatuses string
 
 // CreateEndpointJSONBody defines parameters for CreateEndpoint.
 type CreateEndpointJSONBody struct {
 	Chain   *string `json:"chain,omitempty"`
 	Network *string `json:"network,omitempty"`
+}
+
+// BulkUpdateEndpointStatusJSONBody defines parameters for BulkUpdateEndpointStatus.
+type BulkUpdateEndpointStatusJSONBody struct {
+	// Ids Endpoint IDs
+	Ids    []string                               `json:"ids"`
+	Status BulkUpdateEndpointStatusJSONBodyStatus `json:"status"`
+}
+
+// BulkUpdateEndpointStatusJSONBodyStatus defines parameters for BulkUpdateEndpointStatus.
+type BulkUpdateEndpointStatusJSONBodyStatus string
+
+// BulkRemoveTagJSONBody defines parameters for BulkRemoveTag.
+type BulkRemoveTagJSONBody struct {
+	// Ids Endpoint IDs
+	Ids []string `json:"ids"`
+
+	// TagId Tag ID to remove
+	TagId int `json:"tag_id"`
+}
+
+// BulkAddTagJSONBody defines parameters for BulkAddTag.
+type BulkAddTagJSONBody struct {
+	// Ids Endpoint IDs
+	Ids []string `json:"ids"`
+
+	// Label Tag label to add
+	Label string `json:"label"`
+}
+
+// RenameTagJSONBody defines parameters for RenameTag.
+type RenameTagJSONBody struct {
+	Label string `json:"label"`
 }
 
 // UpdateEndpointJSONBody defines parameters for UpdateEndpoint.
@@ -388,7 +498,7 @@ type FetchEndpointMetricParams struct {
 	// Period hour, day, week, month
 	Period FetchEndpointMetricParamsPeriod `form:"period" json:"period"`
 
-	// Metric method_calls_over_time, response_status_over_time, method_call_breakdown, response_status_breakdown, method_response_time_max, request_errors_over_time, total_request_errors_over_time
+	// Metric method_calls_over_time, metered_endpoint_data_over_time, metered_endpoint_credits_over_time, credits_over_time, response_status_over_time, response_status_breakdown, response_time_over_time, method_response_time_max, request_errors_over_time, total_request_errors_over_time
 	Metric FetchEndpointMetricParamsMetric `form:"metric" json:"metric"`
 }
 
@@ -501,7 +611,7 @@ type FetchAccountMetricsParams struct {
 	// Period hour, day, week, month
 	Period FetchAccountMetricsParamsPeriod `form:"period" json:"period"`
 
-	// Metric method_calls_over_time, response_status_over_time, method_call_breakdown, response_status_breakdown, method_response_time_max, request_errors_over_time, total_request_errors_over_time
+	// Metric method_calls_over_time, metered_endpoint_data_over_time, metered_endpoint_credits_over_time, credits_over_time
 	Metric FetchAccountMetricsParamsMetric `form:"metric" json:"metric"`
 
 	// Percentile Percentile for response time metrics
@@ -575,8 +685,29 @@ type UsageByMethodParams struct {
 	EndTime *int `form:"end_time,omitempty" json:"end_time,omitempty"`
 }
 
+// UsageByTagParams defines parameters for UsageByTag.
+type UsageByTagParams struct {
+	// StartTime Start time (unix timestamp)
+	StartTime *int `form:"start_time,omitempty" json:"start_time,omitempty"`
+
+	// EndTime End time (unix timestamp)
+	EndTime *int `form:"end_time,omitempty" json:"end_time,omitempty"`
+}
+
 // CreateEndpointJSONRequestBody defines body for CreateEndpoint for application/json ContentType.
 type CreateEndpointJSONRequestBody CreateEndpointJSONBody
+
+// BulkUpdateEndpointStatusJSONRequestBody defines body for BulkUpdateEndpointStatus for application/json ContentType.
+type BulkUpdateEndpointStatusJSONRequestBody BulkUpdateEndpointStatusJSONBody
+
+// BulkRemoveTagJSONRequestBody defines body for BulkRemoveTag for application/json ContentType.
+type BulkRemoveTagJSONRequestBody BulkRemoveTagJSONBody
+
+// BulkAddTagJSONRequestBody defines body for BulkAddTag for application/json ContentType.
+type BulkAddTagJSONRequestBody BulkAddTagJSONBody
+
+// RenameTagJSONRequestBody defines body for RenameTag for application/json ContentType.
+type RenameTagJSONRequestBody RenameTagJSONBody
 
 // UpdateEndpointJSONRequestBody defines body for UpdateEndpoint for application/json ContentType.
 type UpdateEndpointJSONRequestBody UpdateEndpointJSONBody
@@ -722,6 +853,32 @@ type ClientInterface interface {
 
 	CreateEndpoint(ctx context.Context, body CreateEndpointJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// BulkUpdateEndpointStatusWithBody request with any body
+	BulkUpdateEndpointStatusWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	BulkUpdateEndpointStatus(ctx context.Context, body BulkUpdateEndpointStatusJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// BulkRemoveTagWithBody request with any body
+	BulkRemoveTagWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	BulkRemoveTag(ctx context.Context, body BulkRemoveTagJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// BulkAddTagWithBody request with any body
+	BulkAddTagWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	BulkAddTag(ctx context.Context, body BulkAddTagJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListTags request
+	ListTags(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteAccountTag request
+	DeleteAccountTag(ctx context.Context, id int, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// RenameTagWithBody request with any body
+	RenameTagWithBody(ctx context.Context, id int, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	RenameTag(ctx context.Context, id int, body RenameTagJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// ArchiveEndpoint request
 	ArchiveEndpoint(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -776,6 +933,9 @@ type ClientInterface interface {
 	UpdateRateLimitsWithBody(ctx context.Context, id string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	UpdateRateLimits(ctx context.Context, id string, body UpdateRateLimitsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetEndpointSecurity request
+	GetEndpointSecurity(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// CreateDomainMaskWithBody request with any body
 	CreateDomainMaskWithBody(ctx context.Context, id string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -898,6 +1058,9 @@ type ClientInterface interface {
 
 	// UsageByMethod request
 	UsageByMethod(ctx context.Context, params *UsageByMethodParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UsageByTag request
+	UsageByTag(ctx context.Context, params *UsageByTagParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 }
 
 func (c *Client) Invoices(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
@@ -962,6 +1125,126 @@ func (c *Client) CreateEndpointWithBody(ctx context.Context, contentType string,
 
 func (c *Client) CreateEndpoint(ctx context.Context, body CreateEndpointJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewCreateEndpointRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) BulkUpdateEndpointStatusWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewBulkUpdateEndpointStatusRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) BulkUpdateEndpointStatus(ctx context.Context, body BulkUpdateEndpointStatusJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewBulkUpdateEndpointStatusRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) BulkRemoveTagWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewBulkRemoveTagRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) BulkRemoveTag(ctx context.Context, body BulkRemoveTagJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewBulkRemoveTagRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) BulkAddTagWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewBulkAddTagRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) BulkAddTag(ctx context.Context, body BulkAddTagJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewBulkAddTagRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ListTags(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListTagsRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) DeleteAccountTag(ctx context.Context, id int, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteAccountTagRequest(c.Server, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) RenameTagWithBody(ctx context.Context, id int, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewRenameTagRequestWithBody(c.Server, id, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) RenameTag(ctx context.Context, id int, body RenameTagJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewRenameTagRequest(c.Server, id, body)
 	if err != nil {
 		return nil, err
 	}
@@ -1202,6 +1485,18 @@ func (c *Client) UpdateRateLimitsWithBody(ctx context.Context, id string, conten
 
 func (c *Client) UpdateRateLimits(ctx context.Context, id string, body UpdateRateLimitsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewUpdateRateLimitsRequest(c.Server, id, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetEndpointSecurity(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetEndpointSecurityRequest(c.Server, id)
 	if err != nil {
 		return nil, err
 	}
@@ -1752,6 +2047,18 @@ func (c *Client) UsageByMethod(ctx context.Context, params *UsageByMethodParams,
 	return c.Client.Do(req)
 }
 
+func (c *Client) UsageByTag(ctx context.Context, params *UsageByTagParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUsageByTagRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 // NewInvoicesRequest generates requests for Invoices
 func NewInvoicesRequest(server string) (*http.Request, error) {
 	var err error
@@ -1887,6 +2194,134 @@ func NewListEndpointsRequest(server string, params *ListEndpointsParams) (*http.
 
 		}
 
+		if params.Search != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "search", runtime.ParamLocationQuery, *params.Search); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.SortBy != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "sort_by", runtime.ParamLocationQuery, *params.SortBy); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.SortDirection != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "sort_direction", runtime.ParamLocationQuery, *params.SortDirection); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Networks != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "networks", runtime.ParamLocationQuery, *params.Networks); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Statuses != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "statuses", runtime.ParamLocationQuery, *params.Statuses); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Labels != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "labels", runtime.ParamLocationQuery, *params.Labels); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Dedicated != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "dedicated", runtime.ParamLocationQuery, *params.Dedicated); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.IsFlatRate != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "is_flat_rate", runtime.ParamLocationQuery, *params.IsFlatRate); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
 		if params.TagIds != nil {
 
 			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "tag_ids", runtime.ParamLocationQuery, *params.TagIds); err != nil {
@@ -1961,6 +2396,234 @@ func NewCreateEndpointRequestWithBody(server string, contentType string, body io
 	}
 
 	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewBulkUpdateEndpointStatusRequest calls the generic BulkUpdateEndpointStatus builder with application/json body
+func NewBulkUpdateEndpointStatusRequest(server string, body BulkUpdateEndpointStatusJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewBulkUpdateEndpointStatusRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewBulkUpdateEndpointStatusRequestWithBody generates requests for BulkUpdateEndpointStatus with any type of body
+func NewBulkUpdateEndpointStatusRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v0/endpoints/bulk/status")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewBulkRemoveTagRequest calls the generic BulkRemoveTag builder with application/json body
+func NewBulkRemoveTagRequest(server string, body BulkRemoveTagJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewBulkRemoveTagRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewBulkRemoveTagRequestWithBody generates requests for BulkRemoveTag with any type of body
+func NewBulkRemoveTagRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v0/endpoints/bulk/tags")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewBulkAddTagRequest calls the generic BulkAddTag builder with application/json body
+func NewBulkAddTagRequest(server string, body BulkAddTagJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewBulkAddTagRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewBulkAddTagRequestWithBody generates requests for BulkAddTag with any type of body
+func NewBulkAddTagRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v0/endpoints/bulk/tags")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewListTagsRequest generates requests for ListTags
+func NewListTagsRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v0/endpoints/tags")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewDeleteAccountTagRequest generates requests for DeleteAccountTag
+func NewDeleteAccountTagRequest(server string, id int) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v0/endpoints/tags/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewRenameTagRequest calls the generic RenameTag builder with application/json body
+func NewRenameTagRequest(server string, id int, body RenameTagJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewRenameTagRequestWithBody(server, id, "application/json", bodyReader)
+}
+
+// NewRenameTagRequestWithBody generates requests for RenameTag with any type of body
+func NewRenameTagRequestWithBody(server string, id int, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v0/endpoints/tags/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PATCH", queryURL.String(), body)
 	if err != nil {
 		return nil, err
 	}
@@ -2681,6 +3344,40 @@ func NewUpdateRateLimitsRequestWithBody(server string, id string, contentType st
 	}
 
 	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewGetEndpointSecurityRequest generates requests for GetEndpointSecurity
+func NewGetEndpointSecurityRequest(server string, id string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v0/endpoints/%s/security", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
 
 	return req, nil
 }
@@ -4161,6 +4858,71 @@ func NewUsageByMethodRequest(server string, params *UsageByMethodParams) (*http.
 	return req, nil
 }
 
+// NewUsageByTagRequest generates requests for UsageByTag
+func NewUsageByTagRequest(server string, params *UsageByTagParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v0/usage/rpc/by-tag")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.StartTime != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "start_time", runtime.ParamLocationQuery, *params.StartTime); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.EndTime != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "end_time", runtime.ParamLocationQuery, *params.EndTime); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
 func (c *Client) applyEditors(ctx context.Context, req *http.Request, additionalEditors []RequestEditorFn) error {
 	for _, r := range c.RequestEditors {
 		if err := r(ctx, req); err != nil {
@@ -4221,6 +4983,32 @@ type ClientWithResponsesInterface interface {
 
 	CreateEndpointWithResponse(ctx context.Context, body CreateEndpointJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateEndpointResponse, error)
 
+	// BulkUpdateEndpointStatusWithBodyWithResponse request with any body
+	BulkUpdateEndpointStatusWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*BulkUpdateEndpointStatusResponse, error)
+
+	BulkUpdateEndpointStatusWithResponse(ctx context.Context, body BulkUpdateEndpointStatusJSONRequestBody, reqEditors ...RequestEditorFn) (*BulkUpdateEndpointStatusResponse, error)
+
+	// BulkRemoveTagWithBodyWithResponse request with any body
+	BulkRemoveTagWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*BulkRemoveTagResponse, error)
+
+	BulkRemoveTagWithResponse(ctx context.Context, body BulkRemoveTagJSONRequestBody, reqEditors ...RequestEditorFn) (*BulkRemoveTagResponse, error)
+
+	// BulkAddTagWithBodyWithResponse request with any body
+	BulkAddTagWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*BulkAddTagResponse, error)
+
+	BulkAddTagWithResponse(ctx context.Context, body BulkAddTagJSONRequestBody, reqEditors ...RequestEditorFn) (*BulkAddTagResponse, error)
+
+	// ListTagsWithResponse request
+	ListTagsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*ListTagsResponse, error)
+
+	// DeleteAccountTagWithResponse request
+	DeleteAccountTagWithResponse(ctx context.Context, id int, reqEditors ...RequestEditorFn) (*DeleteAccountTagResponse, error)
+
+	// RenameTagWithBodyWithResponse request with any body
+	RenameTagWithBodyWithResponse(ctx context.Context, id int, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*RenameTagResponse, error)
+
+	RenameTagWithResponse(ctx context.Context, id int, body RenameTagJSONRequestBody, reqEditors ...RequestEditorFn) (*RenameTagResponse, error)
+
 	// ArchiveEndpointWithResponse request
 	ArchiveEndpointWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*ArchiveEndpointResponse, error)
 
@@ -4275,6 +5063,9 @@ type ClientWithResponsesInterface interface {
 	UpdateRateLimitsWithBodyWithResponse(ctx context.Context, id string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateRateLimitsResponse, error)
 
 	UpdateRateLimitsWithResponse(ctx context.Context, id string, body UpdateRateLimitsJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateRateLimitsResponse, error)
+
+	// GetEndpointSecurityWithResponse request
+	GetEndpointSecurityWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*GetEndpointSecurityResponse, error)
 
 	// CreateDomainMaskWithBodyWithResponse request with any body
 	CreateDomainMaskWithBodyWithResponse(ctx context.Context, id string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateDomainMaskResponse, error)
@@ -4397,6 +5188,9 @@ type ClientWithResponsesInterface interface {
 
 	// UsageByMethodWithResponse request
 	UsageByMethodWithResponse(ctx context.Context, params *UsageByMethodParams, reqEditors ...RequestEditorFn) (*UsageByMethodResponse, error)
+
+	// UsageByTagWithResponse request
+	UsageByTagWithResponse(ctx context.Context, params *UsageByTagParams, reqEditors ...RequestEditorFn) (*UsageByTagResponse, error)
 }
 
 type InvoicesResponse struct {
@@ -4482,8 +5276,13 @@ type ListEndpointsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data  *[]Endpoint `json:"data"`
-		Error *string     `json:"error"`
+		Data       *[]Endpoint `json:"data"`
+		Error      *string     `json:"error"`
+		Pagination *struct {
+			Limit  int `json:"limit"`
+			Offset int `json:"offset"`
+			Total  int `json:"total"`
+		} `json:"pagination,omitempty"`
 	}
 }
 
@@ -4522,6 +5321,207 @@ func (r CreateEndpointResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r CreateEndpointResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type BulkUpdateEndpointStatusResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *struct {
+		Data struct {
+			FailedCount int `json:"failed_count"`
+			Results     []struct {
+				Id      string `json:"id"`
+				Success bool   `json:"success"`
+			} `json:"results"`
+			Total        int `json:"total"`
+			UpdatedCount int `json:"updated_count"`
+		} `json:"data"`
+	}
+}
+
+// Status returns HTTPResponse.Status
+func (r BulkUpdateEndpointStatusResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r BulkUpdateEndpointStatusResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type BulkRemoveTagResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *struct {
+		Data struct {
+			FailedCount int `json:"failed_count"`
+			Results     []struct {
+				Id      string `json:"id"`
+				Success bool   `json:"success"`
+			} `json:"results"`
+			Total        int `json:"total"`
+			UpdatedCount int `json:"updated_count"`
+		} `json:"data"`
+	}
+}
+
+// Status returns HTTPResponse.Status
+func (r BulkRemoveTagResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r BulkRemoveTagResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type BulkAddTagResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *struct {
+		Data struct {
+			FailedCount int `json:"failed_count"`
+			Results     []struct {
+				Id      string `json:"id"`
+				Success bool   `json:"success"`
+			} `json:"results"`
+			Tag struct {
+				Label *string `json:"label,omitempty"`
+				TagId *int    `json:"tag_id,omitempty"`
+			} `json:"tag"`
+			Total        int `json:"total"`
+			UpdatedCount int `json:"updated_count"`
+		} `json:"data"`
+	}
+}
+
+// Status returns HTTPResponse.Status
+func (r BulkAddTagResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r BulkAddTagResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type ListTagsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *struct {
+		Data *struct {
+			Tags *[]struct {
+				Id    int    `json:"id"`
+				Label string `json:"label"`
+
+				// UsageCount Number of endpoints using this tag
+				UsageCount int `json:"usage_count"`
+			} `json:"tags,omitempty"`
+		} `json:"data,omitempty"`
+		Error *string `json:"error"`
+	}
+}
+
+// Status returns HTTPResponse.Status
+func (r ListTagsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListTagsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DeleteAccountTagResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *struct {
+		Data *struct {
+			Success *bool `json:"success,omitempty"`
+		} `json:"data,omitempty"`
+		Error *string `json:"error"`
+	}
+	JSON400 *struct {
+		Data  *interface{} `json:"data"`
+		Error *string      `json:"error,omitempty"`
+	}
+	JSON404 *struct {
+		Data  *interface{} `json:"data"`
+		Error *string      `json:"error,omitempty"`
+	}
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteAccountTagResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteAccountTagResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type RenameTagResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *struct {
+		Data *struct {
+			Id         *int    `json:"id,omitempty"`
+			Label      *string `json:"label,omitempty"`
+			UsageCount *int    `json:"usage_count,omitempty"`
+		} `json:"data,omitempty"`
+		Error *string `json:"error"`
+	}
+	JSON404 *struct {
+		Data  *interface{} `json:"data"`
+		Error *string      `json:"error,omitempty"`
+	}
+}
+
+// Status returns HTTPResponse.Status
+func (r RenameTagResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r RenameTagResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -4855,6 +5855,35 @@ func (r UpdateRateLimitsResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r UpdateRateLimitsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetEndpointSecurityResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *struct {
+		Data  *EndpointSecurity `json:"data,omitempty"`
+		Error *string           `json:"error"`
+	}
+	JSON404 *struct {
+		Data  *interface{} `json:"data"`
+		Error *string      `json:"error,omitempty"`
+	}
+}
+
+// Status returns HTTPResponse.Status
+func (r GetEndpointSecurityResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetEndpointSecurityResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -5744,6 +6773,42 @@ func (r UsageByMethodResponse) StatusCode() int {
 	return 0
 }
 
+type UsageByTagResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *struct {
+		Data *struct {
+			EndTime   int `json:"end_time"`
+			StartTime int `json:"start_time"`
+			Tags      []struct {
+				CreditsUsed int    `json:"credits_used"`
+				Label       string `json:"label"`
+				Requests    int    `json:"requests"`
+
+				// TagId null for the untagged bucket
+				TagId *int `json:"tag_id"`
+			} `json:"tags"`
+		} `json:"data,omitempty"`
+		Error *string `json:"error"`
+	}
+}
+
+// Status returns HTTPResponse.Status
+func (r UsageByTagResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r UsageByTagResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 // InvoicesWithResponse request returning *InvoicesResponse
 func (c *ClientWithResponses) InvoicesWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*InvoicesResponse, error) {
 	rsp, err := c.Invoices(ctx, reqEditors...)
@@ -5795,6 +6860,92 @@ func (c *ClientWithResponses) CreateEndpointWithResponse(ctx context.Context, bo
 		return nil, err
 	}
 	return ParseCreateEndpointResponse(rsp)
+}
+
+// BulkUpdateEndpointStatusWithBodyWithResponse request with arbitrary body returning *BulkUpdateEndpointStatusResponse
+func (c *ClientWithResponses) BulkUpdateEndpointStatusWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*BulkUpdateEndpointStatusResponse, error) {
+	rsp, err := c.BulkUpdateEndpointStatusWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseBulkUpdateEndpointStatusResponse(rsp)
+}
+
+func (c *ClientWithResponses) BulkUpdateEndpointStatusWithResponse(ctx context.Context, body BulkUpdateEndpointStatusJSONRequestBody, reqEditors ...RequestEditorFn) (*BulkUpdateEndpointStatusResponse, error) {
+	rsp, err := c.BulkUpdateEndpointStatus(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseBulkUpdateEndpointStatusResponse(rsp)
+}
+
+// BulkRemoveTagWithBodyWithResponse request with arbitrary body returning *BulkRemoveTagResponse
+func (c *ClientWithResponses) BulkRemoveTagWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*BulkRemoveTagResponse, error) {
+	rsp, err := c.BulkRemoveTagWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseBulkRemoveTagResponse(rsp)
+}
+
+func (c *ClientWithResponses) BulkRemoveTagWithResponse(ctx context.Context, body BulkRemoveTagJSONRequestBody, reqEditors ...RequestEditorFn) (*BulkRemoveTagResponse, error) {
+	rsp, err := c.BulkRemoveTag(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseBulkRemoveTagResponse(rsp)
+}
+
+// BulkAddTagWithBodyWithResponse request with arbitrary body returning *BulkAddTagResponse
+func (c *ClientWithResponses) BulkAddTagWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*BulkAddTagResponse, error) {
+	rsp, err := c.BulkAddTagWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseBulkAddTagResponse(rsp)
+}
+
+func (c *ClientWithResponses) BulkAddTagWithResponse(ctx context.Context, body BulkAddTagJSONRequestBody, reqEditors ...RequestEditorFn) (*BulkAddTagResponse, error) {
+	rsp, err := c.BulkAddTag(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseBulkAddTagResponse(rsp)
+}
+
+// ListTagsWithResponse request returning *ListTagsResponse
+func (c *ClientWithResponses) ListTagsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*ListTagsResponse, error) {
+	rsp, err := c.ListTags(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListTagsResponse(rsp)
+}
+
+// DeleteAccountTagWithResponse request returning *DeleteAccountTagResponse
+func (c *ClientWithResponses) DeleteAccountTagWithResponse(ctx context.Context, id int, reqEditors ...RequestEditorFn) (*DeleteAccountTagResponse, error) {
+	rsp, err := c.DeleteAccountTag(ctx, id, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteAccountTagResponse(rsp)
+}
+
+// RenameTagWithBodyWithResponse request with arbitrary body returning *RenameTagResponse
+func (c *ClientWithResponses) RenameTagWithBodyWithResponse(ctx context.Context, id int, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*RenameTagResponse, error) {
+	rsp, err := c.RenameTagWithBody(ctx, id, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseRenameTagResponse(rsp)
+}
+
+func (c *ClientWithResponses) RenameTagWithResponse(ctx context.Context, id int, body RenameTagJSONRequestBody, reqEditors ...RequestEditorFn) (*RenameTagResponse, error) {
+	rsp, err := c.RenameTag(ctx, id, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseRenameTagResponse(rsp)
 }
 
 // ArchiveEndpointWithResponse request returning *ArchiveEndpointResponse
@@ -5970,6 +7121,15 @@ func (c *ClientWithResponses) UpdateRateLimitsWithResponse(ctx context.Context, 
 		return nil, err
 	}
 	return ParseUpdateRateLimitsResponse(rsp)
+}
+
+// GetEndpointSecurityWithResponse request returning *GetEndpointSecurityResponse
+func (c *ClientWithResponses) GetEndpointSecurityWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*GetEndpointSecurityResponse, error) {
+	rsp, err := c.GetEndpointSecurity(ctx, id, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetEndpointSecurityResponse(rsp)
 }
 
 // CreateDomainMaskWithBodyWithResponse request with arbitrary body returning *CreateDomainMaskResponse
@@ -6364,6 +7524,15 @@ func (c *ClientWithResponses) UsageByMethodWithResponse(ctx context.Context, par
 	return ParseUsageByMethodResponse(rsp)
 }
 
+// UsageByTagWithResponse request returning *UsageByTagResponse
+func (c *ClientWithResponses) UsageByTagWithResponse(ctx context.Context, params *UsageByTagParams, reqEditors ...RequestEditorFn) (*UsageByTagResponse, error) {
+	rsp, err := c.UsageByTag(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUsageByTagResponse(rsp)
+}
+
 // ParseInvoicesResponse parses an HTTP response from a InvoicesWithResponse call
 func ParseInvoicesResponse(rsp *http.Response) (*InvoicesResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -6471,8 +7640,13 @@ func ParseListEndpointsResponse(rsp *http.Response) (*ListEndpointsResponse, err
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data  *[]Endpoint `json:"data"`
-			Error *string     `json:"error"`
+			Data       *[]Endpoint `json:"data"`
+			Error      *string     `json:"error"`
+			Pagination *struct {
+				Limit  int `json:"limit"`
+				Offset int `json:"offset"`
+				Total  int `json:"total"`
+			} `json:"pagination,omitempty"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -6507,6 +7681,249 @@ func ParseCreateEndpointResponse(rsp *http.Response) (*CreateEndpointResponse, e
 			return nil, err
 		}
 		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseBulkUpdateEndpointStatusResponse parses an HTTP response from a BulkUpdateEndpointStatusWithResponse call
+func ParseBulkUpdateEndpointStatusResponse(rsp *http.Response) (*BulkUpdateEndpointStatusResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &BulkUpdateEndpointStatusResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest struct {
+			Data struct {
+				FailedCount int `json:"failed_count"`
+				Results     []struct {
+					Id      string `json:"id"`
+					Success bool   `json:"success"`
+				} `json:"results"`
+				Total        int `json:"total"`
+				UpdatedCount int `json:"updated_count"`
+			} `json:"data"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseBulkRemoveTagResponse parses an HTTP response from a BulkRemoveTagWithResponse call
+func ParseBulkRemoveTagResponse(rsp *http.Response) (*BulkRemoveTagResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &BulkRemoveTagResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest struct {
+			Data struct {
+				FailedCount int `json:"failed_count"`
+				Results     []struct {
+					Id      string `json:"id"`
+					Success bool   `json:"success"`
+				} `json:"results"`
+				Total        int `json:"total"`
+				UpdatedCount int `json:"updated_count"`
+			} `json:"data"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseBulkAddTagResponse parses an HTTP response from a BulkAddTagWithResponse call
+func ParseBulkAddTagResponse(rsp *http.Response) (*BulkAddTagResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &BulkAddTagResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest struct {
+			Data struct {
+				FailedCount int `json:"failed_count"`
+				Results     []struct {
+					Id      string `json:"id"`
+					Success bool   `json:"success"`
+				} `json:"results"`
+				Tag struct {
+					Label *string `json:"label,omitempty"`
+					TagId *int    `json:"tag_id,omitempty"`
+				} `json:"tag"`
+				Total        int `json:"total"`
+				UpdatedCount int `json:"updated_count"`
+			} `json:"data"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseListTagsResponse parses an HTTP response from a ListTagsWithResponse call
+func ParseListTagsResponse(rsp *http.Response) (*ListTagsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListTagsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest struct {
+			Data *struct {
+				Tags *[]struct {
+					Id    int    `json:"id"`
+					Label string `json:"label"`
+
+					// UsageCount Number of endpoints using this tag
+					UsageCount int `json:"usage_count"`
+				} `json:"tags,omitempty"`
+			} `json:"data,omitempty"`
+			Error *string `json:"error"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteAccountTagResponse parses an HTTP response from a DeleteAccountTagWithResponse call
+func ParseDeleteAccountTagResponse(rsp *http.Response) (*DeleteAccountTagResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteAccountTagResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest struct {
+			Data *struct {
+				Success *bool `json:"success,omitempty"`
+			} `json:"data,omitempty"`
+			Error *string `json:"error"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest struct {
+			Data  *interface{} `json:"data"`
+			Error *string      `json:"error,omitempty"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest struct {
+			Data  *interface{} `json:"data"`
+			Error *string      `json:"error,omitempty"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseRenameTagResponse parses an HTTP response from a RenameTagWithResponse call
+func ParseRenameTagResponse(rsp *http.Response) (*RenameTagResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &RenameTagResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest struct {
+			Data *struct {
+				Id         *int    `json:"id,omitempty"`
+				Label      *string `json:"label,omitempty"`
+				UsageCount *int    `json:"usage_count,omitempty"`
+			} `json:"data,omitempty"`
+			Error *string `json:"error"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest struct {
+			Data  *interface{} `json:"data"`
+			Error *string      `json:"error,omitempty"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
 
 	}
 
@@ -6802,6 +8219,45 @@ func ParseUpdateRateLimitsResponse(rsp *http.Response) (*UpdateRateLimitsRespons
 	response := &UpdateRateLimitsResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
+	}
+
+	return response, nil
+}
+
+// ParseGetEndpointSecurityResponse parses an HTTP response from a GetEndpointSecurityWithResponse call
+func ParseGetEndpointSecurityResponse(rsp *http.Response) (*GetEndpointSecurityResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetEndpointSecurityResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest struct {
+			Data  *EndpointSecurity `json:"data,omitempty"`
+			Error *string           `json:"error"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest struct {
+			Data  *interface{} `json:"data"`
+			Error *string      `json:"error,omitempty"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
 	}
 
 	return response, nil
@@ -7779,119 +9235,179 @@ func ParseUsageByMethodResponse(rsp *http.Response) (*UsageByMethodResponse, err
 	return response, nil
 }
 
+// ParseUsageByTagResponse parses an HTTP response from a UsageByTagWithResponse call
+func ParseUsageByTagResponse(rsp *http.Response) (*UsageByTagResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &UsageByTagResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest struct {
+			Data *struct {
+				EndTime   int `json:"end_time"`
+				StartTime int `json:"start_time"`
+				Tags      []struct {
+					CreditsUsed int    `json:"credits_used"`
+					Label       string `json:"label"`
+					Requests    int    `json:"requests"`
+
+					// TagId null for the untagged bucket
+					TagId *int `json:"tag_id"`
+				} `json:"tags"`
+			} `json:"data,omitempty"`
+			Error *string `json:"error"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"H4sIAAAAAAAC/+xd3XPbOJL/V1i8e7irkmOA33TVPTiJZzZ740w28e7WTOxSgUBDYiKRGpKy43P5f78C",
-	"wC+JpEhJ/lAS+8U2CYBA968b3Y0GcKfTeL6II4iyVD+501M6hTmRf9IpCSPxxyKJF5BkIcjHYTpOYQY0",
-	"G5cFstsF6Cd6EMczIJF+P9IjyG7i5KuqkMFc/vGfCXD9RP+P4+qTx/n3jvMKom7eGkkSciv+T2fLSe0r",
-	"aZaE0US/r0rGwRegmSgqezRepmQCzY7TBFiYpeNlCqzWXhhlMIFE9prMYeCXIGKLOIyyls8UVGGQ0iRc",
-	"ZGEc6SfqsSbHMtLhG5kvZqJFyKb6aP2DI32aZYvxMpm19Gakh6z18YwEICtEy9mMBKL5LFlCS+sFsRud",
-	"zF80uzknYRRB1tbVjExW2bxKjrJXbRXHYSsn2gi+joqbNC0I1DPe+5GewF/LMBFs/yyolwNFryhRo/jV",
-	"Bm6PWSwoMZ6T9GtzqOrlcJZtwtU4XLSIXjvjVdFtGv9ykw1u/WvH8w5hGemLZTAL6fgr3G7brTlkSUhb",
-	"CEsysgKx8o+mDK/jpPE/mWzbrYRkMJ6F8zBrwTehNF4qPdCBw1rnqpbGwW3O4o5aNWWaLNjA5hfzoQXT",
-	"IQU3UwU4JAkkg4FUr7AV+eGvJaTZmIezbIvPzSGbxqwNLTUVtAaOBUnIStGiOxs7mAJdJmF226URpLoY",
-	"PhW2KpuWzoaLHdoMF21NfbnJdmhLaJGWxmI5m6Rd1DgviNEP/HDxZplm8fxvQFgb56/JbAnDZoAG98LF",
-	"wE4UtBkgpznABxeXuP5FwnpgnSz+CtGgsm1jXungdrwuhbeF4asCulPjKxLeprXLcW/XsqzXbHCjOKs6",
-	"Q9VMWXobldZloU677Id+23W49acUYzoOEiBfWXwTDSarqpn3voVLnSZBzeBsmRYk8zum8zQj2TIdSN8w",
-	"uo5D2kJYMhdz9Jgtof0r+fsFCTuoG4SzWRhNxgmQNO5kEcm6uNNlsocRbDKeVb/am1yx3AeRpzHbQRLG",
-	"bAxRR6fz92lGkmxL7oz0dBlkcUZmQ+37FWw1CZHQaXgNw5TkPmKUd2MHJLcNqla6RdJz76ffXOvszRau",
-	"8YLczqHNX21grEYukrDxjKTZ2BqkWXIRGJOO5pZJAhG9bTfXSPIVssWMUBhXXeqnzVYKIg2jyQzGL857",
-	"qXxXXZths3WtjqBpzfodVL+ssFmB/GhxhRqlmiGGGh0/CXrlorkICzdaoFKfKju4UAj6tyOyCI9EiWoc",
-	"i/B/QQ4kAJJAMibLbCoaUP/+EidzIZ363/99IXokvyW0p3xbNSN6rd+Lbk3jVJS/ubl59dcypF+jmMEr",
-	"Gs91Md3yWApNHGWEKnlVHfuHKPk+ZtCYqKpX2ps4SuMZaKcf3mn/QuLbYSbxWj64hiRVta6R8iwgIotQ",
-	"P9HNV+gV1oVWy6aSVMfX6DifpI9zM0A+n0DWlJSPkCUhXIM2C9NMi7lW1pDfSIgo947pJ/q76kUC6SKO",
-	"UtWsgVAx8lypksViFlJZ8/hLbiMo6HfHM9YMzFq3B5ljhbkzzLxNkjjZyVe6b/AwXVIKaapgu5zPSXJb",
-	"o2raRlYlzZ/114pH+pWoW2daPj9twbSyxjrTPlQvHp1p9W4PYloxDx8s02pk7WSaVHPdrPoFMjrVSNlk",
-	"XnydT2+Kx4/ApUG8UNq6ZRLYgu71KUB+vKh9tTNPFPkaxCu4kZOtZEYxsQ4QnbKobL3BkN/CNDsrW8vD",
-	"YaB8+s/5HPTXEpLbagqSdkAxk5D2Sbe9Zsx5CrtVVTN8ulJ3cEh4U6PSqNjcblfw8P7q+XBc2rPCPGxH",
-	"7IFAu1I3DSgW8K4AeCXcFml+rAP6jXQ0NKIpg75srKliZMGz6nUebXgds9s9uNPtYW7jH67SWHDh/lEw",
-	"tAk66x7RsyNEcSzViBbBTZ2xbfhY14DHdyG7V3CZQQZN4JyqOMIA5OQla9Bp04bC/qxUiHQBVjnaot5K",
-	"+nVojCFUKsbRQ59R53ywTKJ0ABU+TeObZyDBwQJ+R1ALMrbQukPlkYxOm0z754IJnSenKI3HyQDuqSqP",
-	"zr+H0Khd7nwbze93l5uciLuolWMWpgIc4/lyloVVckzrBPVWlU21WuF17uRlzuslDknH5P2rDUHCbgPt",
-	"tE9lhKODhhANJuFZ1EtBVeRgCai696D0CxdjKpdEx9NyTbRrrnsrn2vZFLR3HzRVTStDSGtYlGXfra63",
-	"fjf6vrkE8PgqXVEs7SLvJtZ2qvjcrI0Tban0FIn6Wacq/Z4o1fZELHwIla/GUy61rJJifdiaLNZng9ab",
-	"vHo2e3vjMIcsEz86eBVWUoE0Wtjb0bYwbtdQs3gyZpCRcNYfj0g1VRKYFkZchqbDOCqMmwXQkIdUm8UT",
-	"DaJM+uqr0P8Vst/iydv8a4+A9Y5QQZGv8CTKL1/HUVZSRdxx0dRKIkwBwbyH+ol+d6mLlpIFvdRPtEvd",
-	"eIUu9ZF2ma90qoeQTceUzGbqjcqCEm8+313qWazKoG+OQd9wD84813aISx1kGG8wehM4Z4Ad9xfLQMxz",
-	"Tw1btcKTeF7UpIFhmdYpdk3jjPmOcYaoZZiGb5sUm3AGjot9zrmpasrRFFXz3oqBlf0groMNZKCOH2KY",
-	"Hg0gwJZBMQLuEuZZlkEdhrkPng/IBdd1MHrOH2zt3QJ6+Xn6H2NfvlHLYx7iHJE9O7JnP1wfIce3wDEC",
-	"xl3ObYyIBeA4jmNQbnmOQ3wHExM7tvncJLcD04KAIE4ZAEG+jzhDrsNNSomPHBxwCKiJDLDEH5g4BAKf",
-	"UhcwClzTtgyLegEN7APAD0aW4RAHMPjYdD2LgGEDcRzMEKOBRQGbQcB8Hzm+SU0ICAsQ8UCwgwdegBmz",
-	"DWwbzPUs0zUC3zQQcR1OHM4CG3EHI4xcg2OObOJ6HogmXRxQHxEXG7ZtgIUp4MA2IHBd0aRvAw8gMGyM",
-	"Dd+3TQt8I2Cej7nv+BajFmaO4wdgWY4lilicuQbzqIFsh1rcxcixmc98ElDxfRMIeNympgMm467JMfGY",
-	"Z3o88LEbMJuZPsOBHRimiRhDvseY5QWWybjtsoAFmHg0sAzDM1wLOQb4GBxmAac2BmYwmxkOIWJ8yHMN",
-	"yqnrB46JgNqEBb5lcjAty8fEcQPqeYGFA8IxuI7jUuoRyyeIUIoZpr5r+hY3CPUDalg+M21Avokx5qaP",
-	"HG4YPtiub7oUDEysALDlcpuD6XPDdyxANnMYYmAavkUdy2CW7VPmE2JQ5oFtcfAwAdN3CCE+tQzDoJ7J",
-	"HNuyPdelruFiuiuELvX7kZwIDZs7HnMu9Svxfygnc9PA97UltXULoDAA8uKmgUeXyuC81E/uLnUaMzH1",
-	"miNhIKQpmYCsBN+ALqVxlsA1JBmwE+3XT8hwZFP55Cyna4+ark/Q8+o2ZFuubZrINExnZxrfX15GMtzU",
-	"tKqFSZrbYVqSG7NMy21tvpzN5FKL1RYqCKNrMguZVtmQmrJ8VQ2rWaMwsLUozjQeLyO2Zs3/Clmq1brU",
-	"Zrf/Fk/STTb7EGNdFFs3zjtjj79CuZQov/101nkY0dmSwbiiRqOJWpb0Qy9rRvAtG5PWun0dFxbzQxAg",
-	"i5/eLdnoj3wWmCpdwh18kxQi9pHcXCQkSgkV/Wh4KlL5GNxHNjYdyzMs2zY9ywx8QglCnrBsAsNDyDN9",
-	"z3c85FuOT5Hj+NwMbMYRN8BwLIsjjHwvsCzH5rZjGxhhDwU+soj14na8uB3P/rPrfFZyDw7D/cC+gZBt",
-	"GxSIG1DTpEEAgc8x85GwzjATckOAc4ae2/2gluXbVhBwbBkBYNO2iI8YogR7yOLEJrZvB8xxEKMArkWF",
-	"kWcFBnZtn2Buc8Q933SB0z1J5nW+8X2PASecId/ysAvcNHzuMOr61EUmx5RjT3gA+yGP8n0RY1rMoh41",
-	"CGIMU24SCxD3TUq5FzBsmsS2bezZHgSOianBOQss3yMGDpBjMZN+fw4rAgczDzwfg21ix2fMNhF2A264",
-	"4NmAwDUs7HHiBRRh3wMITOz7iFGbYdsGenD6ByPL5aYrnCfbcUzigmUjz2eBZVDCfSMIPJdT23FcFhDk",
-	"Gsi2fQgs0+GBj7hvORRs2zENFlATO9jk3HTBdIUPM8hrSSBdzrLc2TAtR8zTgG3sMZMYjCJi2RxsTImJ",
-	"bAOJbrou8rhhGRQ5JjVsh2ITewblBrYqPwjdl4H3sXCB9JNoOZvl2dvFTlL9w++fLvRqZ2mHaVJL/z7R",
-	"vzESVmlHMi9d5wFQwql3ZFjcOcKYo6PAROjI8qwAEws7xOR6lRtvIDTSs3AOaUbmC/1EN5BhHyHryPAv",
-	"sHFi+ieG/cq2zD/1kS4z1/VjXZiG+5lc/eHgM8t/8xp5GDzmO76B3pgeOXVPX/uIBsjwLRJYr6l3dtoM",
-	"4CKDeJTsb0jkjvCMZJBmK17wQB+46fgemQbC9pr3+69zrXKAZZ1Xq37v5eUSIXQmfrm++4f6F/3wv/T7",
-	"Qn5wQ35yQg6QIIG0fplxkOkxSuoyYzBvd5nB9ivHcFdk5mpUem8n+vkFRe8vvv7f+dtz/P7ij5vfL05v",
-	"zt+e3pz/7dv8/ZfTmz/fTr79+Qndvv/1D+O3i7Nvf345zf748vev72+R+fvFP27+nJ8Z52+p8f7f5/+j",
-	"dwURdo4e1Hzp/cIGZamZctK3CxwoPh4lJIOjahdRaxhBfk2V1xKZyKTKt8QNzmWpjySD34oyB5KIUHd6",
-	"q21QkKRjmcTauhJXLyY7X24UFaC0jhA+QliAEqEThF4pzSZwKXFPcGBQk1lHYHPnyCJ2cORTjx254HCb",
-	"WIFJDSa34mSQXBMB5BRoHLFSyCQ3834XcnilNn7pJxhVIqOr3Bym319Va9BiFmwFb5W+yyGjU1GtA4dJ",
-	"nmwI80V2q91MIapAx2JIJT7hm6BfCz5bEdMAqcCKloOlL2s41Uiz1Y6sijUkHnQ6RQWBOx2i5VwQqMJC",
-	"GC0z0Ec6I/XtZ41N4dsdl6FA1LrPbmVnXNGz6jN53avh2X1bSGaB9nzrXEMkD14A+8WvAWCtGNRTzByb",
-	"BalHOofOJMd3+V7s2qE5PdndRU7WEAFXZZ9AwEetjbSN7RknsLEkaX6UwJrA6B8rlCnKrxkru8A1b6gT",
-	"g80aXWDczPT+qWJTtvUwKKmy3zmUHmIKetBJpL45vJjPCg050vNkbNYymd0/yqSS7xuoC81zTC5i/t4w",
-	"s4xxtfO/eGRU0435YNONSlBlQ5c5u63DfgHfLIq7zjZJSHs2sEJtg4yqoBY/o+5FT1mv6Mm5Os2uoQfW",
-	"09zzfr97Kzn9ADpi9QPTeJmMNEZuR9oNwNeRNo8j2X7b0qE68mXjBwtZFO3mBuVIFy0LXMqm20SyXb9L",
-	"3z8dx9eQjIW3PtIKKR0rmNZf1apUZxc1a9ReFZqxKCHaGc/Jt1G5+i6Bv/IVeWjNuOt9B9nmBav7ydY+",
-	"8Fq0qjHyUt7Xht5Sp/6ua/C1yErL6HqG38LaA9j3WhwceaA7uVd0SJvKOs/VUZe6WouvLJZZ5/awmqOs",
-	"xdFGZaVqPEGY5SFMi7WDauZh9KH2Ho/Wiy86znfKj8jsPBKz/8iYNaTUO3a162a1jzWu9c2srwnTPvbM",
-	"qmctHtxIt9uaeydsi4jMtE+QXEOinUnIt8/AW0Vh2qFcnHJzvH405uaN3isxo+pUzPaozdvynMmDhvTa",
-	"WcIPt118923Wa8TdfvdHK3uP72r/DfbhIxUUDKPJeve0Vt6rio/L+3YHbHV0T7Y9s59QD8DH/JjUwdIZ",
-	"LjqE8t3isKOni4ORQUnC/Vh2fBcu9hK0FjYWW0SfTq7kGH7y7aXd3NkDIcWRxoOl+stN1wrJ328Oe1Xk",
-	"sU+vfwqFoKi/J7+P777cZHvphDYQqAqPBIJ2raCGcRCz7N6MWTmQe7A0lmdxt4vkx+r1Aftz21wGsKOQ",
-	"Fd+o1saGSFuNug/B2eO74s+9hK+T56rWY/K8XQxro3qZojfyay8UNU7W30JLyLpafqh+l66o3UFw0Aqj",
-	"us5j/USvhNxqMS8WB0Q31S6lm2mYwUwxRh8NP8jvQM6NGH5l0KMjvVNTriHs4ZAutGb9wZ66c6MkFBr0",
-	"kSWhS42uDXNPZWp1GjbakRbFWgHRrVTZFmwebYxOb6Gf8uj0d8uVn0Dn7Ya1cjl3b6z1qJTqzpjBcyZZ",
-	"ZlOIspw/mrrbpX3mPF0pepGXPKTjxzq0dscY9yb08Z38vZembie4qvJoJG5XAcVgXozbbjbtjplx7ZKw",
-	"7nTxorSWl+7Nv/gVsqILv+cfOMjc8XUydKWPf77Lb1MrAJnqrQk8tWJVSKGvpIwC9hUKF/1l6ve69ZWd",
-	"pgM+SuNkyEBXrk/rH8jawXiN4qOC+vqbX47exFEEVMD+6N0HuTWkL0eqCdaexPhhGzTWm931bMFi2t1a",
-	"plTFpxKrhzCbarqFMBaKf8isni7AySyF9ZQBCbptcw1H65cabll7ml98tmW15sWIWzewy2eLdYMtq61E",
-	"Obeuu35J4pYNVFbgvkmkq3kfBcgeZwtDngQybpsvX+aIH2eOeKg02t65pEv972bFlYnZHZPNB7JM5Tm2",
-	"hGbh9ZqX1XNM+SfV+CFPMM3EdDlOkJ2Wdwte9SUY5k08nPbocyJ675V78kzJEvKPM7I2d+mBhyJlk1S7",
-	"wjcfNq+lBbKHnzlfXIK3MYKRkUlfrqcqeUEmP8wlADutCF6QSe9GuV3zK1tjL5XLLEnfULUXZLKZ+cd3",
-	"6rKj+yEnvZOJxpN4vhEJeTDlcZDQEUpRFzI+eNhLcLNvH1kvp4pAx3acGrqBJC+nkckkgYnAnUZoEqep",
-	"Rmaz2h1IuRNGKJU3n7buKzlVL4tk8Z59JS/bPl62fTzmto8Gaz9AQiHKwhlINBcd0EQDhRx0wy+vqj99",
-	"dPV722mymVXFLpO2fSi5djmawTXMaiwpdF2uYJrbUTIg8wG3C1YXPgrlJitJKGRT6NRsv4VpdiGbf1zm",
-	"blhbX7n9ex5Ako5p97XrnYmDyzQPUHR8s+dybJiTsP0+Y76czbovJO8aymIaZ3HnLdRJPINBXsFW12v3",
-	"X2h6ENuzygurPxfXIp/KS5I/XwkVU0mNwGYF5ZqgKMAOuJ4wghtZuVcMcvscyPzB7igsEDMPo98gmogB",
-	"Wn107bw45SkSXhhwspxl4wKbg6G+u9TumU6znx4XuMiVQtfhT0/m8z/w2AJShqy0I60IYskRS05sJYYN",
-	"aWqRxPpE1XsJZO4uEdWhbEoybUpSLYq1HEldTlMhno8sCPnRc4eI19bzP75/vMqxCQwUAKjcye96SGtO",
-	"71CJKwQkyg/t6hC6UY892Hq5EwniZVY/QT5vvLGQ/1TS9gzTzkhfQMTCaDIOo+swg01mY24xjBdJKLgz",
-	"FmZme1LIT2dg9tvcL8Tbyjp/liWAn1bLykuB81l1/d6OmoexKcgniu15cEx10sFVw4iqAtL9zn8VyyRp",
-	"Gk4iYFoWa9k0TNUYF7Nlqi2j8mVV/r+IREMYzEBUgWtIbuMI/rszVlAtmzxlzKC8rrYXbF1CX7sbvl+y",
-	"l4FaMt9RM76I8lOKsowU1CRgBdClDDy3fPddLX4zDem0PowE2oW5YwW/KZsPEccoQ6/hdifLreFhpZnn",
-	"CnEU0tJ6E9HzzceKyXOIquNnWjy8n1a619bxV2c4MjgkcVw4lzJv5imlvjVI+U66HnlYRRjGMl+HsZWU",
-	"b/m8HOUr7Zc4KcunI600fjUSMU2YrVJpFN1T5VcaS0daHM1uNWlQa2GqRQAM2KuGSlHdE6Q4l2R7OH2y",
-	"oylfGOVlyg+byxvnr0O4kd0LwtlMlO3N/VE9eC4d9NCuzOM4K0+l+laRThjLpzoh099/XGtOvoXz5VxJ",
-	"npYAWUtI/xm1ean3VnXbNhr8+E7U7cvK+Qjz+Lr8kErMUb5QnOSBVLkmVL3etEKkWnsEfcggzZK4io3k",
-	"8bAyS77fUHkavXWYUXHJvETy5oeLilMSCRlTo9PyGJqE6w+gQiTjdlQhnZL9zB5eIyfnn6J/Xa3nOmzv",
-	"IFFDKR4nkELE8uD205q7T0GCLov6oxy2sJ/lyPPEYGnoymlGouUmzKZaHv6vMoLXdb1oSNBFTVY/76Kj",
-	"gpAmAZX9aPq1VEEFHMKoZnj+tAZaLkY1GZLSUxBJzj+dxtpSgPg4WdDOiPU7LsQuyVS6nPBPI6b+Fq7r",
-	"PEzTMJqMNLpMEoG53KvTVIqs8FiXKTDl7wrZjsRLmgALsyrbLS+sfOFsmURtHu4/pbz1zA+fRFe1DTmo",
-	"1Vj07RTjWcQ2tVtQRe/ThY+umXLijktyb0B2zS8tqsn9OK2eaznEkzs9v4P9pHZpXFuj6taBQd+PryEh",
-	"kzwXq7d0jY1De7MmoyvjHa3iohzp1VOdH9Szn03KW0KiCaxlqla3zUtJVnnZUq7yhAFYqVzpASVNTT1w",
-	"HNwelUs3PRfcq08KFGrBraZqtUrt69s3+csX4e0RXkGndHCetSw+lnxoXdXaXmJ3E6zDWBp/CAFaR/MQ",
-	"eSk3D20rMt1bPJXUnFXvXwSnJ0y7PdRXVuu329bQKXFPLz7PJyI19A6Rkup0ruEyMkni5QKY+FpevUNS",
-	"zou3L3Ly4HLSdk3ZJinJt1S9yEgbehuS0u7qjUnh640E10N1wHbu+smbRxS+1WXM0yxbpCfHx2QRvvpr",
-	"GdKvUczgFY3n8pSF/JPFFof806Lh/EGVhFB7+EZZIi3FqgMPai9f56t5beXrF520vS82UN1f3f9/AAAA",
-	"///joXzjYL8AAA==",
+	"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",
+	"AAA=",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file

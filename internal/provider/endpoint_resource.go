@@ -26,9 +26,11 @@ import (
 	"github.com/circlefin/terraform-provider-quicknode/api/quicknode"
 	"github.com/circlefin/terraform-provider-quicknode/internal/utils"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/objectplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
@@ -69,13 +71,14 @@ type EndpointResource struct {
 
 // EndpointResourceModel describes the resource data model.
 type EndpointResourceModel struct {
-	Label    types.String `tfsdk:"label"`
-	Chain    types.String `tfsdk:"chain"`
-	Network  types.String `tfsdk:"network"`
-	Url      types.String `tfsdk:"url"`
-	Id       types.String `tfsdk:"id"`
-	Security types.Object `tfsdk:"security"`
-	Tags     types.Set    `tfsdk:"tags"`
+	Label      types.String `tfsdk:"label"`
+	Chain      types.String `tfsdk:"chain"`
+	Network    types.String `tfsdk:"network"`
+	Url        types.String `tfsdk:"url"`
+	Id         types.String `tfsdk:"id"`
+	Security   types.Object `tfsdk:"security"`
+	Tags       types.Set    `tfsdk:"tags"`
+	Multichain types.Bool   `tfsdk:"multichain"`
 }
 
 type EndpointResourceSecurityToken struct {
@@ -157,6 +160,12 @@ func (r *EndpointResource) Schema(ctx context.Context, req resource.SchemaReques
 				ElementType:         types.StringType,
 				Optional:            true,
 				MarkdownDescription: "Tags to associate with the endpoint",
+			},
+			"multichain": schema.BoolAttribute{
+				Optional:            true,
+				Computed:            true,
+				Default:             booldefault.StaticBool(false),
+				MarkdownDescription: "Whether multichain is enabled for the endpoint.",
 			},
 		},
 	}
@@ -351,9 +360,66 @@ func (r *EndpointResource) Create(ctx context.Context, req resource.CreateReques
 		}
 	}
 
+	if data.Multichain.ValueBool() {
+		// Save state before the remote toggle so an enable failure leaves the
+		// caller with a valid resource id to recover from on the next apply
+		// rather than orphaning the endpoint in QuickNode.
+		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+		r.setMultichain(ctx, data.Id.ValueString(), true, &resp.Diagnostics)
+		if resp.Diagnostics.HasError() {
+			return
+		}
+	}
+
 	tflog.Trace(ctx, "created a resource")
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+}
+
+func (r *EndpointResource) setMultichain(ctx context.Context, id string, enable bool, diags *diag.Diagnostics) {
+	action := "Disabling"
+	call := func() (int, string, []byte, error) {
+		resp, err := r.client.DisableMultichainWithResponse(ctx, id)
+		if err != nil {
+			return 0, "", nil, err
+		}
+		if resp == nil {
+			return 0, "", nil, fmt.Errorf("nil response from DisableMultichain")
+		}
+		return resp.StatusCode(), resp.Status(), resp.Body, nil
+	}
+	if enable {
+		action = "Enabling"
+		call = func() (int, string, []byte, error) {
+			resp, err := r.client.EnableMultichainWithResponse(ctx, id)
+			if err != nil {
+				return 0, "", nil, err
+			}
+			if resp == nil {
+				return 0, "", nil, fmt.Errorf("nil response from EnableMultichain")
+			}
+			return resp.StatusCode(), resp.Status(), resp.Body, nil
+		}
+	}
+
+	status, statusText, body, err := call()
+	if err != nil {
+		diags.AddError(
+			fmt.Sprintf("%s - %s Multichain", utils.ClientErrorSummary, action),
+			utils.BuildClientErrorMessage(err),
+		)
+		return
+	}
+	if status != 200 {
+		m, err := utils.BuildRequestErrorMessage(statusText, body)
+		if err != nil {
+			diags.AddWarning(fmt.Sprintf("%s - %s Multichain", utils.InternalErrorSummary, action), utils.BuildInternalErrorMessage(err))
+		}
+		diags.AddError(
+			fmt.Sprintf("%s - %s Multichain", utils.RequestErrorSummary, action),
+			m,
+		)
+	}
 }
 
 func (r *EndpointResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
@@ -424,6 +490,8 @@ func (r *EndpointResource) Read(ctx context.Context, req resource.ReadRequest, r
 		data.Security = securityValueObject
 	}
 
+	data.Multichain = types.BoolValue(endpoint.IsMultichain)
+
 	data.Tags = types.SetNull(types.StringType)
 	if endpoint.Tags != nil && len(*endpoint.Tags) > 0 {
 		var tags []string
@@ -442,10 +510,11 @@ func (r *EndpointResource) Read(ctx context.Context, req resource.ReadRequest, r
 }
 
 func (r *EndpointResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
-	var data EndpointResourceModel
+	var data, state EndpointResourceModel
 
 	// Read Terraform plan data into the model
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &data)...)
+	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -580,6 +649,17 @@ func (r *EndpointResource) Update(ctx context.Context, req resource.UpdateReques
 				)
 				return
 			}
+		}
+	}
+
+	// Compare ValueBool() rather than Equal() so that legacy state files where
+	// Multichain is null are treated as false and do not trigger a spurious
+	// Disable on the first apply after upgrading to a version with this
+	// attribute.
+	if data.Multichain.ValueBool() != state.Multichain.ValueBool() {
+		r.setMultichain(ctx, data.Id.ValueString(), data.Multichain.ValueBool(), &resp.Diagnostics)
+		if resp.Diagnostics.HasError() {
+			return
 		}
 	}
 

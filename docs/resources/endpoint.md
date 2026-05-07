@@ -23,6 +23,7 @@ Endpoint resource
 ### Optional
 
 - `label` (String) Label to decorate an endpoint with
+- `multichain` (Boolean) Whether multichain is enabled for the endpoint.
 - `tags` (Set of String) Tags to associate with the endpoint
 
 ### Read-Only
