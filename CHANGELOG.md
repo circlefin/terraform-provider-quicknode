@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.8.0](https://github.com/circlefin/terraform-provider-quicknode/compare/v0.7.2...v0.8.0) (2026-05-08)
+
+
+### Features
+
+* add multichain support to endpoint resource ([#71](https://github.com/circlefin/terraform-provider-quicknode/issues/71)) ([fae6895](https://github.com/circlefin/terraform-provider-quicknode/commit/fae6895a94d188f7761232d7389e74173574f751))
+
 ## [0.7.2](https://github.com/circlefin/terraform-provider-quicknode/compare/v0.7.1...v0.7.2) (2026-04-21)
 
 
