@@ -776,7 +776,8 @@
               "book_updates",
               "twap",
               "writer_actions",
-              "events_with_orders"
+              "events_with_orders",
+              "block_with_beacon"
             ],
             "example": "block"
           },
@@ -1158,7 +1159,8 @@
               "book_updates",
               "twap",
               "writer_actions",
-              "events_with_orders"
+              "events_with_orders",
+              "block_with_beacon"
             ],
             "example": "block"
           },

@@ -282,7 +282,7 @@
             }
           },
           "400": {
-            "description": "invalid request_id format"
+            "description": "hermes rejects non-time-based UUID"
           },
           "404": {
             "description": "endpoint not found"
@@ -646,12 +646,38 @@
       }
     },
     "/v0/endpoints/{id}/rate-limits": {
-      "put": {
-        "summary": "Updates rate limits",
+      "get": {
+        "summary": "List endpoint rate limits",
         "tags": [
           "Endpoint Rate Limits"
         ],
-        "description": "Update rate limits on an endpoint",
+        "description": "Returns the rate limits currently enforced on the endpoint, with the source of each value.",
+        "operationId": "getRateLimits",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Rate limits returned"
+          },
+          "404": {
+            "description": "Endpoint not found"
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update endpoint rate limits (partial)",
+        "tags": [
+          "Endpoint Rate Limits"
+        ],
+        "description": "Partial update of endpoint-level rate-limit overrides (RPS/RPM/RPD). Only buckets included in the request body are modified — omitted buckets are left unchanged. There is no clear-by-omission behavior. PUT is also accepted as a legacy alias of this operation.",
         "operationId": "updateRateLimits",
         "parameters": [
           {
@@ -690,13 +716,19 @@
                     "type": "object",
                     "properties": {
                       "rps": {
-                        "type": "integer"
+                        "type": "integer",
+                        "minimum": 1,
+                        "description": "Maximum requests per second. Capped by the account's plan tier."
                       },
                       "rpm": {
-                        "type": "integer"
+                        "type": "integer",
+                        "minimum": 1,
+                        "description": "Maximum requests per minute. Capped by the account's plan tier."
                       },
                       "rpd": {
-                        "type": "integer"
+                        "type": "integer",
+                        "minimum": 1,
+                        "description": "Maximum requests per day. Capped by the account's plan tier."
                       }
                     },
                     "minProperties": 1
@@ -704,6 +736,99 @@
                 }
               }
             }
+          }
+        }
+      },
+      "put": {
+        "summary": "Update endpoint rate limits (legacy PUT alias)",
+        "tags": [
+          "Endpoint Rate Limits"
+        ],
+        "description": "Deprecated — kept for backwards compatibility with existing API clients. Use PATCH /v0/endpoints/{id}/rate-limits instead.",
+        "operationId": "updateRateLimitsLegacyPut",
+        "deprecated": true,
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Rate limits updated"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "rate_limits"
+                ],
+                "properties": {
+                  "rate_limits": {
+                    "type": "object",
+                    "properties": {
+                      "rps": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "description": "Maximum requests per second. Capped by the account's plan tier."
+                      },
+                      "rpm": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "description": "Maximum requests per minute. Capped by the account's plan tier."
+                      },
+                      "rpd": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "description": "Maximum requests per day. Capped by the account's plan tier."
+                      }
+                    },
+                    "minProperties": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v0/endpoints/{id}/rate-limits/{override_id}": {
+      "delete": {
+        "summary": "Delete a user-set rate-limit override",
+        "tags": [
+          "Endpoint Rate Limits"
+        ],
+        "description": "Delete the user-set rate-limit override identified by its UUID. The override id is exposed on the GET rate-limits response for user_override rows. Returns 404 if the id does not match a user-set override on this endpoint — plan defaults are not deletable.",
+        "operationId": "deleteRateLimitOverride",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "override_id",
+            "in": "path",
+            "description": "The UUID of the user-set rate-limit override, as returned by the GET rate-limits response.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "404": {
+            "description": "Override not found"
           }
         }
       }
@@ -2522,6 +2647,47 @@
         }
       }
     },
+    "/v0/endpoints/{id}/urls": {
+      "get": {
+        "summary": "Get endpoint URLs",
+        "tags": [
+          "Endpoints"
+        ],
+        "description": "Returns the http/wss URLs for the endpoint, plus multichain_urls for multichain endpoints.",
+        "operationId": "showEndpointUrls",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/endpoint_urls"
+                    },
+                    "error": {
+                      "type": "string",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v0/metrics": {
       "get": {
         "summary": "Fetch account-level metrics",
@@ -2748,7 +2914,7 @@
         "tags": [
           "Tags"
         ],
-        "description": "Deletes an account tag. Hard-fails if the tag is still assigned to any endpoints \u2014 remove it from all endpoints first. Admin-only.",
+        "description": "Deletes an account tag. Hard-fails if the tag is still assigned to any endpoints — remove it from all endpoints first. Admin-only.",
         "operationId": "deleteAccountTag",
         "parameters": [
           {
@@ -4481,6 +4647,44 @@
           "http_url",
           "security",
           "is_multichain"
+        ]
+      },
+      "endpoint_urls": {
+        "type": "object",
+        "properties": {
+          "http_url": {
+            "type": "string"
+          },
+          "wss_url": {
+            "type": "string",
+            "nullable": true
+          },
+          "multichain_urls": {
+            "type": "object",
+            "nullable": true,
+            "description": "Map of network name → { http_url, wss_url } for multichain endpoints; null otherwise.",
+            "additionalProperties": {
+              "type": "object",
+              "properties": {
+                "http_url": {
+                  "type": "string"
+                },
+                "wss_url": {
+                  "type": "string",
+                  "nullable": true
+                }
+              },
+              "required": [
+                "http_url",
+                "wss_url"
+              ]
+            }
+          }
+        },
+        "required": [
+          "http_url",
+          "wss_url",
+          "multichain_urls"
         ]
       },
       "endpoint_rate_limits": {

@@ -294,6 +294,18 @@ type EndpointToken struct {
 	Token *string `json:"token,omitempty"`
 }
 
+// EndpointUrls defines model for endpoint_urls.
+type EndpointUrls struct {
+	HttpUrl string `json:"http_url"`
+
+	// MultichainUrls Map of network name → { http_url, wss_url } for multichain endpoints; null otherwise.
+	MultichainUrls *map[string]struct {
+		HttpUrl string  `json:"http_url"`
+		WssUrl  *string `json:"wss_url"`
+	} `json:"multichain_urls"`
+	WssUrl *string `json:"wss_url"`
+}
+
 // EndpointUsage defines model for endpoint_usage.
 type EndpointUsage struct {
 	Chain            *string        `json:"chain,omitempty"`
@@ -511,8 +523,27 @@ type FetchEndpointMetricParamsMetric string
 // UpdateRateLimitsJSONBody defines parameters for UpdateRateLimits.
 type UpdateRateLimitsJSONBody struct {
 	RateLimits struct {
+		// Rpd Maximum requests per day. Capped by the account's plan tier.
 		Rpd *int `json:"rpd,omitempty"`
+
+		// Rpm Maximum requests per minute. Capped by the account's plan tier.
 		Rpm *int `json:"rpm,omitempty"`
+
+		// Rps Maximum requests per second. Capped by the account's plan tier.
+		Rps *int `json:"rps,omitempty"`
+	} `json:"rate_limits"`
+}
+
+// UpdateRateLimitsLegacyPutJSONBody defines parameters for UpdateRateLimitsLegacyPut.
+type UpdateRateLimitsLegacyPutJSONBody struct {
+	RateLimits struct {
+		// Rpd Maximum requests per day. Capped by the account's plan tier.
+		Rpd *int `json:"rpd,omitempty"`
+
+		// Rpm Maximum requests per minute. Capped by the account's plan tier.
+		Rpm *int `json:"rpm,omitempty"`
+
+		// Rps Maximum requests per second. Capped by the account's plan tier.
 		Rps *int `json:"rps,omitempty"`
 	} `json:"rate_limits"`
 }
@@ -724,6 +755,9 @@ type UpdateMethodRateLimitJSONRequestBody UpdateMethodRateLimitJSONBody
 // UpdateRateLimitsJSONRequestBody defines body for UpdateRateLimits for application/json ContentType.
 type UpdateRateLimitsJSONRequestBody UpdateRateLimitsJSONBody
 
+// UpdateRateLimitsLegacyPutJSONRequestBody defines body for UpdateRateLimitsLegacyPut for application/json ContentType.
+type UpdateRateLimitsLegacyPutJSONRequestBody UpdateRateLimitsLegacyPutJSONBody
+
 // CreateDomainMaskJSONRequestBody defines body for CreateDomainMask for application/json ContentType.
 type CreateDomainMaskJSONRequestBody CreateDomainMaskJSONBody
 
@@ -929,10 +963,21 @@ type ClientInterface interface {
 	// FetchEndpointMetric request
 	FetchEndpointMetric(ctx context.Context, id string, params *FetchEndpointMetricParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// GetRateLimits request
+	GetRateLimits(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// UpdateRateLimitsWithBody request with any body
 	UpdateRateLimitsWithBody(ctx context.Context, id string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	UpdateRateLimits(ctx context.Context, id string, body UpdateRateLimitsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateRateLimitsLegacyPutWithBody request with any body
+	UpdateRateLimitsLegacyPutWithBody(ctx context.Context, id string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	UpdateRateLimitsLegacyPut(ctx context.Context, id string, body UpdateRateLimitsLegacyPutJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteRateLimitOverride request
+	DeleteRateLimitOverride(ctx context.Context, id string, overrideId string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetEndpointSecurity request
 	GetEndpointSecurity(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -1008,6 +1053,9 @@ type ClientInterface interface {
 
 	// DeleteTag request
 	DeleteTag(ctx context.Context, id string, tagId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ShowEndpointUrls request
+	ShowEndpointUrls(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// FetchAccountMetrics request
 	FetchAccountMetrics(ctx context.Context, params *FetchAccountMetricsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -1471,6 +1519,18 @@ func (c *Client) FetchEndpointMetric(ctx context.Context, id string, params *Fet
 	return c.Client.Do(req)
 }
 
+func (c *Client) GetRateLimits(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetRateLimitsRequest(c.Server, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 func (c *Client) UpdateRateLimitsWithBody(ctx context.Context, id string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewUpdateRateLimitsRequestWithBody(c.Server, id, contentType, body)
 	if err != nil {
@@ -1485,6 +1545,42 @@ func (c *Client) UpdateRateLimitsWithBody(ctx context.Context, id string, conten
 
 func (c *Client) UpdateRateLimits(ctx context.Context, id string, body UpdateRateLimitsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewUpdateRateLimitsRequest(c.Server, id, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateRateLimitsLegacyPutWithBody(ctx context.Context, id string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateRateLimitsLegacyPutRequestWithBody(c.Server, id, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateRateLimitsLegacyPut(ctx context.Context, id string, body UpdateRateLimitsLegacyPutJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateRateLimitsLegacyPutRequest(c.Server, id, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) DeleteRateLimitOverride(ctx context.Context, id string, overrideId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteRateLimitOverrideRequest(c.Server, id, overrideId)
 	if err != nil {
 		return nil, err
 	}
@@ -1821,6 +1917,18 @@ func (c *Client) CreateTag(ctx context.Context, id string, body CreateTagJSONReq
 
 func (c *Client) DeleteTag(ctx context.Context, id string, tagId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewDeleteTagRequest(c.Server, id, tagId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ShowEndpointUrls(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewShowEndpointUrlsRequest(c.Server, id)
 	if err != nil {
 		return nil, err
 	}
@@ -3301,6 +3409,40 @@ func NewFetchEndpointMetricRequest(server string, id string, params *FetchEndpoi
 	return req, nil
 }
 
+// NewGetRateLimitsRequest generates requests for GetRateLimits
+func NewGetRateLimitsRequest(server string, id string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v0/endpoints/%s/rate-limits", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
 // NewUpdateRateLimitsRequest calls the generic UpdateRateLimits builder with application/json body
 func NewUpdateRateLimitsRequest(server string, id string, body UpdateRateLimitsJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
@@ -3338,12 +3480,100 @@ func NewUpdateRateLimitsRequestWithBody(server string, id string, contentType st
 		return nil, err
 	}
 
+	req, err := http.NewRequest("PATCH", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewUpdateRateLimitsLegacyPutRequest calls the generic UpdateRateLimitsLegacyPut builder with application/json body
+func NewUpdateRateLimitsLegacyPutRequest(server string, id string, body UpdateRateLimitsLegacyPutJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewUpdateRateLimitsLegacyPutRequestWithBody(server, id, "application/json", bodyReader)
+}
+
+// NewUpdateRateLimitsLegacyPutRequestWithBody generates requests for UpdateRateLimitsLegacyPut with any type of body
+func NewUpdateRateLimitsLegacyPutRequestWithBody(server string, id string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v0/endpoints/%s/rate-limits", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
 	req, err := http.NewRequest("PUT", queryURL.String(), body)
 	if err != nil {
 		return nil, err
 	}
 
 	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewDeleteRateLimitOverrideRequest generates requests for DeleteRateLimitOverride
+func NewDeleteRateLimitOverrideRequest(server string, id string, overrideId string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "override_id", runtime.ParamLocationPath, overrideId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v0/endpoints/%s/rate-limits/%s", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
 
 	return req, nil
 }
@@ -4160,6 +4390,40 @@ func NewDeleteTagRequest(server string, id string, tagId string) (*http.Request,
 	}
 
 	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewShowEndpointUrlsRequest generates requests for ShowEndpointUrls
+func NewShowEndpointUrlsRequest(server string, id string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v0/endpoints/%s/urls", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -5059,10 +5323,21 @@ type ClientWithResponsesInterface interface {
 	// FetchEndpointMetricWithResponse request
 	FetchEndpointMetricWithResponse(ctx context.Context, id string, params *FetchEndpointMetricParams, reqEditors ...RequestEditorFn) (*FetchEndpointMetricResponse, error)
 
+	// GetRateLimitsWithResponse request
+	GetRateLimitsWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*GetRateLimitsResponse, error)
+
 	// UpdateRateLimitsWithBodyWithResponse request with any body
 	UpdateRateLimitsWithBodyWithResponse(ctx context.Context, id string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateRateLimitsResponse, error)
 
 	UpdateRateLimitsWithResponse(ctx context.Context, id string, body UpdateRateLimitsJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateRateLimitsResponse, error)
+
+	// UpdateRateLimitsLegacyPutWithBodyWithResponse request with any body
+	UpdateRateLimitsLegacyPutWithBodyWithResponse(ctx context.Context, id string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateRateLimitsLegacyPutResponse, error)
+
+	UpdateRateLimitsLegacyPutWithResponse(ctx context.Context, id string, body UpdateRateLimitsLegacyPutJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateRateLimitsLegacyPutResponse, error)
+
+	// DeleteRateLimitOverrideWithResponse request
+	DeleteRateLimitOverrideWithResponse(ctx context.Context, id string, overrideId string, reqEditors ...RequestEditorFn) (*DeleteRateLimitOverrideResponse, error)
 
 	// GetEndpointSecurityWithResponse request
 	GetEndpointSecurityWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*GetEndpointSecurityResponse, error)
@@ -5138,6 +5413,9 @@ type ClientWithResponsesInterface interface {
 
 	// DeleteTagWithResponse request
 	DeleteTagWithResponse(ctx context.Context, id string, tagId string, reqEditors ...RequestEditorFn) (*DeleteTagResponse, error)
+
+	// ShowEndpointUrlsWithResponse request
+	ShowEndpointUrlsWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*ShowEndpointUrlsResponse, error)
 
 	// FetchAccountMetricsWithResponse request
 	FetchAccountMetricsWithResponse(ctx context.Context, params *FetchAccountMetricsParams, reqEditors ...RequestEditorFn) (*FetchAccountMetricsResponse, error)
@@ -5840,6 +6118,27 @@ func (r FetchEndpointMetricResponse) StatusCode() int {
 	return 0
 }
 
+type GetRateLimitsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+}
+
+// Status returns HTTPResponse.Status
+func (r GetRateLimitsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetRateLimitsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type UpdateRateLimitsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -5855,6 +6154,48 @@ func (r UpdateRateLimitsResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r UpdateRateLimitsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type UpdateRateLimitsLegacyPutResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+}
+
+// Status returns HTTPResponse.Status
+func (r UpdateRateLimitsLegacyPutResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r UpdateRateLimitsLegacyPutResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DeleteRateLimitOverrideResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteRateLimitOverrideResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteRateLimitOverrideResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -6288,6 +6629,31 @@ func (r DeleteTagResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r DeleteTagResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type ShowEndpointUrlsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *struct {
+		Data  *EndpointUrls `json:"data,omitempty"`
+		Error *string       `json:"error"`
+	}
+}
+
+// Status returns HTTPResponse.Status
+func (r ShowEndpointUrlsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ShowEndpointUrlsResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -7106,6 +7472,15 @@ func (c *ClientWithResponses) FetchEndpointMetricWithResponse(ctx context.Contex
 	return ParseFetchEndpointMetricResponse(rsp)
 }
 
+// GetRateLimitsWithResponse request returning *GetRateLimitsResponse
+func (c *ClientWithResponses) GetRateLimitsWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*GetRateLimitsResponse, error) {
+	rsp, err := c.GetRateLimits(ctx, id, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetRateLimitsResponse(rsp)
+}
+
 // UpdateRateLimitsWithBodyWithResponse request with arbitrary body returning *UpdateRateLimitsResponse
 func (c *ClientWithResponses) UpdateRateLimitsWithBodyWithResponse(ctx context.Context, id string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateRateLimitsResponse, error) {
 	rsp, err := c.UpdateRateLimitsWithBody(ctx, id, contentType, body, reqEditors...)
@@ -7121,6 +7496,32 @@ func (c *ClientWithResponses) UpdateRateLimitsWithResponse(ctx context.Context, 
 		return nil, err
 	}
 	return ParseUpdateRateLimitsResponse(rsp)
+}
+
+// UpdateRateLimitsLegacyPutWithBodyWithResponse request with arbitrary body returning *UpdateRateLimitsLegacyPutResponse
+func (c *ClientWithResponses) UpdateRateLimitsLegacyPutWithBodyWithResponse(ctx context.Context, id string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateRateLimitsLegacyPutResponse, error) {
+	rsp, err := c.UpdateRateLimitsLegacyPutWithBody(ctx, id, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateRateLimitsLegacyPutResponse(rsp)
+}
+
+func (c *ClientWithResponses) UpdateRateLimitsLegacyPutWithResponse(ctx context.Context, id string, body UpdateRateLimitsLegacyPutJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateRateLimitsLegacyPutResponse, error) {
+	rsp, err := c.UpdateRateLimitsLegacyPut(ctx, id, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateRateLimitsLegacyPutResponse(rsp)
+}
+
+// DeleteRateLimitOverrideWithResponse request returning *DeleteRateLimitOverrideResponse
+func (c *ClientWithResponses) DeleteRateLimitOverrideWithResponse(ctx context.Context, id string, overrideId string, reqEditors ...RequestEditorFn) (*DeleteRateLimitOverrideResponse, error) {
+	rsp, err := c.DeleteRateLimitOverride(ctx, id, overrideId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteRateLimitOverrideResponse(rsp)
 }
 
 // GetEndpointSecurityWithResponse request returning *GetEndpointSecurityResponse
@@ -7364,6 +7765,15 @@ func (c *ClientWithResponses) DeleteTagWithResponse(ctx context.Context, id stri
 		return nil, err
 	}
 	return ParseDeleteTagResponse(rsp)
+}
+
+// ShowEndpointUrlsWithResponse request returning *ShowEndpointUrlsResponse
+func (c *ClientWithResponses) ShowEndpointUrlsWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*ShowEndpointUrlsResponse, error) {
+	rsp, err := c.ShowEndpointUrls(ctx, id, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseShowEndpointUrlsResponse(rsp)
 }
 
 // FetchAccountMetricsWithResponse request returning *FetchAccountMetricsResponse
@@ -8208,6 +8618,22 @@ func ParseFetchEndpointMetricResponse(rsp *http.Response) (*FetchEndpointMetricR
 	return response, nil
 }
 
+// ParseGetRateLimitsResponse parses an HTTP response from a GetRateLimitsWithResponse call
+func ParseGetRateLimitsResponse(rsp *http.Response) (*GetRateLimitsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetRateLimitsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	return response, nil
+}
+
 // ParseUpdateRateLimitsResponse parses an HTTP response from a UpdateRateLimitsWithResponse call
 func ParseUpdateRateLimitsResponse(rsp *http.Response) (*UpdateRateLimitsResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -8217,6 +8643,38 @@ func ParseUpdateRateLimitsResponse(rsp *http.Response) (*UpdateRateLimitsRespons
 	}
 
 	response := &UpdateRateLimitsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	return response, nil
+}
+
+// ParseUpdateRateLimitsLegacyPutResponse parses an HTTP response from a UpdateRateLimitsLegacyPutWithResponse call
+func ParseUpdateRateLimitsLegacyPutResponse(rsp *http.Response) (*UpdateRateLimitsLegacyPutResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &UpdateRateLimitsLegacyPutResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	return response, nil
+}
+
+// ParseDeleteRateLimitOverrideResponse parses an HTTP response from a DeleteRateLimitOverrideWithResponse call
+func ParseDeleteRateLimitOverrideResponse(rsp *http.Response) (*DeleteRateLimitOverrideResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteRateLimitOverrideResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -8623,6 +9081,35 @@ func ParseDeleteTagResponse(rsp *http.Response) (*DeleteTagResponse, error) {
 	response := &DeleteTagResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
+	}
+
+	return response, nil
+}
+
+// ParseShowEndpointUrlsResponse parses an HTTP response from a ShowEndpointUrlsWithResponse call
+func ParseShowEndpointUrlsResponse(rsp *http.Response) (*ShowEndpointUrlsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ShowEndpointUrlsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest struct {
+			Data  *EndpointUrls `json:"data,omitempty"`
+			Error *string       `json:"error"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
 	}
 
 	return response, nil
@@ -9278,136 +9765,148 @@ func ParseUsageByTagResponse(rsp *http.Response) (*UsageByTagResponse, error) {
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"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",
-	"AAA=",
+	"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",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file
