@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.8.1](https://github.com/circlefin/terraform-provider-quicknode/compare/v0.8.0...v0.8.1) (2026-05-22)
+
+
+### Miscellaneous Chores
+
+* generate new openapi spec 3.1.0 ([#73](https://github.com/circlefin/terraform-provider-quicknode/issues/73)) ([0e81e6a](https://github.com/circlefin/terraform-provider-quicknode/commit/0e81e6aab42fb5c48f261950a15706cd9be69e2f))
+
 ## [0.8.0](https://github.com/circlefin/terraform-provider-quicknode/compare/v0.7.2...v0.8.0) (2026-05-08)
 
 
