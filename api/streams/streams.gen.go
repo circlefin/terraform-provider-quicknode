@@ -29,6 +29,7 @@ const (
 // Defines values for CreateStreamDtoDataset.
 const (
 	CreateStreamDtoDatasetBlock                       CreateStreamDtoDataset = "block"
+	CreateStreamDtoDatasetBlockWithBeacon             CreateStreamDtoDataset = "block_with_beacon"
 	CreateStreamDtoDatasetBlockWithReceipts           CreateStreamDtoDataset = "block_with_receipts"
 	CreateStreamDtoDatasetBlockWithReceiptsDebugTrace CreateStreamDtoDataset = "block_with_receipts_debug_trace"
 	CreateStreamDtoDatasetBlockWithReceiptsTraceBlock CreateStreamDtoDataset = "block_with_receipts_trace_block"
@@ -245,6 +246,7 @@ const (
 // Defines values for TestFilterFunctionDtoDataset.
 const (
 	TestFilterFunctionDtoDatasetBlock                       TestFilterFunctionDtoDataset = "block"
+	TestFilterFunctionDtoDatasetBlockWithBeacon             TestFilterFunctionDtoDataset = "block_with_beacon"
 	TestFilterFunctionDtoDatasetBlockWithReceipts           TestFilterFunctionDtoDataset = "block_with_receipts"
 	TestFilterFunctionDtoDatasetBlockWithReceiptsDebugTrace TestFilterFunctionDtoDataset = "block_with_receipts_debug_trace"
 	TestFilterFunctionDtoDatasetBlockWithReceiptsTraceBlock TestFilterFunctionDtoDataset = "block_with_receipts_trace_block"
