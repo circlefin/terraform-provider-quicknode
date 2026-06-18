@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.8.2](https://github.com/circlefin/terraform-provider-quicknode/compare/v0.8.1...v0.8.2) (2026-06-18)
+
+
+### Miscellaneous Chores
+
+* **ci:** bump GitHub Actions to Node 24 ([#75](https://github.com/circlefin/terraform-provider-quicknode/issues/75)) ([5572d5c](https://github.com/circlefin/terraform-provider-quicknode/commit/5572d5c828496889e125589bc36891adf4a764e8))
+
 ## [0.8.1](https://github.com/circlefin/terraform-provider-quicknode/compare/v0.8.0...v0.8.1) (2026-05-22)
 
 
