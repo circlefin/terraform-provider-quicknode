@@ -22,6 +22,8 @@ import (
 	"regexp"
 
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
+
+	"github.com/circlefin/terraform-provider-quicknode/api/streams"
 )
 
 type StringOneOfValidator struct {
@@ -115,58 +117,25 @@ func (v Int64RangeValidator) ValidateInt64(ctx context.Context, req validator.In
 }
 
 var (
-	NetworkValidator = StringOneOfValidator{
-		values: []string{
-			"abstract-mainnet", "abstract-testnet", "arbitrum-mainnet", "arbitrum-sepolia", "arc-testnet",
-			"avalanche-fuji", "avalanche-mainnet", "b3-mainnet", "b3-sepolia",
-			"base-mainnet", "base-sepolia", "bera-mainnet", "bera-bepolia",
-			"bitcoin-mainnet", "blast-mainnet", "blast-sepolia", "bnbchain-mainnet",
-			"bnbchain-testnet", "celo-mainnet", "cyber-mainnet", "cyber-sepolia",
-			"ethereum-holesky", "ethereum-hoodi", "ethereum-mainnet", "ethereum-sepolia",
-			"fantom-mainnet", "flow-mainnet", "flow-testnet", "gnosis-mainnet",
-			"gravity-alpham", "hedera-mainnet", "hedera-testnet", "hemi-mainnet",
-			"hemi-testnet", "hyperliquid-mainnet", "imx-mainnet", "imx-testnet",
-			"injective-mainnet", "injective-testnet", "ink-mainnet", "ink-sepolia",
-			"joc-mainnet", "kaia-mainnet", "kaia-testnet", "lens-mainnet",
-			"lens-testnet", "linea-mainnet", "mantle-mainnet", "mantle-sepolia",
-			"monad-testnet", "morph-holesky", "morph-mainnet", "nova-mainnet",
-			"omni-mainnet", "omni-omega", "optimism-mainnet", "optimism-sepolia",
-			"peaq-mainnet", "plasma-testnet", "polygon-amoy", "polygon-mainnet",
-			"race-mainnet", "race-testnet", "sahara-testnet", "scroll-mainnet",
-			"scroll-testnet", "sei-mainnet", "sei-testnet", "solana-devnet",
-			"solana-mainnet", "solana-testnet", "soneium-mainnet", "sonic-mainnet",
-			"sophon-mainnet", "sophon-testnet", "story-aeneid", "story-mainnet",
-			"tron-mainnet", "unichain-mainnet", "unichain-sepolia", "vana-mainnet",
-			"vana-moksha", "worldchain-mainnet", "worldchain-sepolia", "xai-mainnet",
-			"xai-sepolia", "xrp-mainnet", "xrp-testnet", "zerog-galileo",
-			"zkevm-cardona", "zkevm-mainnet", "zksync-mainnet", "zksync-sepolia",
-			"zora-mainnet",
-		},
-	}
+	// Network, Dataset, Destination, and Region values are generated from the
+	// OpenAPI spec (see api/streams/enums.gen.go) and refreshed by `make vendor`.
+	NetworkValidator = StringOneOfValidator{values: streams.Networks}
 
-	DatasetValidator = StringOneOfValidator{
-		values: []string{
-			"block", "block_with_receipts", "receipts", "logs", "transactions",
-			"trace_blocks", "debug_traces", "block_with_receipts_debug_trace",
-			"block_with_receipts_trace_block", "programs_with_logs", "ledger",
-		},
-	}
+	DatasetValidator = StringOneOfValidator{values: streams.Datasets}
 
 	MetadataValidator = StringOneOfValidator{
 		values: []string{"body", "header", "none"},
 	}
 
-	DestinationValidator = StringOneOfValidator{
-		values: []string{"webhook", "s3", "function", "postgres"},
-	}
+	DestinationValidator = StringOneOfValidator{values: streams.Destinations}
 
+	// StatusValidator is hand-maintained: CreateStreamDto only permits active
+	// and paused, but a stream can be read back as terminated or completed.
 	StatusValidator = StringOneOfValidator{
 		values: []string{"active", "paused", "terminated", "completed"},
 	}
 
-	RegionValidator = StringOneOfValidator{
-		values: []string{"usa_east", "europe_central", "asia_east"},
-	}
+	RegionValidator = StringOneOfValidator{values: streams.Regions}
 
 	CompressionValidator = StringOneOfValidator{
 		values: []string{"none", "gzip"},
