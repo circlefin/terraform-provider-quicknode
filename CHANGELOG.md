@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.9.0](https://github.com/circlefin/terraform-provider-quicknode/compare/v0.8.1...v0.9.0) (2026-06-29)
+
+
+### Features
+
+* derive stream enum validators from openapi spec ([#77](https://github.com/circlefin/terraform-provider-quicknode/issues/77)) ([cb81e39](https://github.com/circlefin/terraform-provider-quicknode/commit/cb81e39575b7ac3aa993d3030bc4e7dbf7c88c89))
+
+
+### Miscellaneous Chores
+
+* **ci:** bump GitHub Actions to Node 24 ([#75](https://github.com/circlefin/terraform-provider-quicknode/issues/75)) ([5572d5c](https://github.com/circlefin/terraform-provider-quicknode/commit/5572d5c828496889e125589bc36891adf4a764e8))
+
 ## [0.8.1](https://github.com/circlefin/terraform-provider-quicknode/compare/v0.8.0...v0.8.1) (2026-05-22)
 
 
