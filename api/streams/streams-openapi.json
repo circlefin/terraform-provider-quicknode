@@ -637,6 +637,7 @@
               "arbitrum-mainnet",
               "arbitrum-sepolia",
               "arc-testnet",
+              "arc-mainnet",
               "ault-mainnet",
               "ault-testnet",
               "avalanche-fuji",
@@ -712,6 +713,7 @@
               "polygon-amoy",
               "polygon-mainnet",
               "robinhood-testnet",
+              "robinhood-mainnet",
               "sahara-testnet",
               "scroll-mainnet",
               "scroll-testnet",
@@ -813,6 +815,11 @@
           "elastic_batch_enabled": {
             "type": "boolean",
             "example": true
+          },
+          "restream_batch_on_reorg": {
+            "type": "boolean",
+            "example": false,
+            "description": "Restream the entire batch on reorg: true. Disabled: false"
           },
           "destination": {
             "type": "string",
@@ -931,6 +938,11 @@
             "type": "boolean",
             "example": true
           },
+          "restream_batch_on_reorg": {
+            "type": "boolean",
+            "example": false,
+            "description": "Restream the entire batch on reorg: true. Disabled: false"
+          },
           "destination": {
             "type": "string",
             "enum": [
@@ -1016,6 +1028,7 @@
               "arbitrum-mainnet",
               "arbitrum-sepolia",
               "arc-testnet",
+              "arc-mainnet",
               "ault-mainnet",
               "ault-testnet",
               "avalanche-fuji",
@@ -1091,6 +1104,7 @@
               "polygon-amoy",
               "polygon-mainnet",
               "robinhood-testnet",
+              "robinhood-mainnet",
               "sahara-testnet",
               "scroll-mainnet",
               "scroll-testnet",

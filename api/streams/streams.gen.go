@@ -64,6 +64,7 @@ const (
 	CreateStreamDtoNetworkAbstractTestnet   CreateStreamDtoNetwork = "abstract-testnet"
 	CreateStreamDtoNetworkArbitrumMainnet   CreateStreamDtoNetwork = "arbitrum-mainnet"
 	CreateStreamDtoNetworkArbitrumSepolia   CreateStreamDtoNetwork = "arbitrum-sepolia"
+	CreateStreamDtoNetworkArcMainnet        CreateStreamDtoNetwork = "arc-mainnet"
 	CreateStreamDtoNetworkArcTestnet        CreateStreamDtoNetwork = "arc-testnet"
 	CreateStreamDtoNetworkAultMainnet       CreateStreamDtoNetwork = "ault-mainnet"
 	CreateStreamDtoNetworkAultTestnet       CreateStreamDtoNetwork = "ault-testnet"
@@ -139,6 +140,7 @@ const (
 	CreateStreamDtoNetworkPlasmaTestnet     CreateStreamDtoNetwork = "plasma-testnet"
 	CreateStreamDtoNetworkPolygonAmoy       CreateStreamDtoNetwork = "polygon-amoy"
 	CreateStreamDtoNetworkPolygonMainnet    CreateStreamDtoNetwork = "polygon-mainnet"
+	CreateStreamDtoNetworkRobinhoodMainnet  CreateStreamDtoNetwork = "robinhood-mainnet"
 	CreateStreamDtoNetworkRobinhoodTestnet  CreateStreamDtoNetwork = "robinhood-testnet"
 	CreateStreamDtoNetworkSaharaTestnet     CreateStreamDtoNetwork = "sahara-testnet"
 	CreateStreamDtoNetworkScrollMainnet     CreateStreamDtoNetwork = "scroll-mainnet"
@@ -272,6 +274,7 @@ const (
 	TestFilterFunctionDtoNetworkAbstractTestnet   TestFilterFunctionDtoNetwork = "abstract-testnet"
 	TestFilterFunctionDtoNetworkArbitrumMainnet   TestFilterFunctionDtoNetwork = "arbitrum-mainnet"
 	TestFilterFunctionDtoNetworkArbitrumSepolia   TestFilterFunctionDtoNetwork = "arbitrum-sepolia"
+	TestFilterFunctionDtoNetworkArcMainnet        TestFilterFunctionDtoNetwork = "arc-mainnet"
 	TestFilterFunctionDtoNetworkArcTestnet        TestFilterFunctionDtoNetwork = "arc-testnet"
 	TestFilterFunctionDtoNetworkAultMainnet       TestFilterFunctionDtoNetwork = "ault-mainnet"
 	TestFilterFunctionDtoNetworkAultTestnet       TestFilterFunctionDtoNetwork = "ault-testnet"
@@ -347,6 +350,7 @@ const (
 	TestFilterFunctionDtoNetworkPlasmaTestnet     TestFilterFunctionDtoNetwork = "plasma-testnet"
 	TestFilterFunctionDtoNetworkPolygonAmoy       TestFilterFunctionDtoNetwork = "polygon-amoy"
 	TestFilterFunctionDtoNetworkPolygonMainnet    TestFilterFunctionDtoNetwork = "polygon-mainnet"
+	TestFilterFunctionDtoNetworkRobinhoodMainnet  TestFilterFunctionDtoNetwork = "robinhood-mainnet"
 	TestFilterFunctionDtoNetworkRobinhoodTestnet  TestFilterFunctionDtoNetwork = "robinhood-testnet"
 	TestFilterFunctionDtoNetworkSaharaTestnet     TestFilterFunctionDtoNetwork = "sahara-testnet"
 	TestFilterFunctionDtoNetworkScrollMainnet     TestFilterFunctionDtoNetwork = "scroll-mainnet"
@@ -449,6 +453,9 @@ type CreateStreamDto struct {
 	// NotificationEmail Notify when stream is terminated
 	NotificationEmail *string               `json:"notification_email,omitempty"`
 	Region            CreateStreamDtoRegion `json:"region"`
+
+	// RestreamBatchOnReorg Restream the entire batch on reorg: true. Disabled: false
+	RestreamBatchOnReorg *bool `json:"restream_batch_on_reorg,omitempty"`
 
 	// StartRange Stream start at block number. If not provided, the stream will start at the latest block.
 	StartRange *int                  `json:"start_range,omitempty"`
@@ -593,6 +600,9 @@ type UpdateStreamDto struct {
 
 	// NotificationEmail Notify when stream is terminated
 	NotificationEmail *string `json:"notification_email,omitempty"`
+
+	// RestreamBatchOnReorg Restream the entire batch on reorg: true. Disabled: false
+	RestreamBatchOnReorg *bool `json:"restream_batch_on_reorg,omitempty"`
 
 	// StartRange Stream start at block number. If not provided, the stream will start at the latest block.
 	StartRange *int                   `json:"start_range,omitempty"`

@@ -1094,6 +1094,9 @@
         "responses": {
           "200": {
             "description": "referrer created"
+          },
+          "400": {
+            "description": "referrer is missing"
           }
         },
         "requestBody": {
@@ -1150,6 +1153,21 @@
                     "error": {
                       "type": "string",
                       "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "method is missing",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
                     }
                   }
                 }
@@ -1307,6 +1325,9 @@
         "responses": {
           "200": {
             "description": "success"
+          },
+          "400": {
+            "description": "ip is missing"
           }
         },
         "requestBody": {
@@ -1387,6 +1408,9 @@
         "responses": {
           "200": {
             "description": "success"
+          },
+          "400": {
+            "description": "name is missing"
           }
         },
         "requestBody": {
@@ -3979,7 +4003,7 @@
         "tags": [
           "Usage"
         ],
-        "description": "If start_time or end_time are missing, current billing period is used and remaining credits for the period are returned.",
+        "description": "If neither start_time nor end_time are provided, current billing period is used and remaining credits for the period are returned. If one bound is omitted, the supplied bound is honored: missing start_time defaults to the current period start, and missing end_time defaults to the current time.",
         "operationId": "usage",
         "parameters": [
           {
