@@ -75,6 +75,7 @@ type EndpointResourceModel struct {
 	Chain      types.String `tfsdk:"chain"`
 	Network    types.String `tfsdk:"network"`
 	Url        types.String `tfsdk:"url"`
+	WssUrl     types.String `tfsdk:"wss_url"`
 	Id         types.String `tfsdk:"id"`
 	Security   types.Object `tfsdk:"security"`
 	Tags       types.Set    `tfsdk:"tags"`
@@ -84,6 +85,26 @@ type EndpointResourceModel struct {
 type EndpointResourceSecurityToken struct {
 	Id    types.String
 	Token types.String
+}
+
+// baseUrl strips the authentication token path from an endpoint URL, leaving
+// only the scheme and host.
+func baseUrl(raw string) types.String {
+	u, err := url.Parse(raw)
+	if err != nil || u.Scheme == "" || u.Host == "" {
+		return types.StringNull()
+	}
+
+	return types.StringValue(fmt.Sprintf("%s://%s", u.Scheme, u.Host))
+}
+
+// setUrls derives the url and wss_url attributes from an API response.
+func (data *EndpointResourceModel) setUrls(httpUrl string, wssUrl *string) {
+	data.Url = baseUrl(httpUrl)
+	data.WssUrl = types.StringNull()
+	if wssUrl != nil && *wssUrl != "" {
+		data.WssUrl = baseUrl(*wssUrl)
+	}
 }
 
 func (r *EndpointResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -115,7 +136,14 @@ func (r *EndpointResource) Schema(ctx context.Context, req resource.SchemaReques
 			},
 			"url": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "Endpoint URL that was created.",
+				MarkdownDescription: "HTTP(S) URL of the endpoint, without the authentication token path.",
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.UseStateForUnknown(),
+				},
+			},
+			"wss_url": schema.StringAttribute{
+				Computed:            true,
+				MarkdownDescription: "WebSocket URL of the endpoint, without the authentication token path. Null for chains that do not offer WebSocket support.",
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
@@ -275,8 +303,7 @@ func (r *EndpointResource) Create(ctx context.Context, req resource.CreateReques
 
 	endpoint := endpointResp.JSON200.Data
 	data.Id = types.StringValue(endpoint.Id)
-	u, _ := url.Parse(endpoint.HttpUrl)
-	data.Url = types.StringValue(fmt.Sprintf("%s://%s", u.Scheme, u.Host))
+	data.setUrls(endpoint.HttpUrl, endpoint.WssUrl)
 	data.Security = types.ObjectNull(securityAttributes)
 	if endpoint.Security.Tokens != nil {
 		var tokens []basetypes.ObjectValuable
@@ -464,8 +491,7 @@ func (r *EndpointResource) Read(ctx context.Context, req resource.ReadRequest, r
 	if endpoint.Label != nil && *endpoint.Label != "" {
 		data.Label = types.StringPointerValue(endpoint.Label)
 	}
-	u, _ := url.Parse(endpoint.HttpUrl)
-	data.Url = types.StringValue(fmt.Sprintf("%s://%s", u.Scheme, u.Host))
+	data.setUrls(endpoint.HttpUrl, endpoint.WssUrl)
 	data.Security = types.ObjectNull(securityAttributes)
 	if endpoint.Security.Tokens != nil {
 		var tokens []basetypes.ObjectValuable

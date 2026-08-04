@@ -30,7 +30,8 @@ Endpoint resource
 
 - `id` (String) ID of the endpoint
 - `security` (Attributes) Security Configuration of the endpoint (see [below for nested schema](#nestedatt--security))
-- `url` (String) Endpoint URL that was created.
+- `url` (String) HTTP(S) URL of the endpoint, without the authentication token path.
+- `wss_url` (String) WebSocket URL of the endpoint, without the authentication token path. Null for chains that do not offer WebSocket support.
 
 <a id="nestedatt--security"></a>
 ### Nested Schema for `security`
