@@ -303,9 +303,9 @@ func TestMultichainDiff_NullVsFalse(t *testing.T) {
 	}
 }
 
-func strPtr(s string) *string { return &s }
-
 func TestSetUrls(t *testing.T) {
+	wss, empty := "wss://example-endpoint.quiknode.pro/abc123/", ""
+
 	tests := map[string]struct {
 		httpUrl string
 		wssUrl  *string
@@ -314,10 +314,12 @@ func TestSetUrls(t *testing.T) {
 	}{
 		"http and wss": {
 			httpUrl: "https://example-endpoint.quiknode.pro/abc123/",
-			wssUrl:  strPtr("wss://example-endpoint.quiknode.pro/abc123/"),
+			wssUrl:  &wss,
 			wantUrl: types.StringValue("https://example-endpoint.quiknode.pro"),
 			wantWss: types.StringValue("wss://example-endpoint.quiknode.pro"),
 		},
+		// The spec types wss_url as nullable, but pin both wire
+		// representations of "no WebSocket" so neither regresses.
 		"nil wss": {
 			httpUrl: "https://example-endpoint.matic.quiknode.pro/abc123/",
 			wssUrl:  nil,
@@ -326,7 +328,7 @@ func TestSetUrls(t *testing.T) {
 		},
 		"empty wss": {
 			httpUrl: "https://example-endpoint.quiknode.pro/abc123/",
-			wssUrl:  strPtr(""),
+			wssUrl:  &empty,
 			wantUrl: types.StringValue("https://example-endpoint.quiknode.pro"),
 			wantWss: types.StringNull(),
 		},

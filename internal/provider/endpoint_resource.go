@@ -88,7 +88,8 @@ type EndpointResourceSecurityToken struct {
 }
 
 // baseUrl strips the authentication token path from an endpoint URL, leaving
-// only the scheme and host.
+// only the scheme and host. It returns null for input it cannot parse into
+// both a scheme and a host, which includes the empty string.
 func baseUrl(raw string) types.String {
 	u, err := url.Parse(raw)
 	if err != nil || u.Scheme == "" || u.Host == "" {
@@ -101,10 +102,7 @@ func baseUrl(raw string) types.String {
 // setUrls derives the url and wss_url attributes from an API response.
 func (data *EndpointResourceModel) setUrls(httpUrl string, wssUrl *string) {
 	data.Url = baseUrl(httpUrl)
-	data.WssUrl = types.StringNull()
-	if wssUrl != nil && *wssUrl != "" {
-		data.WssUrl = baseUrl(*wssUrl)
-	}
+	data.WssUrl = baseUrl(types.StringPointerValue(wssUrl).ValueString())
 }
 
 func (r *EndpointResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
