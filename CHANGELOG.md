@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.10.0](https://github.com/circlefin/terraform-provider-quicknode/compare/v0.9.1...v0.10.0) (2026-08-04)
+
+
+### Features
+
+* **endpoint:** add wss_url output to endpoint resource ([#81](https://github.com/circlefin/terraform-provider-quicknode/issues/81)) ([b8da509](https://github.com/circlefin/terraform-provider-quicknode/commit/b8da509a2e0ec022cf46611334269330c8298e11))
+
 ## [0.9.1](https://github.com/circlefin/terraform-provider-quicknode/compare/v0.9.0...v0.9.1) (2026-07-22)
 
 
