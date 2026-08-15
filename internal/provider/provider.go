@@ -26,6 +26,7 @@ import (
 	"github.com/circlefin/terraform-provider-quicknode/api/streams"
 	"github.com/circlefin/terraform-provider-quicknode/internal/client/transport"
 	"github.com/circlefin/terraform-provider-quicknode/internal/utils"
+	"github.com/circlefin/terraform-provider-quicknode/internal/validators"
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/function"
@@ -33,6 +34,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/provider"
 	"github.com/hashicorp/terraform-plugin-framework/provider/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
+	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
@@ -88,6 +90,9 @@ func (p *QuickNodeProvider) Schema(ctx context.Context, req provider.SchemaReque
 			"requests_per_second": schema.Int64Attribute{
 				MarkdownDescription: "Maximum requests per second to limit requests to quicknode api",
 				Optional:            true,
+				Validators: []validator.Int64{
+					validators.RequestsPerSecondValidator,
+				},
 			},
 		},
 	}
