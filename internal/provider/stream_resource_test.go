@@ -102,6 +102,29 @@ func TestAccMinimalQuicknodeStreamResource(t *testing.T) {
 	})
 }
 
+func TestUpdateStreamReorgSettingsFromAPIPreservesZeroValues(t *testing.T) {
+	data := &StreamResourceModel{}
+	result := map[string]interface{}{
+		"fix_block_reorgs":      float64(0),
+		"keep_distance_from_tip": float64(0),
+	}
+
+	updateStreamReorgSettingsFromAPI(data, result)
+
+	if data.FixBlockReorgs.IsNull() {
+		t.Fatal("fix_block_reorgs should preserve API zero as a configured value")
+	}
+	if got := data.FixBlockReorgs.ValueInt64(); got != 0 {
+		t.Fatalf("fix_block_reorgs = %d, want 0", got)
+	}
+	if data.KeepDistanceFromTip.IsNull() {
+		t.Fatal("keep_distance_from_tip should preserve API zero as a configured value")
+	}
+	if got := data.KeepDistanceFromTip.ValueInt64(); got != 0 {
+		t.Fatalf("keep_distance_from_tip = %d, want 0", got)
+	}
+}
+
 func testAccQuickNodeStreamResource(name string, destination string) string {
 	return providerConfig + fmt.Sprintf(`
 resource "quicknode_stream" "main" {
