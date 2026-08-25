@@ -645,22 +645,7 @@ func (r *StreamResource) readStreamFromAPI(ctx context.Context, streamID string,
 			data.FilterFunction = types.StringValue(filterFunction)
 		}
 	}
-	if fixBlockReorgs, ok := result["fix_block_reorgs"].(float64); ok {
-		// Treat 0 as null for optional fields
-		if fixBlockReorgs == 0 {
-			data.FixBlockReorgs = types.Int64Null()
-		} else {
-			data.FixBlockReorgs = types.Int64Value(int64(fixBlockReorgs))
-		}
-	}
-	if keepDistanceFromTip, ok := result["keep_distance_from_tip"].(float64); ok {
-		// Treat 0 as null for optional fields
-		if keepDistanceFromTip == 0 {
-			data.KeepDistanceFromTip = types.Int64Null()
-		} else {
-			data.KeepDistanceFromTip = types.Int64Value(int64(keepDistanceFromTip))
-		}
-	}
+	updateStreamReorgSettingsFromAPI(data, result)
 	if notificationEmail, ok := result["notification_email"].(string); ok {
 		// Treat empty string as null for optional fields
 		if notificationEmail == "" {
@@ -680,6 +665,15 @@ func (r *StreamResource) readStreamFromAPI(ctx context.Context, streamID string,
 	}
 
 	return data, nil
+}
+
+func updateStreamReorgSettingsFromAPI(data *StreamResourceModel, result map[string]interface{}) {
+	if fixBlockReorgs, ok := result["fix_block_reorgs"].(float64); ok {
+		data.FixBlockReorgs = types.Int64Value(int64(fixBlockReorgs))
+	}
+	if keepDistanceFromTip, ok := result["keep_distance_from_tip"].(float64); ok {
+		data.KeepDistanceFromTip = types.Int64Value(int64(keepDistanceFromTip))
+	}
 }
 
 func (r *StreamResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
