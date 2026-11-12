@@ -447,6 +447,21 @@ func (r *EndpointResource) setMultichain(ctx context.Context, id string, enable 
 	}
 }
 
+// endpointLabel maps the API's endpoint label to the state value.
+//
+// The label is optional: an attribute that was not configured stays null even
+// when the API reports an empty value. An explicitly configured empty label is
+// preserved so a refresh converges instead of proposing a permanent diff.
+func endpointLabel(prior types.String, apiLabel *string) types.String {
+	if apiLabel != nil && *apiLabel != "" {
+		return types.StringValue(*apiLabel)
+	}
+	if !prior.IsNull() && prior.ValueString() == "" {
+		return prior
+	}
+	return types.StringNull()
+}
+
 func (r *EndpointResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 	var data EndpointResourceModel
 
@@ -485,10 +500,7 @@ func (r *EndpointResource) Read(ctx context.Context, req resource.ReadRequest, r
 	endpoint := endpointResp.JSON200.Data
 	data.Chain = types.StringValue(endpoint.Chain)
 	data.Network = types.StringValue(endpoint.Network)
-	data.Label = types.StringNull()
-	if endpoint.Label != nil && *endpoint.Label != "" {
-		data.Label = types.StringPointerValue(endpoint.Label)
-	}
+	data.Label = endpointLabel(data.Label, endpoint.Label)
 	data.setUrls(endpoint.HttpUrl, endpoint.WssUrl)
 	data.Security = types.ObjectNull(securityAttributes)
 	if endpoint.Security.Tokens != nil {

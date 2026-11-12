@@ -563,6 +563,30 @@ func getPostgresAttributes(destAttrs map[string]interface{}) (*streams.PostgresA
 	}, nil
 }
 
+// optionalStringFromAPI maps an optional string attribute from the API response.
+//
+// An attribute the practitioner did not configure stays null even when the API
+// reports an empty value. A configured attribute keeps the API value verbatim,
+// so an explicitly configured empty string converges on refresh instead of
+// producing a permanent diff.
+func optionalStringFromAPI(apiValue string, configured bool) types.String {
+	if apiValue == "" && !configured {
+		return types.StringNull()
+	}
+	return types.StringValue(apiValue)
+}
+
+// optionalInt64FromAPI maps an optional integer attribute from the API response.
+//
+// It follows the same rule as optionalStringFromAPI: unset attributes stay
+// null, configured attributes keep the API value, including an explicit zero.
+func optionalInt64FromAPI(apiValue int64, configured bool) types.Int64 {
+	if apiValue == 0 && !configured {
+		return types.Int64Null()
+	}
+	return types.Int64Value(apiValue)
+}
+
 // readStreamFromAPI reads stream data from the API and updates the provided StreamResourceModel.
 // An optional fallback model can be provided; fields absent from the API response will retain
 // their values from the fallback instead of becoming null. This guards against providers returning
@@ -588,6 +612,17 @@ func (r *StreamResource) readStreamFromAPI(ctx context.Context, streamID string,
 
 	// Create a new model and populate it with API data
 	data := &StreamResourceModel{}
+
+	// A non-null fallback value (prior state or plan) means the practitioner
+	// configured the attribute explicitly, including an explicit "" or 0.
+	var filterFunctionConfigured, fixBlockReorgsConfigured, keepDistanceFromTipConfigured bool
+	var notificationEmailConfigured bool
+	if len(fallback) > 0 && fallback[0] != nil {
+		filterFunctionConfigured = !fallback[0].FilterFunction.IsNull()
+		fixBlockReorgsConfigured = !fallback[0].FixBlockReorgs.IsNull()
+		keepDistanceFromTipConfigured = !fallback[0].KeepDistanceFromTip.IsNull()
+		notificationEmailConfigured = !fallback[0].NotificationEmail.IsNull()
+	}
 
 	// Update data based on API response
 	if id, ok := result["id"].(string); ok {
@@ -638,26 +673,26 @@ func (r *StreamResource) readStreamFromAPI(ctx context.Context, streamID string,
 		data.Region = types.StringValue(region)
 	}
 	if filterFunction, ok := result["filter_function"].(string); ok {
-		// Treat empty filter_function as null
-		if filterFunction == "" {
-			data.FilterFunction = types.StringNull()
-		} else {
-			data.FilterFunction = types.StringValue(filterFunction)
-		}
+		data.FilterFunction = optionalStringFromAPI(filterFunction, filterFunctionConfigured)
+	} else if filterFunctionConfigured {
+		// QuickNode API did not return filter_function; preserve the configured
+		// value to avoid an inconsistent result error.
+		data.FilterFunction = fallback[0].FilterFunction
 	}
 	if fixBlockReorgs, ok := result["fix_block_reorgs"].(float64); ok {
-		data.FixBlockReorgs = types.Int64Value(int64(fixBlockReorgs))
+		data.FixBlockReorgs = optionalInt64FromAPI(int64(fixBlockReorgs), fixBlockReorgsConfigured)
+	} else if fixBlockReorgsConfigured {
+		data.FixBlockReorgs = fallback[0].FixBlockReorgs
 	}
 	if keepDistanceFromTip, ok := result["keep_distance_from_tip"].(float64); ok {
-		data.KeepDistanceFromTip = types.Int64Value(int64(keepDistanceFromTip))
+		data.KeepDistanceFromTip = optionalInt64FromAPI(int64(keepDistanceFromTip), keepDistanceFromTipConfigured)
+	} else if keepDistanceFromTipConfigured {
+		data.KeepDistanceFromTip = fallback[0].KeepDistanceFromTip
 	}
 	if notificationEmail, ok := result["notification_email"].(string); ok {
-		// Treat empty string as null for optional fields
-		if notificationEmail == "" {
-			data.NotificationEmail = types.StringNull()
-		} else {
-			data.NotificationEmail = types.StringValue(notificationEmail)
-		}
+		data.NotificationEmail = optionalStringFromAPI(notificationEmail, notificationEmailConfigured)
+	} else if notificationEmailConfigured {
+		data.NotificationEmail = fallback[0].NotificationEmail
 	}
 
 	// Update destination_attributes
@@ -746,13 +781,13 @@ func (r *StreamResource) Create(ctx context.Context, req resource.CreateRequest,
 	}
 
 	createResp, err := r.client.CreateWithResponse(ctx, streams.CreateJSONRequestBody{
-		Name:                  data.Name.ValueString(),
-		Network:               streams.CreateStreamDtoNetwork(data.Network.ValueString()),
-		Dataset:               streams.CreateStreamDtoDataset(data.Dataset.ValueString()),
-		StartRange:            startRangePtr,
+		Name:             data.Name.ValueString(),
+		Network:          streams.CreateStreamDtoNetwork(data.Network.ValueString()),
+		Dataset:          streams.CreateStreamDtoDataset(data.Dataset.ValueString()),
+		StartRange:       startRangePtr,
 		DatasetBatchSize: datasetBatchSize,
 		// include_stream_metadata removed from QuickNode API (no longer accepted in create requests)
-		Destination: streams.CreateStreamDtoDestination(data.Destination.ValueString()),
+		Destination:           streams.CreateStreamDtoDestination(data.Destination.ValueString()),
 		ElasticBatchEnabled:   data.ElasticBatchEnabled.ValueBool(),
 		Status:                streams.CreateStreamDtoStatus(data.Status.ValueString()),
 		FilterFunction:        filterFunction,
@@ -1073,12 +1108,12 @@ func (r *StreamResource) Update(ctx context.Context, req resource.UpdateRequest,
 	})
 
 	updateResp, err := r.client.UpdateWithResponse(ctx, streamId, streams.UpdateJSONRequestBody{
-		Name:                  &name,
-		StartRange:            &startRange,
-		EndRange:              optionalFields.EndRange,
+		Name:             &name,
+		StartRange:       &startRange,
+		EndRange:         optionalFields.EndRange,
 		DatasetBatchSize: &datasetBatchSize,
 		// include_stream_metadata removed from QuickNode API (no longer accepted in update requests)
-		Destination: &destination,
+		Destination:           &destination,
 		ElasticBatchEnabled:   &elasticBatchEnabled,
 		Status:                &status,
 		FilterFunction:        filterFunction,
